@@ -27,7 +27,7 @@ export default function Logo({ size = 'medium', showText = true, className = '' 
       {/* Logo de la imagen */}
       <div className={`${sizeClasses.container} relative`}>
         <Image
-          src="/logo.png"
+          src="/LogoPNG.png"
           alt="Agencia MKN Logo"
           width={48}
           height={48}
