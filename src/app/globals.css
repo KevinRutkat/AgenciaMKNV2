@@ -1,26 +1,281 @@
 @import "tailwindcss";
+@import "flag-icons/css/flag-icons.min.css";
 
+/* Variables de colores personalizadas basadas en la paleta KEHRE-WIEDER */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Colores principales de la paleta */
+  --primary-blue: #4FAACC;          /* Azul turquesa principal */
+  --primary-blue-light: #7BC4DB;    /* Azul turquesa claro */
+  --primary-blue-dark: #2E7A96;     /* Azul turquesa oscuro */
+  
+  --primary-green: #5CB85C;         /* Verde de la palmera */
+  --primary-green-light: #7FCC7F;   /* Verde claro */
+  --primary-green-dark: #4A904A;    /* Verde oscuro */
+  
+  --accent-coral: #F85555;          /* Coral/rojo del botón */
+  --accent-coral-light: #FF7676;    /* Coral claro */
+  --accent-coral-dark: #D73A3A;     /* Coral oscuro */
+  
+  --neutral-white: #FFFFFF;         /* Blanco puro */
+  --neutral-light: #F8FFFE;         /* Blanco con tinte azulado */
+  --neutral-gray: #E8F4F8;          /* Gris azulado suave */
+  --neutral-dark: #2C5F71;          /* Azul grisáceo oscuro */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Clases de utilidad personalizadas con !important para asegurar que se apliquen */
+.bg-primary-blue { background-color: var(--primary-blue) !important; }
+.bg-primary-blue-light { background-color: var(--primary-blue-light) !important; }
+.bg-primary-blue-dark { background-color: var(--primary-blue-dark) !important; }
+
+.bg-primary-green { background-color: var(--primary-green) !important; }
+.bg-primary-green-light { background-color: var(--primary-green-light) !important; }
+.bg-primary-green-dark { background-color: var(--primary-green-dark) !important; }
+
+.bg-accent-coral { background-color: var(--accent-coral) !important; }
+.bg-accent-coral-light { background-color: var(--accent-coral-light) !important; }
+.bg-accent-coral-dark { background-color: var(--accent-coral-dark) !important; }
+
+.bg-neutral-light { background-color: var(--neutral-light) !important; }
+.bg-neutral-gray { background-color: var(--neutral-gray) !important; }
+
+.text-primary-blue { color: var(--primary-blue) !important; }
+.text-primary-blue-light { color: var(--primary-blue-light) !important; }
+.text-primary-blue-dark { color: var(--primary-blue-dark) !important; }
+
+.text-primary-green { color: var(--primary-green) !important; }
+.text-primary-green-light { color: var(--primary-green-light) !important; }
+.text-primary-green-dark { color: var(--primary-green-dark) !important; }
+
+.text-accent-coral { color: var(--accent-coral) !important; }
+.text-accent-coral-light { color: var(--accent-coral-light) !important; }
+.text-accent-coral-dark { color: var(--accent-coral-dark) !important; }
+
+.text-neutral-dark { color: var(--neutral-dark) !important; }
+
+.border-primary-blue { border-color: var(--primary-blue) !important; }
+.border-primary-green { border-color: var(--primary-green) !important; }
+.border-accent-coral { border-color: var(--accent-coral) !important; }
+.border-neutral-gray { border-color: var(--neutral-gray) !important; }
+
+/* Clases hover */
+.hover-bg-primary-blue-dark:hover { background-color: var(--primary-blue-dark) !important; }
+.hover-bg-primary-green-dark:hover { background-color: var(--primary-green-dark) !important; }
+.hover-bg-accent-coral-dark:hover { background-color: var(--accent-coral-dark) !important; }
+.hover-bg-neutral-gray:hover { background-color: var(--neutral-gray) !important; }
+
+.hover-text-primary-blue:hover { color: var(--primary-blue) !important; }
+.hover-text-accent-coral:hover { color: var(--accent-coral) !important; }
+
+/* Gradientes personalizados */
+.bg-kehre-gradient {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-coral) 100%);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.bg-kehre-gradient-light {
+  background: linear-gradient(135deg, var(--neutral-light) 0%, var(--neutral-gray) 50%, var(--primary-blue-light) 100%);
+}
+
+/* Utilidades responsive adicionales */
+.container-responsive {
+  @apply px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl;
+}
+
+.text-responsive-lg {
+  @apply text-lg sm:text-xl md:text-2xl;
+}
+
+.text-responsive-xl {
+  @apply text-xl sm:text-2xl md:text-3xl;
+}
+
+.text-responsive-2xl {
+  @apply text-2xl sm:text-3xl md:text-4xl;
+}
+
+.text-responsive-3xl {
+  @apply text-3xl sm:text-4xl md:text-5xl;
+}
+
+.spacing-responsive {
+  @apply px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12;
+}
+
+.gap-responsive {
+  @apply gap-4 sm:gap-6 lg:gap-8;
+}
+
+/* Mejoras para accesibilidad en móvil */
+@media (max-width: 640px) {
+  /* Asegurar que los elementos interactivos tengan al menos 44px de altura */
+  button, 
+  input[type="button"], 
+  input[type="submit"], 
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mejorar el espaciado de los enlaces */
+  a {
+    padding: 4px;
+  }
+  
+  /* Asegurar que el texto no sea demasiado pequeño */
+  body, p, span, div {
+    font-size: 16px !important;
+  }
+  
+  /* Hacer que las imágenes sean responsive por defecto */
+  img {
+    max-width: 100%;
+    height: auto;
   }
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--neutral-light);
+}
+
+/* Estilos personalizados para el banner */
+.text-shadow-strong {
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.8),
+    4px 4px 8px rgba(0, 0, 0, 0.6),
+    6px 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.shadow-3xl {
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Animación sutil para el texto del banner */
+@keyframes floating {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Estilos para la página de detalle de vivienda */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Ocultar barra de scroll horizontal */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+  width: 0;
+  height: 0;
+}
+
+/* Transiciones suaves para las galerías */
+.gallery-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efecto hover para las imágenes de preview */
+.preview-image:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Estilo para botones de navegación de galería */
+.gallery-nav-button {
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.gallery-nav-button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.1);
+}
+
+/* Asegurar cursor pointer en todos los elementos clickeables */
+button, .cursor-pointer, [role="button"] {
+  cursor: pointer !important;
+}
+
+.floating-animation {
+  animation: floating 3s ease-in-out infinite;
+}
+
+/* Ensure emoji/flags render across OS and custom fonts */
+.emoji-font {
+  font-family:
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Noto Color Emoji",
+    "Twemoji Mozilla",
+    "EmojiOne Color",
+    "Android Emoji",
+    system-ui,
+    sans-serif !important;
+}
+
+/* Estilos para el selector de idiomas flotante - SOLO para el botón principal */
+.floating-language-selector > button .fi {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 2rem !important;
+}
+
+/* Asegurar que las banderas en móvil ocupen todo el círculo - SOLO botón principal */
+@media (max-width: 640px) {
+  .floating-language-selector > button .fi {
+    font-size: 2.2rem !important;
+    transform: scale(1.1) !important;
+  }
+}
+
+/* Estilos normales para las banderas del dropdown */
+.floating-language-selector .dropdown-flag {
+  font-size: 1rem !important;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 0 !important;
+  transform: none !important;
+  display: inline-block !important;
 }

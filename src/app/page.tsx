@@ -1,103 +1,327 @@
-import Image from "next/image";
+'use client'
+
+import Banner from '@/components/Banner'
+import { GoogleMap, Marker } from '@react-google-maps/api'
+import { useMultipleTranslations } from '@/hooks/useTranslation'
+import { useGoogleMaps } from '@/contexts/GoogleMapsContext'
+import Link from 'next/link'
+import { useState, useEffect } from 'react'
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  // Google Maps desde contexto global
+  const { isLoaded, loadError } = useGoogleMaps()
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Traducciones para el contenido principal
+  const textsToTranslate = [
+    "Agencia Inmobiliaria y Servicios de Traducción en Cabo de Palos",
+    "Gestión inmobiliaria profesional y servicios de traducción especializada en La Manga, Cartagena y Alicante. Tu agencia de confianza para compra, venta, alquiler de propiedades y traducción de todo tipo.",
+    "Ver Propiedades",
+    "Ver Servicios",
+    "🏡 Sobre Agencia MKN",
+    "Agencia MKN es una inmobiliaria especializada en vivienda a lo largo de Cabo de Palos, Cartagena y Alicante. Nos dedicamos a ayudar y apoyar a nuestros clientes en todas sus gestiones inmobiliarias, desde la busqueda de la vivienda hasta la firma del contrato convirtiendonos en una agencia completa y profesional.",
+    "Ubicados estratégicamente en Cabo de Palos, ofrecemos gestión inmobiliaria integral: compraventa, alquiler, documentación, asesoramiento legal y acompañamiento personalizado durante todo el proceso.",
+    "Como agencia ubicada en una zona multicultural, también destacamos por nuestros servicios de traducción profesional en español, alemán e inglés. Ofrecemos traducción presencial y especializada varios ambitos como pueden ser gestiones administrativas, cuestiones medicas y procedimientos legales.",
+    "📍 Nuestra Ubicación",
+    "🌊 Cabo de Palos, Cartagena",
+    "Ubicados en el privilegiado enclave de Cabo de Palos, conocido por sus aguas cristalinas y su proximidad a la Reserva Marina de Islas Hormigas, ofrecemos las mejores oportunidades inmobiliarias en La Manga del Mar Menor y toda la región de Cartagena.",
+    "En Agencia MKN, nuestro mayor valor es la relación de confianza que establecemos con cada cliente. Nos comprometemos a ofrecer una experiencia inequíparable, basada en la transparencia, la profesionalidad y el trato cercano que nos caracteriza, acompañándote durante todo el proceso inmobiliario.",
+    "Dirección:",
+    "Ctra. a Cabo de Palos, Km. 25, 30370 Cabo de Palos, Murcia",
+    "Foto de la empresa",
+    "(Se añadirá más tarde)",
+    "Teléfono:",
+    "Email:",
+    "Horario:",
+    "Lunes a Sábado, 12:00 - 17:00",
+    "Error cargando el mapa",
+    "Cargando mapa...",
+    "🔗 Ver en Google Maps",
+    "⭐ Nuestros Servicios",
+    "Gestión Inmobiliaria Integral",
+    "Gestión completa de compraventa y alquiler. Nos encargamos de todos los trámites, documentación, asesoramiento legal y acompañamiento personalizado durante todo el proceso.",
+    "Servicios de Traducción",
+    "Traducción profesional en español, alemán e inglés. Ofrecemos traducción en gestiones oficiales como Hacienda o Ayuntamientos, servicios notariales, traducción médica y hospitalaria, así como traducción presencial en reuniones y documentos inmobiliarios.",
+    "📞 ¿Quieres contactar con nosotros?",
+    "Estamos aquí para ayudarte con tus necesidades inmobiliarias y de traducción",
+    "Contáctanos"
+  ];
+
+  const translations = useMultipleTranslations(textsToTranslate);
+
+  const [
+    bannerTitle,
+    bannerSubtitle,
+    verPropiedadesText,
+    verServiciosText,
+    sobreAgenciaTitle,
+    aboutText1,
+    aboutText2,
+    aboutText3,
+    ubicacionTitle,
+    caboDePolosTitle,
+    locationDescription1,
+    locationDescription2,
+    direccionLabel,
+    direccionText,
+    fotoEmpresaText,
+    seAnadiraText,
+    telefonoLabel,
+    emailLabel,
+    horarioLabel,
+    horarioText,
+    errorCargandoMapa,
+    cargandoMapa,
+    mapaLink,
+    nuestrosServiciosTitle,
+    gestionInmobiliariaTitle,
+    gestionInmobiliariaText,
+    serviciosTraduccionTitle,
+    serviciosTraduccionText,
+    contactarTitle,
+    contactarSubtitle,
+    contactanosText
+  ] = mounted ? translations : [
+    "Agencia Inmobiliaria y Servicios de Traducción en Cabo de Palos",
+    "Gestión inmobiliaria profesional y servicios de traducción especializada en La Manga, Cartagena y Alicante. Tu agencia de confianza para compra, venta, alquiler de propiedades y traducción de todo tipo.",
+    "Ver Propiedades",
+    "Ver Servicios",
+    "🏡 Sobre Agencia MKN",
+    "Agencia MKN es una inmobiliaria especializada en vivienda a lo largo de Cabo de Palos, Cartagena y Alicante. Nos dedicamos a ayudar y apoyar a nuestros clientes en todas sus gestiones inmobiliarias, desde la busqueda de la vivienda hasta la firma del contrato convirtiendonos en una agencia completa y profesional.",
+    "Ubicados estratégicamente en Cabo de Palos, ofrecemos gestión inmobiliaria integral: compraventa, alquiler, documentación, asesoramiento legal y acompañamiento personalizado durante todo el proceso.",
+    "Como agencia ubicada en una zona multicultural, también destacamos por nuestros servicios de traducción profesional en español, alemán e inglés. Ofrecemos traducción presencial y especializada varios ambitos como pueden ser gestiones administrativas, cuestiones medicas y procedimientos legales.",
+    "📍 Nuestra Ubicación",
+    "🌊 Cabo de Palos, Cartagena",
+    "Ubicados en el privilegiado enclave de Cabo de Palos, conocido por sus aguas cristalinas y su proximidad a la Reserva Marina de Islas Hormigas, ofrecemos las mejores oportunidades inmobiliarias en La Manga del Mar Menor y toda la región de Cartagena.",
+    "En Agencia MKN, nuestro mayor valor es la relación de confianza que establecemos con cada cliente. Nos comprometemos a ofrecer una experiencia inequíparable, basada en la transparencia, la profesionalidad y el trato cercano que nos caracteriza, acompañándote durante todo el proceso inmobiliario.",
+    "Dirección:",
+    "Ctra. a Cabo de Palos, Km. 25, 30370 Cabo de Palos, Murcia",
+    "Foto de la empresa",
+    "(Se añadirá más tarde)",
+    "Teléfono:",
+    "Email:",
+    "Horario:",
+    "Lunes a Sábado, 12:00 - 17:00",
+    "Error cargando el mapa",
+    "Cargando mapa...",
+    "🔗 Ver en Google Maps",
+    "⭐ Nuestros Servicios",
+    "Gestión Inmobiliaria Integral",
+    "Gestión completa de compraventa y alquiler. Nos encargamos de todos los trámites, documentación, asesoramiento legal y acompañamiento personalizado durante todo el proceso.",
+    "Servicios de Traducción",
+    "Traducción profesional en español, alemán e inglés. Ofrecemos traducción en gestiones oficiales como Hacienda o Ayuntamientos, servicios notariales, traducción médica y hospitalaria, así como traducción presencial en reuniones y documentos inmobiliarios.",
+    "📞 ¿Quieres contactar con nosotros?",
+    "Estamos aquí para ayudarte con tus necesidades inmobiliarias y de traducción",
+    "Contáctanos"
+  ];
+
+  // Coordenadas de la Agencia MKN en Cabo de Palos
+  // Ctra. a Cabo de Palos, Km. 25, 30370 Cabo de Palos, Murcia
+  const agencyLocation = {
+    lat: 37.627368, // Coordenadas exactas de la Agencia MKN
+    lng: -0.710618
+  };
+
+  return (
+    <div className="min-h-screen bg-kehre-gradient-light">
+      {/* Banner del Faro */}
+      <Banner
+        title={bannerTitle}
+        subtitle={bannerSubtitle}
+        buttonText={verPropiedadesText}
+        buttonLink="/propiedades"
+        secondButtonText={verServiciosText}
+        secondButtonLink="/servicios"
+        showCarousel={true}
+      />
+
+      {/* Contenido principal sobre la empresa */}
+      <main className="px-4 sm:px-6 md:px-8 py-8 sm:py-12">
+        <div className="max-w-7xl mx-auto">
+          
+          {/* Sección: Quiénes somos */}
+          <section className="mb-12 sm:mb-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">
+                  {sobreAgenciaTitle}
+                </h2>
+                <p className="text-base sm:text-lg text-gray-700 mb-3 leading-relaxed">
+                  {aboutText1}
+                </p>
+                <p className="text-base sm:text-lg text-gray-700 mb-3 leading-relaxed">
+                  {aboutText2}
+                </p>
+                <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
+                  {aboutText3}
+                </p>
+              </div>
+              <div className="relative h-64 sm:h-80 rounded-xl overflow-hidden shadow-xl">
+                {/* Aquí irá la foto de la empresa que añadirás más tarde */}
+                <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                  <div className="text-center text-gray-700 px-4">
+                    <div className="text-4xl sm:text-5xl mb-3">🏢</div>
+                    <p className="text-base sm:text-lg font-semibold">{fotoEmpresaText}</p>
+                    <p className="text-xs opacity-70">{seAnadiraText}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Sección: Nuestra ubicación */}
+          <section className="mb-12 sm:mb-16">
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 sm:p-8 shadow-lg">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6 sm:mb-8 text-center">
+                {ubicacionTitle}
+              </h2>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                    {caboDePolosTitle}
+                  </h3>
+                  <p className="text-gray-700 mb-4 leading-relaxed">
+                    {locationDescription1}
+                  </p>
+                  <p className="text-gray-700 mb-4 leading-relaxed">
+                    {locationDescription2}
+                  </p>
+                  <div className="space-y-2 text-gray-700">
+                    <p className="flex items-center">
+                      <span className="mr-3">📍</span>
+                      <strong className="mr-2">{direccionLabel}</strong>
+                      {direccionText}
+                    </p>
+                    <p className="flex items-center">
+                      <span className="mr-3">📞</span>
+                      <strong className="mr-2">{telefonoLabel}</strong>
+                      <a href="tel:+34634 73 79 49" className="text-blue-600 hover:text-blue-800 transition-colors">+34 634 73 79 49</a>
+                    </p>
+                    <p className="flex items-center">
+                      <span className="mr-3">📧</span>
+                      <strong className="mr-2">{emailLabel}</strong>
+                      <a href="mailto:marionrutkat@gmail.com" className="text-blue-600 hover:text-blue-800 transition-colors">marionrutkat@gmail.com</a>
+                    </p>
+                    <p className="flex items-center">
+                      <span className="mr-3">🕒</span>
+                      <strong className="mr-2">{horarioLabel}</strong>
+                      {horarioText}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <div className="relative h-80 lg:h-96 rounded-lg overflow-hidden shadow-md">
+                    {isLoaded && !loadError ? (
+                      <GoogleMap
+                        mapContainerStyle={{ height: '100%', width: '100%' }}
+                        zoom={15}
+                        center={agencyLocation}
+                        options={{
+                          disableDefaultUI: false,
+                          zoomControl: true,
+                          streetViewControl: true,
+                          mapTypeControl: true,
+                          fullscreenControl: true,
+                          gestureHandling: 'cooperative', // Mejor para móviles
+                        }}
+                      >
+                        <Marker 
+                          position={agencyLocation}
+                          title="Agencia MKN - Inmobiliaria y Servicios de Traducción"
+                        />
+                      </GoogleMap>
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                        <div className="text-center text-gray-700">
+                          <div className="text-5xl mb-4">🗺️</div>
+                          <p className="text-lg font-semibold">
+                            {loadError ? errorCargandoMapa : cargandoMapa}
+                          </p>
+                          <p className="text-sm opacity-70">Cabo de Palos, Cartagena</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Enlace a Google Maps - ahora está debajo del mapa */}
+                  <div className="mt-4 text-center">
+                    <a 
+                      href="https://maps.google.com/?q=Agencia+MKN+Cabo+de+Palos+Murcia"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    >
+                      {mapaLink}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Sección: Nuestros servicios */}
+          <section className="mb-16">
+            <h2 className="text-4xl font-bold text-gray-800 mb-8 text-center">
+              {nuestrosServiciosTitle}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <div className="bg-white rounded-xl p-6 shadow-lg text-center transform hover:scale-105 transition-all duration-300 border border-gray-200">
+                <div className="text-4xl mb-4">🔑</div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">{gestionInmobiliariaTitle}</h3>
+                <p className="text-gray-700">
+                  {gestionInmobiliariaText}
+                </p>
+              </div>
+              <div className="bg-white rounded-xl p-6 shadow-lg text-center transform hover:scale-105 transition-all duration-300 border border-gray-200">
+                <div className="text-4xl mb-4">🌐</div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">{serviciosTraduccionTitle}</h3>
+                <p className="text-gray-700">
+                  {serviciosTraduccionText}
+                </p>
+              </div>
+            </div>
+            
+            {/* Call to action integrado */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 text-center border border-blue-100 shadow-sm">
+              <p className="text-gray-700 mb-4 text-lg">
+                ¿Necesitas más información sobre nuestros servicios?
+              </p>
+              <Link
+                href="/servicios"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold transition-all duration-300 hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5"
+              >
+                <span className="mr-2">📋</span>
+                {verServiciosText}
+                <span className="ml-2">→</span>
+              </Link>
+            </div>
+          </section>
+
+          {/* Call to Action */}
+          <section className="text-center">
+            <div className="bg-kehre-gradient rounded-xl p-8 text-white shadow-xl">
+              <h2 className="text-3xl font-bold mb-4">
+                {contactarTitle}
+              </h2>
+              <p className="text-xl mb-6 opacity-90">
+                {contactarSubtitle}
+              </p>
+              <Link
+                href="/contacto"
+                className="inline-block bg-white text-blue-800 px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover:bg-gray-100"
+              >
+                {contactanosText}
+              </Link>
+            </div>
+          </section>
+
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
-  );
+  )
 }
