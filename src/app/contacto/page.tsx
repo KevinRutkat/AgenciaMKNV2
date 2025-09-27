@@ -79,6 +79,7 @@ export default function ContactoPage() {
     
     // Formulario
     "📝 Envíanos un mensaje",
+    "Y nos pondremos en contacto con usted lo antes posible",
     "👤 Nombre completo *",
     "Ingresa tu nombre completo",
     "📧 Correo electrónico *",
@@ -120,6 +121,7 @@ export default function ContactoPage() {
     
     // Formulario
     formTitle,
+    formSubtitle,
     nombreLabel,
     nombrePlaceholder,
     correoLabel,
@@ -169,9 +171,12 @@ export default function ContactoPage() {
           
           {/* Formulario de Contacto */}
           <div className="bg-white rounded-2xl shadow-xl p-6 h-fit">
-            <h2 className="text-2xl font-bold text-teal-800 mb-4">
+            <h2 className="text-2xl font-bold text-teal-800 mb-2">
               {formTitle}
             </h2>
+            <p className="text-gray-600 text-sm mb-4">
+              {formSubtitle}
+            </p>
             
             <form onSubmit={handleSubmit} className="space-y-3">
               {/* Campo Nombre */}
