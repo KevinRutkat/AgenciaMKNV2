@@ -27,9 +27,9 @@ const inter = Inter({
 // Definimos los metadatos que aparecerán en el <head> de todas las páginas
 export const metadata: Metadata = {
   metadataBase: new URL('https://agenciamkn.com'),
-  title: "Agencia MKN - Marketing Digital y Propiedades",
-  description: "Agencia MKN, especialistas en marketing digital y gestión de propiedades. Encuentra tu hogar ideal o promociona tu negocio con nosotros.",
-  keywords: ["agencia", "marketing digital", "propiedades", "inmobiliaria", "MKN"],
+  title: "Agencia MKN - Inmobiliaria y Traductora",
+    description: "Especialistas en inmuebles, gestión de propiedades y traducción presencial y virtual. Tus socios de confianza para gestionar su inmueble y para ofrecer servicios de traducción de todo tipo.",
+  keywords: ["agencia", "inmobiliaria", "propiedades", "inmobiliaria", "traductora"],
   authors: [{ name: "Agencia MKN" }],
   creator: "Agencia MKN",
   publisher: "Agencia MKN",
@@ -50,8 +50,8 @@ export const metadata: Metadata = {
   
   // Open Graph para redes sociales y búsquedas
   openGraph: {
-    title: "Agencia MKN - Marketing Digital y Propiedades",
-    description: "Especialistas en marketing digital y gestión de propiedades. Tu socio de confianza para hacer crecer tu negocio.",
+    title: "Agencia MKN - Inmobiliaria y Traductora",
+    description: "Especialistas en inmuebles, gestión de propiedades y traducción presencial y virtual. Tus socios de confianza para gestionar su inmueble y para ofrecer servicios de traducción de todo tipo.",
     url: "https://agenciamkn.com",
     siteName: "Agencia MKN",
     images: [
