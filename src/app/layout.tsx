@@ -37,15 +37,14 @@ export const metadata: Metadata = {
   // Configuración de iconos
   icons: {
     icon: [
-      { url: '/favicon.ico' },
       { url: '/LogoPNG.png', sizes: '32x32', type: 'image/png' },
-      { url: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/LogoPNG.png', sizes: '192x192', type: 'image/png' },
+      { url: '/LogoPNG.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/LogoPNG.png', sizes: '180x180', type: 'image/png' },
     ],
-    shortcut: '/favicon.ico',
+    shortcut: '/LogoPNG.png',
   },
   
   // Open Graph para redes sociales y búsquedas
