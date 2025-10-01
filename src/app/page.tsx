@@ -5,6 +5,7 @@ import { GoogleMap, Marker } from '@react-google-maps/api'
 import { useMultipleTranslations } from '@/hooks/useTranslation'
 import { useGoogleMaps } from '@/contexts/GoogleMapsContext'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 
 export default function Home() {
@@ -69,8 +70,6 @@ export default function Home() {
     locationDescription2,
     direccionLabel,
     direccionText,
-    fotoEmpresaText,
-    seAnadiraText,
     telefonoLabel,
     emailLabel,
     horarioLabel,
@@ -161,15 +160,15 @@ export default function Home() {
                   {aboutText3}
                 </p>
               </div>
-              <div className="relative h-64 sm:h-80 rounded-xl overflow-hidden shadow-xl">
-                {/* Aquí irá la foto de la empresa que añadirás más tarde */}
-                <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                  <div className="text-center text-gray-700 px-4">
-                    <div className="text-4xl sm:text-5xl mb-3">🏢</div>
-                    <p className="text-base sm:text-lg font-semibold">{fotoEmpresaText}</p>
-                    <p className="text-xs opacity-70">{seAnadiraText}</p>
-                  </div>
-                </div>
+              <div className="relative h-80 sm:h-96 rounded-xl overflow-hidden shadow-xl">
+                {/* Foto de la empresa */}
+                <Image 
+                  src="/FotoLocal.jpg" 
+                  alt="Foto de Agencia MKN - Oficina en Cabo de Palos"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
               </div>
             </div>
           </section>
