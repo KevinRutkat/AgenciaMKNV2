@@ -18,7 +18,7 @@ export default function Home() {
   // Google Maps desde contexto global
   const { isLoaded, loadError } = useGoogleMaps()
 
-  // Traducciones para el contenido principal
+  // Traducciones para el contenido principal  
   const textsToTranslate = [
     "Agencia Inmobiliaria y Servicios de Traducción en Cabo de Palos",
     "Gestión inmobiliaria profesional y servicios de traducción especializada en La Manga, Cartagena y Alicante. Tu agencia de confianza para compra, venta, alquiler de propiedades y traducción de todo tipo.",
@@ -34,12 +34,9 @@ export default function Home() {
     "En Agencia MKN, nuestro mayor valor es la relación de confianza que establecemos con cada cliente. Nos comprometemos a ofrecer una experiencia inequíparable, basada en la transparencia, la profesionalidad y el trato cercano que nos caracteriza, acompañándote durante todo el proceso inmobiliario.",
     "Dirección:",
     "Ctra. a Cabo de Palos, Km. 25, 30370 Cabo de Palos, Murcia",
-    "Foto de la empresa",
-    "(Se añadirá más tarde)",
     "Teléfono:",
     "Email:",
     "Horario:",
-    "Lunes a Sábado, 12:00 - 17:00",
     "Error cargando el mapa",
     "Cargando mapa...",
     "🔗 Ver en Google Maps",
@@ -48,6 +45,7 @@ export default function Home() {
     "Gestión completa de compraventa y alquiler. Nos encargamos de todos los trámites, documentación, asesoramiento legal y acompañamiento personalizado durante todo el proceso.",
     "Servicios de Traducción",
     "Traducción profesional en español, alemán e inglés. Ofrecemos traducción en gestiones oficiales como Hacienda o Ayuntamientos, servicios notariales, traducción médica y hospitalaria, así como traducción presencial en reuniones y documentos inmobiliarios.",
+    "¿Necesitas más información sobre nuestros servicios?",
     "📞 ¿Quieres contactar con nosotros?",
     "Estamos aquí para ayudarte con tus necesidades inmobiliarias y de traducción",
     "Contáctanos"
@@ -73,7 +71,6 @@ export default function Home() {
     telefonoLabel,
     emailLabel,
     horarioLabel,
-    horarioText,
     errorCargandoMapa,
     cargandoMapa,
     mapaLink,
@@ -82,6 +79,7 @@ export default function Home() {
     gestionInmobiliariaText,
     serviciosTraduccionTitle,
     serviciosTraduccionText,
+    masInformacionText,
     contactarTitle,
     contactarSubtitle,
     contactanosText
@@ -100,12 +98,9 @@ export default function Home() {
     "En Agencia MKN, nuestro mayor valor es la relación de confianza que establecemos con cada cliente. Nos comprometemos a ofrecer una experiencia inequíparable, basada en la transparencia, la profesionalidad y el trato cercano que nos caracteriza, acompañándote durante todo el proceso inmobiliario.",
     "Dirección:",
     "Ctra. a Cabo de Palos, Km. 25, 30370 Cabo de Palos, Murcia",
-    "Foto de la empresa",
-    "(Se añadirá más tarde)",
     "Teléfono:",
     "Email:",
     "Horario:",
-    "Lunes a Sábado, 12:00 - 17:00",
     "Error cargando el mapa",
     "Cargando mapa...",
     "🔗 Ver en Google Maps",
@@ -114,6 +109,7 @@ export default function Home() {
     "Gestión completa de compraventa y alquiler. Nos encargamos de todos los trámites, documentación, asesoramiento legal y acompañamiento personalizado durante todo el proceso.",
     "Servicios de Traducción",
     "Traducción profesional en español, alemán e inglés. Ofrecemos traducción en gestiones oficiales como Hacienda o Ayuntamientos, servicios notariales, traducción médica y hospitalaria, así como traducción presencial en reuniones y documentos inmobiliarios.",
+    "¿Necesitas más información sobre nuestros servicios?",
     "📞 ¿Quieres contactar con nosotros?",
     "Estamos aquí para ayudarte con tus necesidades inmobiliarias y de traducción",
     "Contáctanos"
@@ -206,11 +202,27 @@ export default function Home() {
                       <strong className="mr-2">{emailLabel}</strong>
                       <a href="mailto:marionrutkat@gmail.com" className="text-blue-600 hover:text-blue-800 transition-colors">marionrutkat@gmail.com</a>
                     </p>
-                    <p className="flex items-center">
-                      <span className="mr-3">🕒</span>
-                      <strong className="mr-2">{horarioLabel}</strong>
-                      {horarioText}
-                    </p>
+                    <div>
+                      <p className="flex items-center mb-2">
+                        <span className="mr-3">🕒</span>
+                        <strong>{horarioLabel}</strong>
+                      </p>
+                      <div className="ml-8 space-y-1 text-sm">
+                        <div className="bg-blue-50 rounded-lg p-3 border-l-4 border-blue-400">
+                          <p className="font-semibold text-blue-800 mb-2">Lunes a Viernes</p>
+                          <p className="text-gray-700">• Trámites fuera de oficina: <span className="font-medium">9:00 - 13:30</span></p>
+                          <p className="text-gray-700">• Horario oficina: <span className="font-medium">14:00 - 16:00</span> y <span className="font-medium">18:00 - 19:30</span></p>
+                        </div>
+                        <div className="bg-green-50 rounded-lg p-3 border-l-4 border-green-400">
+                          <p className="font-semibold text-green-800 mb-1">Sábados</p>
+                          <p className="text-gray-700">• <span className="font-medium">11:00 - 15:00</span></p>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg p-3 border-l-4 border-gray-400">
+                          <p className="font-semibold text-gray-800">Domingos</p>
+                          <p className="text-gray-600">• Descanso</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div>
@@ -288,7 +300,7 @@ export default function Home() {
             {/* Call to action integrado */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 text-center border border-blue-100 shadow-sm">
               <p className="text-gray-700 mb-4 text-lg">
-                ¿Necesitas más información sobre nuestros servicios?
+                {masInformacionText}
               </p>
               <Link
                 href="/servicios"

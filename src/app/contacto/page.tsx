@@ -104,8 +104,8 @@ export default function ContactoPage() {
     "30370 Cabo de Palos",
     "Murcia, España",
     "Horario de atención",
-    "Lunes a Sábado: 12:00 - 17:00",
-    "Domingos: Cerrado",
+    "Trámites fuera de Oficina: 9:00 - 13:30 | Oficina: 14:00 - 16:00 y 18:00 - 19:30",
+    "Sábados: 11:00 - 15:00 | Domingo: Descanso",
     
     // Mapa
     "🗺️ Ubicación",
