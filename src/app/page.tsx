@@ -210,8 +210,8 @@ export default function Home() {
                       <div className="ml-8 space-y-1 text-sm">
                         <div className="bg-blue-50 rounded-lg p-3 border-l-4 border-blue-400">
                           <p className="font-semibold text-blue-800 mb-2">Lunes a Viernes</p>
-                          <p className="text-gray-700">• Trámites fuera de oficina: <span className="font-medium">9:00 - 13:30</span></p>
-                          <p className="text-gray-700">• Horario oficina: <span className="font-medium">14:00 - 16:00</span> y <span className="font-medium">18:00 - 19:30</span></p>
+                          <p className="text-gray-700">• Trámites fuera de oficina: <span className="font-medium">9:00 - 12:00</span></p>
+                          <p className="text-gray-700">• Horario oficina: <span className="font-medium">12:00 - 16:00</span> y <span className="font-medium">18:00 - 19:30</span></p>
                         </div>
                         <div className="bg-green-50 rounded-lg p-3 border-l-4 border-green-400">
                           <p className="font-semibold text-green-800 mb-1">Sábados</p>

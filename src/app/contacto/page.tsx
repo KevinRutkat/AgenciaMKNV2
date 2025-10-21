@@ -104,8 +104,10 @@ export default function ContactoPage() {
     "30370 Cabo de Palos",
     "Murcia, España",
     "Horario de atención",
-    "Trámites fuera de Oficina: 9:00 - 13:30 | Oficina: 14:00 - 16:00 y 18:00 - 19:30",
-    "Sábados: 11:00 - 15:00 | Domingo: Descanso",
+    "• Trámites fuera de Oficina: 9:00 - 12:00",
+    "• Oficina: 12:00 - 16:00 y 18:00 - 19:30",
+    "• Sábados: 11:00 - 15:00",
+    "• Domingo: Descanso",
     
     // Mapa
     "🗺️ Ubicación",
@@ -148,6 +150,8 @@ export default function ContactoPage() {
     horarioLabel,
     horario1,
     horario2,
+    horario3,
+    horario4,
     
     // Mapa
     ubicacionTitle,
@@ -312,6 +316,8 @@ export default function ContactoPage() {
                     <h3 className="font-semibold text-gray-900 text-sm mb-1">{horarioLabel}</h3>
                     <p className="text-gray-600 text-sm">{horario1}</p>
                     <p className="text-gray-600 text-sm">{horario2}</p>
+                    <p className="text-gray-600 text-sm">{horario3}</p>
+                    <p className="text-gray-600 text-sm">{horario4}</p>
                   </div>
                 </div>
               </div>

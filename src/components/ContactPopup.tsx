@@ -64,8 +64,8 @@ export default function ContactPopup({ onClose }: ContactPopupProps) {
             <div>
               <p className="font-semibold text-green-800">Horario</p>
               <div className="text-green-600 text-sm">
-                <p><strong>Trámites fuera de Oficina:</strong> 9:00 - 13:30</p>
-                <p><strong>Oficina:</strong> 14:00 - 16:00 y 18:00 - 19:30</p>
+                <p><strong>Trámites fuera de Oficina:</strong> 9:00 - 12:00</p>
+                <p><strong>Oficina:</strong> 12:00 - 16:00 y 18:00 - 19:30</p>
                 <p><strong>Sábados:</strong> 11:00 - 15:00</p>
                 <p><strong>Domingo:</strong> Descanso</p>
               </div>
