@@ -215,7 +215,7 @@ export default function Home() {
                         </div>
                         <div className="bg-green-50 rounded-lg p-3 border-l-4 border-green-400">
                           <p className="font-semibold text-green-800 mb-1">Sábados</p>
-                          <p className="text-gray-700">• <span className="font-medium">11:00 - 15:00</span></p>
+                          <p className="text-gray-700">• <span className="font-medium">11:00 - 14:00</span></p>
                         </div>
                         <div className="bg-gray-50 rounded-lg p-3 border-l-4 border-gray-400">
                           <p className="font-semibold text-gray-800">Domingos</p>

@@ -106,7 +106,7 @@ export default function ContactoPage() {
     "Horario de atención",
     "• Trámites fuera de Oficina: 9:00 - 12:00",
     "• Oficina: 12:00 - 16:00 y 18:00 - 19:30",
-    "• Sábados: 11:00 - 15:00",
+    "• Sábados: 11:00 - 14:00",
     "• Domingo: Descanso",
     
     // Mapa
