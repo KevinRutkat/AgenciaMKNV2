@@ -105,7 +105,7 @@ export default function ContactoPage() {
     "Murcia, España",
     "Horario de atención",
     "• Trámites fuera de Oficina: 9:00 - 12:00",
-    "• Oficina: 12:00 - 16:00 y 18:00 - 19:30",
+    "• Lunes a Viernes: 12:00 - 16:00",
     "• Sábados: 11:00 - 14:00",
     "• Domingo: Descanso",
     
