@@ -1,8 +1,8 @@
 import { MetadataRoute } from "next";
 
-export default function robots(): MetadataRoute.Robots {
-  const baseUrl = "https://www.agenciamkn.com";
+const baseUrl = "https://www.agenciamkn.com";
 
+export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
@@ -12,10 +12,11 @@ export default function robots(): MetadataRoute.Robots {
           "/test-translation/",
           "/translation-example/",
           "/session/",
+          "/propiedades/add",
+          "/propiedades/edit"
         ],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
-    host: baseUrl,
   };
 }

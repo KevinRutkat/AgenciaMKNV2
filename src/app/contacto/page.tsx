@@ -1,82 +1,49 @@
-'use client'
+"use client";
 
-import { useState } from 'react';
-import Banner from '@/components/Banner';
-import { GoogleMap, Marker } from '@react-google-maps/api';
-import { useMultipleTranslations } from '@/hooks/useTranslation';
-import { useGoogleMaps } from '@/contexts/GoogleMapsContext';
+import { useState } from "react";
+import Banner from "@/components/Banner";
+import { GoogleMap, Marker } from "@react-google-maps/api";
+import { useMultipleTranslations } from "@/hooks/useTranslation";
+import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 
 export default function ContactoPage() {
   // Google Maps desde contexto global
-  const { isLoaded, loadError } = useGoogleMaps()
+  const { isLoaded, loadError } = useGoogleMaps();
 
   // Coordenadas de la Agencia MKN en Cabo de Palos
-  // Ctra. a Cabo de Palos, Km. 25, 30370 Cabo de Palos, Murcia
   const agencyLocation = {
-    lat: 37.627368, // Coordenadas exactas de la Agencia MKN
-    lng: -0.710618
+    lat: 37.627368,
+    lng: -0.710618,
   };
 
-  // Estado para manejar los datos del formulario
   const [formData, setFormData] = useState({
-    nombre: '',
-    correo: '',
-    telefono: '',
-    motivo: ''
+    nombre: "",
+    correo: "",
+    telefono: "",
+    motivo: "",
   });
 
-  // Estado para manejar el envío del formulario
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState('');
+  const [submitMessage, setSubmitMessage] = useState("");
 
-  // Función para manejar cambios en los inputs
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  // Función para manejar el envío del formulario
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        setSubmitMessage(successMessage);
-        setFormData({
-          nombre: '',
-          correo: '',
-          telefono: '',
-          motivo: ''
-        });
-      } else {
-        const errorData = await response.json();
-        setSubmitMessage(errorData.error || errorMessage);
-      }
-    } catch {
-      setSubmitMessage(errorMessage);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Traducciones de la página de contacto
   const textsToTranslate = [
     // Banner
     "📞 Contáctanos",
     "Estamos aquí para ayudarte a encontrar la propiedad de tus sueños. No dudes en contactarnos para cualquier consulta.",
-    
+
     // Formulario
     "📝 Envíanos un mensaje",
     "Y nos pondremos en contacto con usted lo antes posible",
@@ -90,11 +57,11 @@ export default function ContactoPage() {
     "Describe el motivo de tu contacto (compra, venta, alquiler, valoración, etc.)",
     "📤 Enviando...",
     "📩 Enviar mensaje",
-    
+
     // Mensajes de estado
-    "¡Gracias por contactarnos! Tu mensaje ha sido enviado  y te responderemos pronto.",
+    "¡Gracias por contactarnos! Tu mensaje ha sido enviado y te responderemos pronto.",
     "Error al enviar el mensaje. Por favor intenta de nuevo.",
-    
+
     // Información de contacto
     "🏢 Nuestra oficina",
     "Correo electrónico",
@@ -108,19 +75,19 @@ export default function ContactoPage() {
     "• Lunes a Viernes: 12:00 - 16:00",
     "• Sábados: 11:00 - 14:00",
     "• Domingo: Descanso",
-    
+
     // Mapa
     "🗺️ Ubicación",
     "Error cargando el mapa",
     "Cargando mapa...",
-    "🔗 Ver en Google Maps"
-  ]
+    "🔗 Ver en Google Maps",
+  ];
 
   const [
     // Banner
     bannerTitle,
     bannerSubtitle,
-    
+
     // Formulario
     formTitle,
     formSubtitle,
@@ -134,12 +101,12 @@ export default function ContactoPage() {
     motivoPlaceholder,
     enviandoText,
     enviarText,
-    
+
     // Mensajes de estado
     successMessage,
     errorMessage,
-    
-    // Información de contacto
+
+    // Info contacto
     oficinaTitle,
     correoInfoLabel,
     telefonoInfoLabel,
@@ -152,40 +119,68 @@ export default function ContactoPage() {
     horario2,
     horario3,
     horario4,
-    
+
     // Mapa
     ubicacionTitle,
     errorCargandoMapa,
     cargandoMapa,
-    mapaLink
-  ] = useMultipleTranslations(textsToTranslate)
+    mapaLink,
+  ] = useMultipleTranslations(textsToTranslate);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitMessage(successMessage);
+        setFormData({
+          nombre: "",
+          correo: "",
+          telefono: "",
+          motivo: "",
+        });
+      } else {
+        const errorData = await response.json();
+        setSubmitMessage(errorData.error || errorMessage);
+      }
+    } catch {
+      setSubmitMessage(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white">
-      {/* Banner Component */}
-      <Banner 
+      <Banner
         title={bannerTitle}
         subtitle={bannerSubtitle}
         height="medium"
         showCarousel={false}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          
-          {/* Formulario de Contacto */}
-          <div className="bg-white rounded-2xl shadow-xl p-6 h-fit">
-            <h2 className="text-2xl font-bold text-teal-800 mb-2">
-              {formTitle}
-            </h2>
-            <p className="text-gray-600 text-sm mb-4">
-              {formSubtitle}
-            </p>
-            
+          {/* Formulario */}
+          <section aria-label="Formulario de contacto" className="bg-white rounded-2xl shadow-xl p-6 h-fit">
+            <h2 className="text-2xl font-bold text-teal-800 mb-2">{formTitle}</h2>
+            <p className="text-gray-600 text-sm mb-4">{formSubtitle}</p>
+
             <form onSubmit={handleSubmit} className="space-y-3">
-              {/* Campo Nombre */}
               <div>
-                <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="nombre"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   {nombreLabel}
                 </label>
                 <input
@@ -200,9 +195,11 @@ export default function ContactoPage() {
                 />
               </div>
 
-              {/* Campo Correo */}
               <div>
-                <label htmlFor="correo" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="correo"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   {correoLabel}
                 </label>
                 <input
@@ -217,9 +214,11 @@ export default function ContactoPage() {
                 />
               </div>
 
-              {/* Campo Teléfono */}
               <div>
-                <label htmlFor="telefono" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="telefono"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   {telefonoLabel}
                 </label>
                 <input
@@ -234,9 +233,11 @@ export default function ContactoPage() {
                 />
               </div>
 
-              {/* Campo Motivo */}
               <div>
-                <label htmlFor="motivo" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="motivo"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   {motivoLabel}
                 </label>
                 <textarea
@@ -251,7 +252,6 @@ export default function ContactoPage() {
                 />
               </div>
 
-              {/* Botón de envío */}
               <div className="pt-2">
                 <button
                   type="submit"
@@ -262,48 +262,71 @@ export default function ContactoPage() {
                 </button>
               </div>
 
-              {/* Mensaje de estado */}
               {submitMessage && (
-                <div className={`p-3 rounded-lg text-center text-sm ${
-                  submitMessage.includes('Error') 
-                    ? 'bg-red-100 text-red-700 border border-red-200' 
-                    : 'bg-green-100 text-green-700 border border-green-200'
-                }`}>
+                <div
+                  className={`p-3 rounded-lg text-center text-sm ${
+                    submitMessage.includes("Error")
+                      ? "bg-red-100 text-red-700 border border-red-200"
+                      : "bg-green-100 text-green-700 border border-green-200"
+                  }`}
+                >
                   {submitMessage}
                 </div>
               )}
             </form>
-          </div>
+          </section>
 
-          {/* Información de Contacto */}
+          {/* Info de contacto y mapa */}
           <div className="space-y-6">
-            {/* Información de la empresa */}
-            <div className="bg-white rounded-2xl shadow-xl p-6">
+            <section
+              aria-label="Información de contacto"
+              className="bg-white rounded-2xl shadow-xl p-6"
+            >
               <h2 className="text-2xl font-bold text-teal-800 mb-4">
                 {oficinaTitle}
               </h2>
-              
+
               <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="w-8 text-xl flex-shrink-0">📧</div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-sm mb-1">{correoInfoLabel}</h3>
-                    <p className="text-gray-600 text-sm">marionrutkat@gmail.com</p>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">
+                      {correoInfoLabel}
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      <a
+                        href="mailto:marionrutkat@gmail.com"
+                        className="hover:underline"
+                      >
+                        marionrutkat@gmail.com
+                      </a>
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-start">
                   <div className="w-8 text-xl flex-shrink-0">📞</div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-sm mb-1">{telefonoInfoLabel}</h3>
-                    <p className="text-gray-600 text-sm">+34 634 73 79 49</p>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">
+                      {telefonoInfoLabel}
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      <a
+                        href="tel:+34634737949"
+                        className="hover:underline"
+                      >
+                        +34 634 73 79 49
+                      </a>
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-start">
                   <div className="w-8 text-xl flex-shrink-0">📍</div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-sm mb-1">{direccionLabel}</h3>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">
+                      {direccionLabel}
+                    </h3>
                     <p className="text-gray-600 text-sm">{direccion1}</p>
                     <p className="text-gray-600 text-sm">{direccion2}</p>
                     <p className="text-gray-600 text-sm">{direccion3}</p>
@@ -313,7 +336,9 @@ export default function ContactoPage() {
                 <div className="flex items-start">
                   <div className="w-8 text-xl flex-shrink-0">🕒</div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-sm mb-1">{horarioLabel}</h3>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">
+                      {horarioLabel}
+                    </h3>
                     <p className="text-gray-600 text-sm">{horario1}</p>
                     <p className="text-gray-600 text-sm">{horario2}</p>
                     <p className="text-gray-600 text-sm">{horario3}</p>
@@ -321,19 +346,20 @@ export default function ContactoPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
 
-            {/* Mapa */}
-            <div className="bg-white rounded-2xl shadow-xl p-6">
+            <section
+              aria-label="Mapa de ubicación"
+              className="bg-white rounded-2xl shadow-xl p-6"
+            >
               <h2 className="text-2xl font-bold text-teal-800 mb-4">
                 {ubicacionTitle}
               </h2>
-              
-              {/* Google Maps */}
+
               <div className="relative h-64 rounded-lg overflow-hidden shadow-md">
                 {isLoaded && !loadError ? (
                   <GoogleMap
-                    mapContainerStyle={{ height: '100%', width: '100%' }}
+                    mapContainerStyle={{ height: "100%", width: "100%" }}
                     zoom={15}
                     center={agencyLocation}
                     options={{
@@ -342,10 +368,10 @@ export default function ContactoPage() {
                       streetViewControl: true,
                       mapTypeControl: true,
                       fullscreenControl: true,
-                      gestureHandling: 'cooperative', // Mejor para móviles
+                      gestureHandling: "cooperative",
                     }}
                   >
-                    <Marker 
+                    <Marker
                       position={agencyLocation}
                       title="Agencia MKN - Inmobiliaria y Servicios de Traducción"
                     />
@@ -357,14 +383,16 @@ export default function ContactoPage() {
                       <p className="text-lg font-semibold">
                         {loadError ? errorCargandoMapa : cargandoMapa}
                       </p>
-                      <p className="text-sm opacity-70">Cabo de Palos, Cartagena</p>
+                      <p className="text-sm opacity-70">
+                        Cabo de Palos, Cartagena
+                      </p>
                     </div>
                   </div>
                 )}
               </div>
-              
+
               <div className="mt-3 text-center">
-                <a 
+                <a
                   href="https://maps.google.com/?q=Agencia+MKN+Cabo+de+Palos+Murcia"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -373,10 +401,10 @@ export default function ContactoPage() {
                   {mapaLink}
                 </a>
               </div>
-            </div>
+            </section>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
