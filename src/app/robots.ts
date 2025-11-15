@@ -1,33 +1,21 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://agenciamkn.com'
-  
+  const baseUrl = "https://www.agenciamkn.com";
+
   return {
     rules: [
       {
-        userAgent: '*',
-        allow: [
-          '/',
-          '/logo.png',
-          '/LogoPNG.png',
-          '/favicon.ico',
-          '/*.png',
-          '/*.jpg',
-          '/*.jpeg',
-          '/*.webp',
-          '/*.svg',
-        ],
+        userAgent: "*",
+        allow: "/",
         disallow: [
-          '/api/',
-          '/session/',
-          '/test-translation/',
-          '/translation-example/',
+          "/test-translation/",
+          "/translation-example/",
+          "/session/",
         ],
-        crawlDelay: 1,
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
     host: baseUrl,
-  }
+  };
 }
