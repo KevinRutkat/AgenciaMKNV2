@@ -109,14 +109,25 @@ export default function PropiedadesPage() {
 
   // Filtrar viviendas por categorías según los datos de Supabase
   const propiedadesDestacadas = viviendas.filter(v => v.is_featured === true)
+
   const alquileres = viviendas.filter(v => 
-    v.is_rent === true || 
+    v.is_rent === true ||
+    (v.category && v.category.toLowerCase() === 'alquiler') ||
     (v.property_type && v.property_type.toLowerCase().includes('alquiler')) ||
     (v.name && v.name.toLowerCase().includes('alquiler'))
   )
-  const viviendasUsadas = viviendas.filter(v => v.category === 'Usada')
-  const sinEstrenar = viviendas.filter(v => v.category === 'Sin estrenar')
-  const otros = viviendas.filter(v => v.category === 'Otro')
+
+  const viviendasUsadas = viviendas.filter(
+    v => v.category && v.category.toLowerCase() === 'usada'
+  )
+
+  const sinEstrenar = viviendas.filter(
+    v => v.category && v.category.toLowerCase() === 'sin-estrenar'
+  )
+
+  const otros = viviendas.filter(
+    v => v.category && v.category.toLowerCase() === 'otro'
+  )
 
   // Función para parsear precios correctamente independientemente del formato
   const parsePrice = (priceString: string): number => {
@@ -126,7 +137,6 @@ export default function PropiedadesPage() {
     let cleanPrice = priceString.replace(/[€$£¥\s]/g, '')
     
     // Detectar si usa coma como separador decimal (formato europeo)
-    // Si hay coma después del último punto, es formato europeo
     const lastDotIndex = cleanPrice.lastIndexOf('.')
     const lastCommaIndex = cleanPrice.lastIndexOf(',')
     
@@ -155,19 +165,26 @@ export default function PropiedadesPage() {
         break
       case 'alquileres':
         filtered = filtered.filter(v => 
-          v.is_rent === true || 
+          v.is_rent === true ||
+          (v.category && v.category.toLowerCase() === 'alquiler') ||
           (v.property_type && v.property_type.toLowerCase().includes('alquiler')) ||
           (v.name && v.name.toLowerCase().includes('alquiler'))
         )
         break
       case 'usadas':
-        filtered = filtered.filter(v => v.category === 'Usada')
+        filtered = filtered.filter(
+          v => v.category && v.category.toLowerCase() === 'usada'
+        )
         break
       case 'nuevas':
-        filtered = filtered.filter(v => v.category === 'Sin estrenar')
+        filtered = filtered.filter(
+          v => v.category && v.category.toLowerCase() === 'sin-estrenar'
+        )
         break
       case 'otros':
-        filtered = filtered.filter(v => v.category === 'Otro')
+        filtered = filtered.filter(
+          v => v.category && v.category.toLowerCase() === 'otro'
+        )
         break
       default:
         // 'todas' - no filtrar

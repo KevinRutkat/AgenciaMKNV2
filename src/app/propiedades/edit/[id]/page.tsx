@@ -124,7 +124,8 @@ export default function EditPropertyPage() {
           is_rent: vivienda.is_rent || false,
           plantas: vivienda.plantas || 1,
           is_featured: vivienda.is_featured || false,
-          category: vivienda.category || 'usada'
+          // normalizamos la categoría a minúsculas para que encaje con el select
+          category: vivienda.category ? String(vivienda.category).toLowerCase() : 'usada'
         });
         
         // Establecer coordenadas para el mapa si existen
@@ -206,8 +207,20 @@ export default function EditPropertyPage() {
     }));
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target;
+
+    // ✅ Caso especial: cambiar categoría → sincronizar is_rent
+    if (name === 'category') {
+      setFormData(prev => ({
+        ...prev,
+        category: value,
+        is_rent: value === 'alquiler'
+      }));
+      return;
+    }
     
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
@@ -790,12 +803,12 @@ export default function EditPropertyPage() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
-      {caracteristicasFiltradas.map((caracteristica, index) => (
+                  {caracteristicasFiltradas.map((caracteristica, index) => (
                     <label key={index} className="flex items-center cursor-pointer hover:bg-white p-2 rounded transition-colors">
                       <input
                         type="checkbox"
-        checked={formData.propiedades.some(p => normalizeFeature(p) === normalizeFeature(caracteristica))}
-        onChange={() => handleCaracteristicaChange(caracteristica)}
+                        checked={formData.propiedades.some(p => normalizeFeature(p) === normalizeFeature(caracteristica))}
+                        onChange={() => handleCaracteristicaChange(caracteristica)}
                         className="mr-2 h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
                       />
                       <span className="text-xs text-gray-700">{caracteristica}</span>
