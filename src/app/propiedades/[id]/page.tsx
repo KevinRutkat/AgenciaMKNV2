@@ -10,6 +10,7 @@ import { GoogleMap, Marker } from '@react-google-maps/api'
 import { useMultipleTranslations, useTranslation } from '@/hooks/useTranslation'
 import { useGoogleMaps } from '@/contexts/GoogleMapsContext'
 import ContactPopup from '@/components/ContactPopup'
+import { FEATURES, normalizeFeature } from '@/lib/features'  // ✅ IMPORTAMOS FEATURES
 
 export default function ViviendaDetailPage() {
   const params = useParams()
@@ -92,26 +93,17 @@ export default function ViviendaDetailPage() {
           console.error('Error fetching vivienda:', error)
         } else {
           setVivienda(data)
-          console.log('Vivienda data:', data) // Debug log
-          console.log('All fields:', Object.keys(data)) // Debug log - ver todos los campos
-          console.log('Propiedades field:', data.propiedades) // Debug log
-          console.log('Type of propiedades:', typeof data.propiedades) // Debug log
           
           // Procesar las propiedades - pueden ser array o string
           if (Array.isArray(data.propiedades)) {
-            console.log('Propiedades is array:', data.propiedades) // Debug log
             setPropiedades(data.propiedades)
           } else if (data.propiedades && typeof data.propiedades === 'string' && data.propiedades.trim().length > 0) {
-            console.log('Propiedades is string, splitting...') // Debug log
             const propiedadesList = data.propiedades
               .split(',')
               .map((prop: string) => prop.trim())
               .filter((prop: string) => prop.length > 0)
-            console.log('Processed propiedades from string:', propiedadesList) // Debug log
             setPropiedades(propiedadesList)
           } else {
-            console.log('No propiedades found or invalid format') // Debug log
-            console.log('Reason: propiedades exists?', !!data.propiedades, 'is array?', Array.isArray(data.propiedades), 'is string?', typeof data.propiedades === 'string')
             setPropiedades([])
           }
         }
@@ -216,76 +208,27 @@ export default function ViviendaDetailPage() {
     }
   }
 
-  const getPropertyIcon = (property: string): string => {
-    const iconMap: { [key: string]: string } = {
-      // Espacios exteriores
-      'Jardín': '🌿',
-      'terraza': '🏡',
-      'patio trasero': '🏠',
-      'balcones': '🏛️',
-      'porche': '🏘️',
-      'césped artificial': '🌱',
-      'terraza privada': '🏡',
-      'balcón con vistas': '🌅',
-      'terraza solárium': '☀️',
-      'comedor exterior': '🍽️',
-      'comedor exterior cubierto': '🏠',
-      
-      // Piscinas
-      'piscina privada': '🏊‍♀️',
-      'piscina comunitaria': '🏊‍♂️',
-      'piscina climatizada': '🌡️',
-      'piscina con jacuzzi': '🛁',
-      'zona de piscina con tumbonas': '🏖️',
-      
-      // Cocina y equipamiento
-      'barbacoa': '🔥',
-      'cocina exterior': '👨‍🍳',
-      'cocina equipada': '🍳',
-      'cocina totalmente equipada': '👩‍🍳',
-      'campana extractora': '💨',
-      'cocina de gas': '🔥',
-      'cocina de inducción': '⚡',
-      
-      // Parking y garaje
-      'garaje cerrado': '🚗',
-      'parking privado': '🅿️',
-      'parking': '🅿️',
-      'plaza de garaje en propiedad': '🚙',
-      'aparcamiento para varias plazas': '🚐',
-      'estacionamiento techado': '🏠',
-      
-      // Vistas y ubicación
-      'primera línea de playa': '🏖️',
-      'vistas al mar': '🌊',
-      'vistas al campo o montañas': '🏔️',
-      'acceso directo a la playa': '🏖️',
-      
-      // Seguridad
-      'sistema de alarma': '🚨',
-      'cámaras de vigilancia': '📹',
-      'rejas de seguridad': '🔒',
-      'cerraduras de seguridad': '🔐',
-      'detector de humo': '🚭',
-      
-      // Servicios y comodidades
-      'amueblado': '🛋️',
-      'accesible para personas con movilidad reducida': '♿',
-      'ascensor en la propiedad': '🛗',
-      'gimnasio comunitario': '💪',
-      'zona de juegos infantil': '🎠',
-      'zona de pádel o tenis': '🎾',
-      'spa': '🧘‍♀️',
-      'sauna': '🧖‍♀️',
-      'lavadora': '🌀',
-      'aire acondicionado': '❄️',
-      
-      // Fallback por defecto
-      'default': '✨'
+  // ✅ NUEVA FUNCIÓN: usa FEATURES para sacar el mismo emoji y label que en los formularios
+  const getFeatureDisplay = (property: string): { emoji: string; label: string } => {
+    const normalized = normalizeFeature(property)
+    const match = FEATURES.find(
+      f =>
+        f.key === normalized ||
+        normalizeFeature(f.label) === normalized
+    )
+
+    if (match) {
+      return {
+        emoji: match.emoji ?? '✨',
+        label: match.label
+      }
     }
-    
-    const normalizedProperty = property.toLowerCase().trim()
-    return iconMap[normalizedProperty] || iconMap['default']
+
+    // Fallback: sin coincidencia, mostramos el texto tal cual con un icono genérico
+    return {
+      emoji: '✨',
+      label: property
+    }
   }
 
   if (loading) {
@@ -459,61 +402,61 @@ export default function ViviendaDetailPage() {
             )}
           </div>
 
-            {/* Información de la vivienda */}
-            <div className="space-y-6">
-              {/* Precio y datos principales */}
-              <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                <div className="mb-6">
-                  <div className="text-4xl font-bold text-gray-900 mb-2">
-                    💰 {vivienda.price}€
-                    {vivienda.oldprice && (
-                      <span className="text-xl text-gray-500 line-through ml-3">
-                        {vivienda.oldprice}€
-                      </span>
-                    )}
-                  </div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
-                    <div className={`w-2 h-2 rounded-full ${vivienda.is_rent ? 'bg-gray-600' : 'bg-gray-800'}`}></div>
-                    {vivienda.is_rent ? alquilerText : ventaText} • {vivienda.property_type}
-                  </div>
+          {/* Información de la vivienda */}
+          <div className="space-y-6">
+            {/* Precio y datos principales */}
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+              <div className="mb-6">
+                <div className="text-4xl font-bold text-gray-900 mb-2">
+                  💰 {vivienda.price}€
+                  {vivienda.oldprice && (
+                    <span className="text-xl text-gray-500 line-through ml-3">
+                      {vivienda.oldprice}€
+                    </span>
+                  )}
                 </div>
-
-                {/* Características principales */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-200">
-                    <div className="text-3xl font-bold text-gray-900 mb-1">
-                      🛏️ {Number(vivienda.habitaciones) === 0 ? 'N/A' : vivienda.habitaciones}
-                    </div>
-                    <div className="text-sm text-gray-600 font-medium">
-                      {Number(vivienda.habitaciones) === 0 ? noAplicableText : habitacionesText}
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-200">
-                    <div className="text-3xl font-bold text-gray-900 mb-1">
-                      🚿 {Number(vivienda.bathroom) === 0 ? 'N/A' : vivienda.bathroom}
-                    </div>
-                    <div className="text-sm text-gray-600 font-medium">
-                      {Number(vivienda.bathroom) === 0 ? noAplicableText : bañosText}
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-200">
-                    <div className="text-3xl font-bold text-gray-900 mb-1">📐 {vivienda.metros}</div>
-                    <div className="text-sm text-gray-600 font-medium">m²</div>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-200">
-                    <div className="text-3xl font-bold text-gray-900 mb-1">🏢 {vivienda.plantas}</div>
-                    <div className="text-sm text-gray-600 font-medium">{plantasText}</div>
-                  </div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
+                  <div className={`w-2 h-2 rounded-full ${vivienda.is_rent ? 'bg-gray-600' : 'bg-gray-800'}`}></div>
+                  {vivienda.is_rent ? alquilerText : ventaText} • {vivienda.property_type}
                 </div>
-
-                {/* Botón de contacto */}
-                <button 
-                  onClick={() => setShowContact(true)}
-                  className="w-full bg-gray-900 text-white py-4 px-6 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer"
-                >
-                  {contactarText}
-                </button>
               </div>
+
+              {/* Características principales */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-200">
+                  <div className="text-3xl font-bold text-gray-900 mb-1">
+                    🛏️ {Number(vivienda.habitaciones) === 0 ? 'N/A' : vivienda.habitaciones}
+                  </div>
+                  <div className="text-sm text-gray-600 font-medium">
+                    {Number(vivienda.habitaciones) === 0 ? noAplicableText : habitacionesText}
+                  </div>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-200">
+                  <div className="text-3xl font-bold text-gray-900 mb-1">
+                    🚿 {Number(vivienda.bathroom) === 0 ? 'N/A' : vivienda.bathroom}
+                  </div>
+                  <div className="text-sm text-gray-600 font-medium">
+                    {Number(vivienda.bathroom) === 0 ? noAplicableText : bañosText}
+                  </div>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-200">
+                  <div className="text-3xl font-bold text-gray-900 mb-1">📐 {vivienda.metros}</div>
+                  <div className="text-sm text-gray-600 font-medium">m²</div>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-200">
+                  <div className="text-3xl font-bold text-gray-900 mb-1">🏢 {vivienda.plantas}</div>
+                  <div className="text-sm text-gray-600 font-medium">{plantasText}</div>
+                </div>
+              </div>
+
+              {/* Botón de contacto */}
+              <button 
+                onClick={() => setShowContact(true)}
+                className="w-full bg-gray-900 text-white py-4 px-6 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer"
+              >
+                {contactarText}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -524,12 +467,18 @@ export default function ViviendaDetailPage() {
               {caracteristicasText}
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-              {propiedades.map((propiedad, index) => (
-                <div key={index} className="flex items-center gap-2 text-gray-700 p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200 text-sm">
-                  <span className="text-sm flex-shrink-0">{getPropertyIcon(propiedad)}</span>
-                  <span className="capitalize font-medium text-xs leading-tight">{propiedad}</span>
-                </div>
-              ))}
+              {propiedades.map((propiedad, index) => {
+                const { emoji, label } = getFeatureDisplay(propiedad)
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 text-gray-700 p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200 text-sm"
+                  >
+                    <span className="text-sm flex-shrink-0">{emoji}</span>
+                    <span className="capitalize font-medium text-xs leading-tight">{label}</span>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}

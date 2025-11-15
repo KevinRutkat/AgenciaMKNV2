@@ -114,8 +114,20 @@ export default function AddPropertyPage() {
     }));
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target;
+
+    // Igual que en EditProperty: categoría "alquiler" marca is_rent
+    if (name === 'category') {
+      setFormData(prev => ({
+        ...prev,
+        category: value,
+        is_rent: value === 'alquiler'
+      }));
+      return;
+    }
     
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
@@ -157,7 +169,6 @@ export default function AddPropertyPage() {
     }));
   };
 
-  // Filtrar características según búsqueda
   // Filtrar características según búsqueda
   const caracteristicasFiltradas = caracteristicasDisponibles.filter(caracteristica =>
     normalizeFeature(caracteristica).includes(normalizeFeature(searchCaracteristicas))
@@ -708,7 +719,6 @@ export default function AddPropertyPage() {
                       />
                       <span className="text-sm text-gray-700">🌟 Propiedad destacada</span>
                     </label>
-
                   </div>
                 </div>
               </div>
@@ -743,7 +753,9 @@ export default function AddPropertyPage() {
                     <label key={index} className="flex items-center cursor-pointer hover:bg-white p-2 rounded transition-colors">
                       <input
                         type="checkbox"
-                        checked={formData.propiedades.includes(caracteristica)}
+                        checked={formData.propiedades.some(
+                          p => normalizeFeature(p) === normalizeFeature(caracteristica)
+                        )}
                         onChange={() => handleCaracteristicaChange(caracteristica)}
                         className="mr-2 h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
                       />
