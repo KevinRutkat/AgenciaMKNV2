@@ -83,6 +83,9 @@ const localBusinessSchema = {
 // Metadatos globales
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.agenciamkn.com"),
+  alternates: {
+    canonical: "/", // <-- canónica a https://www.agenciamkn.com/
+  },
   title: {
     default: "Agencia MKN - Inmobiliaria y Traductora",
     template: "%s | Agencia MKN",
