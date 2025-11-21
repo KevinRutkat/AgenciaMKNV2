@@ -23,7 +23,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const title = `${data.name} en ${data.location ?? "Cabo de Palos"} | Agencia MKN`;
+  const title = `${data.name} en ${
+    data.location ?? "Cabo de Palos"
+  } | Agencia MKN`;
   const baseDescription =
     data.descripcion?.replace(/\s+/g, " ").trim() ||
     `Propiedad en ${data.location ?? "Cabo de Palos"} gestionada por Agencia MKN.`;
@@ -65,5 +67,19 @@ export default async function ViviendaDetailPage({ params }: Props) {
 
   const images: ViviendaImage[] = imagesRaw || [];
 
-  return <ViviendaDetailClient vivienda={vivienda} images={images} />;
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-orange-100 via-teal-50 to-teal-100">
+      {/* Banner "Vendido" arriba si aplica */}
+      {vivienda.is_sold && (
+        <div className="bg-red-600 text-white text-center py-2">
+          <span className="text-sm sm:text-base font-semibold">
+            🔴 Esta propiedad está marcada como <strong>VENDIDA</strong>
+          </span>
+        </div>
+      )}
+
+      {/* El resto del contenido lo sigue gestionando el componente cliente */}
+      <ViviendaDetailClient vivienda={vivienda} images={images} />
+    </div>
+  );
 }

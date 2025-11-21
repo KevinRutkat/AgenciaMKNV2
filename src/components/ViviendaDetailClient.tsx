@@ -50,6 +50,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     "Esta propiedad no tiene ubicación registrada",
     "Coordenadas:",
     "Dirección:",
+    "Vendido", // 👈 NUEVO TEXTO
   ];
 
   const [
@@ -70,6 +71,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     propiedadSinUbicacionText,
     coordenadasLabel,
     direccionLabel,
+    soldText, // 👈 NUEVO
   ] = useMultipleTranslations(textsToTranslate);
 
   const translatedDescription = useTranslation(vivienda.descripcion || "");
@@ -169,7 +171,9 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     }
   };
 
-  const getFeatureDisplay = (property: string): { emoji: string; label: string } => {
+  const getFeatureDisplay = (
+    property: string,
+  ): { emoji: string; label: string } => {
     const normalized = normalizeFeature(property);
     const match = FEATURES.find(
       (f) => f.key === normalized || normalizeFeature(f.label) === normalized,
@@ -206,8 +210,13 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Título y ubicación */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center flex-wrap gap-3">
             {vivienda.name}
+            {vivienda.is_sold && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-red-600 text-white text-xs sm:text-sm font-semibold">
+                🔴 {soldText}
+              </span>
+            )}
           </h1>
           <div className="flex items-center gap-2 text-gray-600">
             <MapPinIcon className="h-5 w-5" />
@@ -223,12 +232,12 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                 <>
                   <Image
                     src={images[currentImageIndex].url}
-                    alt={`${vivienda.name} - Imagen ${
-                      currentImageIndex + 1
-                    }`}
+                    alt={`${vivienda.name} - Imagen ${currentImageIndex + 1}`}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 50vw"
-                    className="object-cover"
+                    className={`object-cover ${
+                      vivienda.is_sold ? "opacity-70" : ""
+                    }`}
                   />
 
                   {images.length > 1 && (

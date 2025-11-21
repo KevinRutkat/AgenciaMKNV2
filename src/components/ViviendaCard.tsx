@@ -48,6 +48,7 @@ export default function ViviendaCard({
     "¿Estás seguro de que quieres eliminar esta propiedad? Esta acción no se puede deshacer.",
     "Error: No hay sesión activa",
     "Error al eliminar la propiedad",
+    "Vendido", // texto para el badge
     vivienda.descripcion, // descripción a traducir
   ];
 
@@ -68,6 +69,7 @@ export default function ViviendaCard({
     confirmDelete,
     noSessionError,
     deleteError,
+    sold,
     translatedDescription,
   ] = mounted
     ? translations
@@ -86,6 +88,7 @@ export default function ViviendaCard({
         "¿Estás seguro de que quieres eliminar esta propiedad? Esta acción no se puede deshacer.",
         "Error: No hay sesión activa",
         "Error al eliminar la propiedad",
+        "Vendido",
         vivienda.descripcion,
       ];
 
@@ -211,7 +214,9 @@ export default function ViviendaCard({
             alt={`${vivienda.name} en ${vivienda.location}`}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-            className="object-cover"
+            className={`object-cover ${
+              vivienda.is_sold ? "opacity-50" : ""
+            }`} // más opaco cuando está vendida
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -233,14 +238,23 @@ export default function ViviendaCard({
           </div>
         </div>
 
-        {/* Destacado */}
+        {/* ✅ Vendido arriba izquierda */}
+        {vivienda.is_sold && (
+          <div className="absolute top-1 sm:top-2 left-1 sm:left-2 z-30 pointer-events-none">
+            <span className="bg-red-500 text-white text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-md">
+              🔴 {sold}
+            </span>
+          </div>
+        )}
+
+        {/* Destacado (lo bajo un poco para no pisar el vendido) */}
         {vivienda.is_featured && (
-          <div className="absolute top-1 sm:top-2 left-1 sm:left-2 bg-orange-500 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-semibold z-30 pointer-events-none">
+          <div className="absolute top-6 sm:top-8 left-1 sm:left-2 bg-orange-500 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-semibold z-30 pointer-events-none">
             ⭐ {featured}
           </div>
         )}
 
-        {/* Categoría */}
+        {/* Categoría (arriba derecha, sin tocar) */}
         <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-30 pointer-events-none">
           <span
             className={`${categoryBadge.color} text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full font-semibold shadow-md`}
@@ -265,7 +279,7 @@ export default function ViviendaCard({
           📍 {vivienda.location}
         </p>
 
-        {/* Tipo de propiedad (pequeño, pero visible) */}
+        {/* Tipo de propiedad */}
         {vivienda.property_type && (
           <p className="text-gray-500 text-xs mb-2 capitalize">
             🏠 {vivienda.property_type}

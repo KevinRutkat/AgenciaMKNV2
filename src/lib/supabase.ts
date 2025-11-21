@@ -35,6 +35,7 @@ export interface Vivienda {
   is_rent: boolean
   plantas: number
   is_featured: boolean
+  is_sold: boolean | null
 }
 
 export interface ViviendaImage {
