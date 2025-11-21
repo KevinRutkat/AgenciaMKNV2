@@ -44,8 +44,7 @@ export default function EditPropertyPage() {
     plantas: 1,
     is_featured: false,
     category: 'usada',
-    // 👇 NUEVO CAMPO
-    is_sold: false,
+    is_sold: false, // NUEVO CAMPO
   });
 
   // Lista de características desde constantes compartidas
@@ -82,7 +81,6 @@ export default function EditPropertyPage() {
   // Cargar datos de la propiedad
   const loadPropertyData = async () => {
     try {
-      // Cargar datos de la propiedad
       const { data: vivienda, error: viviendaError } = await supabase
         .from('viviendas')
         .select('*')
@@ -105,10 +103,9 @@ export default function EditPropertyPage() {
         return;
       }
 
-      console.log('Loaded property data:', vivienda); // Debug log
+      console.log('Loaded property data:', vivienda);
 
       if (vivienda) {
-        // Mapear propiedades desde DB (array o string) a labels canónicas sin emojis
         const propiedadesArray: string[] = Array.isArray(vivienda.propiedades)
           ? (vivienda.propiedades as string[])
           : typeof vivienda.propiedades === 'string'
@@ -118,14 +115,16 @@ export default function EditPropertyPage() {
               .filter(Boolean)
           : [];
 
-        // Normalizar: intentar casar cada valor con una feature conocida y usar su label
         const propiedadesCanonicas = propiedadesArray.map((p) => {
           const norm = normalizeFeature(p);
           const match = FEATURES.find(
             (f) => f.key === norm || normalizeFeature(f.label) === norm,
           );
-          return match ? match.label : p; // fallback al valor original
+          return match ? match.label : p;
         });
+
+        const isSoldFromDb = !!vivienda.is_sold;
+        const isFeaturedFromDb = !!vivienda.is_featured;
 
         setFormData({
           name: vivienda.name || '',
@@ -142,22 +141,19 @@ export default function EditPropertyPage() {
           propiedades: propiedadesCanonicas,
           is_rent: vivienda.is_rent || false,
           plantas: vivienda.plantas || 1,
-          is_featured: vivienda.is_featured || false,
-          // normalizamos la categoría a minúsculas para que encaje con el select
+          // 👇 Si está vendida, forzamos destacado a false
+          is_featured: isSoldFromDb ? false : isFeaturedFromDb,
           category: vivienda.category
             ? String(vivienda.category).toLowerCase()
             : 'usada',
-          // 👇 NUEVO: cargar estado vendido
-          is_sold: vivienda.is_sold || false,
+          is_sold: isSoldFromDb,
         });
 
-        // Establecer coordenadas para el mapa si existen
         if (vivienda.lat && vivienda.lng) {
           setCoordinates({ lat: vivienda.lat, lng: vivienda.lng });
         }
       }
 
-      // Cargar imágenes existentes
       const { data: images, error: imagesError } = await supabase
         .from('vivienda_images')
         .select('*')
@@ -191,7 +187,6 @@ export default function EditPropertyPage() {
     return null;
   }
 
-  // Mostrar loading si Google Maps no está cargado o hay error
   if (!isLoaded || loadError) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white flex items-center justify-center">
@@ -213,8 +208,8 @@ export default function EditPropertyPage() {
         setFormData((prev) => ({
           ...prev,
           location: place.formatted_address || '',
-          lat: lat,
-          lng: lng,
+          lat,
+          lng,
         }));
 
         setCoordinates({ lat, lng });
@@ -223,7 +218,6 @@ export default function EditPropertyPage() {
   };
 
   const handleCaracteristicaChange = (caracteristica: string) => {
-    // Store labels without emojis in state
     const label = caracteristica.replace(/^[^\p{L}\p{N}]\s*/u, '').trim();
     setFormData((prev) => ({
       ...prev,
@@ -241,7 +235,7 @@ export default function EditPropertyPage() {
   ) => {
     const { name, value, type } = e.target;
 
-    // ✅ Caso especial: cambiar categoría → sincronizar is_rent
+    // Cambiar categoría → sincronizar is_rent
     if (name === 'category') {
       setFormData((prev) => ({
         ...prev,
@@ -253,6 +247,26 @@ export default function EditPropertyPage() {
 
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
+
+      // 🔁 Mutua exclusión: Destacado vs Vendido
+      if (name === 'is_sold') {
+        setFormData((prev) => ({
+          ...prev,
+          is_sold: checked,
+          is_featured: checked ? false : prev.is_featured,
+        }));
+        return;
+      }
+
+      if (name === 'is_featured') {
+        setFormData((prev) => ({
+          ...prev,
+          is_featured: checked,
+          is_sold: checked ? false : prev.is_sold,
+        }));
+        return;
+      }
+
       setFormData((prev) => ({
         ...prev,
         [name]: checked,
@@ -275,7 +289,6 @@ export default function EditPropertyPage() {
       const newFiles = Array.from(e.target.files);
       const totalFiles = images.length + newFiles.length;
 
-      // Validar número máximo de imágenes total (20)
       if (totalFiles > 20) {
         setSubmitMessage(
           `❌ Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${newFiles.length}`,
@@ -283,8 +296,7 @@ export default function EditPropertyPage() {
         return;
       }
 
-      // Validar tamaño de archivos (máximo 5MB por imagen)
-      const maxSize = 5 * 1024 * 1024; // 5MB
+      const maxSize = 5 * 1024 * 1024;
       const oversizedFiles = newFiles.filter((file) => file.size > maxSize);
       if (oversizedFiles.length > 0) {
         setSubmitMessage(
@@ -293,7 +305,6 @@ export default function EditPropertyPage() {
         return;
       }
 
-      // Validar formato de imágenes
       const validFormats = [
         'image/jpeg',
         'image/jpg',
@@ -310,35 +321,27 @@ export default function EditPropertyPage() {
         return;
       }
 
-      // Si no hay imágenes previas, usar las nuevas. Si ya hay, combinarlas
       const allImages =
         images.length === 0 ? newFiles : [...images, ...newFiles];
       setImages(allImages);
-      setSubmitMessage(''); // Limpiar mensaje de error anterior
+      setSubmitMessage('');
 
-      // Crear URLs de preview
       if (images.length === 0) {
-        // Si no hay imágenes previas, crear todas las URLs
         const urls = newFiles.map((file) => URL.createObjectURL(file));
         setPreviewUrls(urls);
       } else {
-        // Si ya hay imágenes, agregar las nuevas URLs
         const newUrls = newFiles.map((file) => URL.createObjectURL(file));
         setPreviewUrls([...previewUrls, ...newUrls]);
       }
     }
 
-    // Limpiar el input para permitir seleccionar los mismos archivos otra vez
     e.target.value = '';
   };
 
   const removeImage = (index: number) => {
     const newImages = images.filter((_, i) => i !== index);
     const newUrls = previewUrls.filter((_, i) => i !== index);
-
-    // Liberar la URL del objeto
     URL.revokeObjectURL(previewUrls[index]);
-
     setImages(newImages);
     setPreviewUrls(newUrls);
   };
@@ -359,14 +362,12 @@ export default function EditPropertyPage() {
         return;
       }
 
-      // Actualizar el estado local
       setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
     } catch {
       alert('Error al eliminar la imagen');
     }
   };
 
-  // Funciones para drag & drop
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(true);
@@ -384,7 +385,6 @@ export default function EditPropertyPage() {
     const files = Array.from(e.dataTransfer.files);
     if (files.length === 0) return;
 
-    // Filtrar solo archivos de imagen
     const imageFiles = files.filter((file) => {
       const validFormats = [
         'image/jpeg',
@@ -402,7 +402,6 @@ export default function EditPropertyPage() {
       return;
     }
 
-    // Usar la misma lógica que handleImageChange
     const totalFiles = images.length + imageFiles.length;
 
     if (totalFiles > 20) {
@@ -412,8 +411,7 @@ export default function EditPropertyPage() {
       return;
     }
 
-    // Validar tamaño de archivos
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 5 * 1024 * 1024;
     const oversizedFiles = imageFiles.filter((file) => file.size > maxSize);
     if (oversizedFiles.length > 0) {
       setSubmitMessage(
@@ -422,21 +420,15 @@ export default function EditPropertyPage() {
       return;
     }
 
-    // Si no hay imágenes previas, reemplazar todas
     if (images.length === 0) {
       setImages(imageFiles);
       setSubmitMessage('');
-
-      // Crear URLs de preview
       const urls = imageFiles.map((file) => URL.createObjectURL(file));
       setPreviewUrls(urls);
     } else {
-      // Si ya hay imágenes, agregarlas
       const allImages = [...images, ...imageFiles];
       setImages(allImages);
       setSubmitMessage('');
-
-      // Crear nuevas URLs de preview
       const newUrls = imageFiles.map((file) => URL.createObjectURL(file));
       setPreviewUrls([...previewUrls, ...newUrls]);
     }
@@ -448,7 +440,6 @@ export default function EditPropertyPage() {
     setSubmitMessage('');
 
     try {
-      // Obtener el token de sesión actual
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -459,7 +450,6 @@ export default function EditPropertyPage() {
         return;
       }
 
-      // Actualizar datos de la propiedad
       const response = await fetch('/api/propiedades', {
         method: 'PUT',
         headers: {
@@ -469,7 +459,6 @@ export default function EditPropertyPage() {
         body: JSON.stringify({
           id: propertyId,
           ...formData,
-          // Enviar arreglo, no string CSV, para text[] en Postgres
           propiedades: formData.propiedades,
         }),
       });
@@ -480,24 +469,20 @@ export default function EditPropertyPage() {
         return;
       }
 
-      // Si hay nuevas imágenes, subirlas
       if (images.length > 0) {
         try {
-          const viviendaId = Number(propertyId); // si tu columna es integer
+          const viviendaId = Number(propertyId);
 
           await Promise.all(
             images.map(async (file) => {
-              // Nombre único por si editas varias veces
               const path = `viviendas/${viviendaId}/${Date.now()}-${file.name}`;
 
-              // 1) Subir al bucket
               const { error: uploadError } = await supabase.storage
                 .from('propiedades-images')
                 .upload(path, file);
 
               if (uploadError) throw uploadError;
 
-              // 2) Obtener URL pública
               const { data } = supabase.storage
                 .from('propiedades-images')
                 .getPublicUrl(path);
@@ -506,7 +491,6 @@ export default function EditPropertyPage() {
                 throw new Error('No se pudo obtener la URL pública');
               }
 
-              // 3) Insertar en vivienda_images
               const { error: imgError } = await supabase
                 .from('vivienda_images')
                 .insert({
@@ -519,13 +503,11 @@ export default function EditPropertyPage() {
             }),
           );
 
-          // Actualizar estado local para que se vean sin recargar
           setExistingImages((prev) => [
             ...prev,
             ...images.map((file, index) => ({
-              // id fake temporal; si quieres el real, deberías leer de la inserción
               id: Date.now() + index,
-              url: URL.createObjectURL(file), // o mejor volver a hacer fetch a la BD
+              url: URL.createObjectURL(file),
             })),
           ]);
         } catch (err) {
@@ -538,7 +520,6 @@ export default function EditPropertyPage() {
 
       setSubmitMessage('✅ Propiedad actualizada exitosamente');
 
-      // Redirigir después de 2 segundos
       setTimeout(() => {
         router.push('/propiedades');
       }, 2000);
@@ -792,7 +773,6 @@ export default function EditPropertyPage() {
                 </Autocomplete>
               </div>
 
-              {/* Vista previa del mapa */}
               {coordinates && (
                 <div className="space-y-4">
                   <div>
@@ -833,7 +813,6 @@ export default function EditPropertyPage() {
                         value={formData.lat}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-gray-50"
-                        placeholder="36.6169"
                         readOnly
                       />
                     </div>
@@ -853,7 +832,6 @@ export default function EditPropertyPage() {
                         value={formData.lng}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-gray-50"
-                        placeholder="-4.4999"
                         readOnly
                       />
                     </div>
@@ -906,7 +884,6 @@ export default function EditPropertyPage() {
                       </span>
                     </label>
 
-                    {/* 👇 NUEVO: checkbox Vendido */}
                     <label className="flex items-center">
                       <input
                         type="checkbox"
@@ -929,7 +906,6 @@ export default function EditPropertyPage() {
                   🏡 Características de la propiedad
                 </label>
 
-                {/* Buscador de características */}
                 <div className="mb-4">
                   <div className="relative">
                     <input
@@ -987,7 +963,6 @@ export default function EditPropertyPage() {
                     )}
                 </div>
 
-                {/* Mostrar características seleccionadas */}
                 {formData.propiedades.length > 0 && (
                   <div className="mt-3 p-3 bg-teal-50 rounded-lg">
                     <p className="text-sm font-medium text-teal-800 mb-2">
@@ -1025,7 +1000,6 @@ export default function EditPropertyPage() {
                 📸 Gestión de imágenes
               </label>
 
-              {/* Imágenes existentes */}
               {existingImages.length > 0 && (
                 <div className="mb-6">
                   <h4 className="text-sm font-medium text-gray-700 mb-3">
@@ -1033,10 +1007,7 @@ export default function EditPropertyPage() {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {existingImages.map((image) => (
-                      <div
-                        key={image.id}
-                        className="relative group"
-                      >
+                      <div key={image.id} className="relative group">
                         <Image
                           src={image.url}
                           alt="Imagen de la propiedad"
@@ -1046,9 +1017,7 @@ export default function EditPropertyPage() {
                         />
                         <button
                           type="button"
-                          onClick={() =>
-                            removeExistingImage(image.id)
-                          }
+                          onClick={() => removeExistingImage(image.id)}
                           className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                           title="Eliminar imagen"
                         >
@@ -1064,9 +1033,7 @@ export default function EditPropertyPage() {
               )}
 
               <div className="space-y-4">
-                {/* Input unificado para seleccionar múltiples imágenes */}
                 <div className="space-y-3">
-                  {/* Botón estilizado para seleccionar imágenes con drag & drop */}
                   <label htmlFor="images" className="cursor-pointer">
                     <div
                       className={`w-full p-6 border-2 border-dashed rounded-lg transition-all text-center ${
@@ -1147,7 +1114,6 @@ export default function EditPropertyPage() {
                   </p>
                 </div>
 
-                {/* Contador de nuevas imágenes y botón de limpiar */}
                 {images.length > 0 && (
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-600">
@@ -1169,10 +1135,7 @@ export default function EditPropertyPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        // Liberar todas las URLs
-                        previewUrls.forEach((url) =>
-                          URL.revokeObjectURL(url),
-                        );
+                        previewUrls.forEach((url) => URL.revokeObjectURL(url));
                         setImages([]);
                         setPreviewUrls([]);
                         setSubmitMessage('');
@@ -1186,7 +1149,6 @@ export default function EditPropertyPage() {
                 )}
               </div>
 
-              {/* Preview de nuevas imágenes */}
               {previewUrls.length > 0 && (
                 <div className="mt-4">
                   <div className="flex items-center justify-between mb-3">
@@ -1199,10 +1161,7 @@ export default function EditPropertyPage() {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {previewUrls.map((url, index) => (
-                      <div
-                        key={index}
-                        className="relative group"
-                      >
+                      <div key={index} className="relative group">
                         <Image
                           src={url}
                           alt={`Nueva imagen ${index + 1}`}
@@ -1228,7 +1187,6 @@ export default function EditPropertyPage() {
               )}
             </div>
 
-            {/* Mensaje de estado */}
             {submitMessage && (
               <div
                 className={`p-4 rounded-lg text-center ${
@@ -1242,7 +1200,6 @@ export default function EditPropertyPage() {
               </div>
             )}
 
-            {/* Botones */}
             <div className="flex gap-4 pt-6">
               <button
                 type="button"

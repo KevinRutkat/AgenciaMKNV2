@@ -238,19 +238,18 @@ export default function ViviendaCard({
           </div>
         </div>
 
-        {/* ✅ Vendido arriba izquierda */}
-        {vivienda.is_sold && (
+        {/* 🟢 / ⭐ Top-left: solo uno (prioridad Vendido) */}
+        {(vivienda.is_sold || vivienda.is_featured) && (
           <div className="absolute top-1 sm:top-2 left-1 sm:left-2 z-30 pointer-events-none">
-            <span className="bg-red-500 text-white text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-md">
-              🔴 {sold}
-            </span>
-          </div>
-        )}
-
-        {/* Destacado (lo bajo un poco para no pisar el vendido) */}
-        {vivienda.is_featured && (
-          <div className="absolute top-6 sm:top-8 left-1 sm:left-2 bg-orange-500 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-semibold z-30 pointer-events-none">
-            ⭐ {featured}
+            {vivienda.is_sold ? (
+              <span className="bg-red-500 text-white text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-md">
+                🔴 {sold}
+              </span>
+            ) : (
+              <span className="bg-orange-500 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full font-semibold shadow-md">
+                ⭐ {featured}
+              </span>
+            )}
           </div>
         )}
 
