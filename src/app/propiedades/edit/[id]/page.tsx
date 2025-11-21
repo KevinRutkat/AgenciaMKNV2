@@ -426,25 +426,58 @@ export default function EditPropertyPage() {
 
       // Si hay nuevas imágenes, subirlas
       if (images.length > 0) {
-        const imageFormData = new FormData();
-        imageFormData.append('vivienda_id', propertyId);
-        
-        images.forEach((image, index) => {
-          imageFormData.append(`image_${index}`, image);
-        });
+        try {
+          const viviendaId = Number(propertyId); // si tu columna es integer
 
-        const imageResponse = await fetch('/api/propiedades/images', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-          body: imageFormData,
-        });
+          await Promise.all(
+            images.map(async (file) => {
+              // Nombre único por si editas varias veces
+              const path = `viviendas/${viviendaId}/${Date.now()}-${file.name}`;
 
-        if (!imageResponse.ok) {
-          console.error('Error uploading images');
+              // 1) Subir al bucket
+              const { error: uploadError } = await supabase.storage
+                .from('propiedades-images')
+                .upload(path, file);
+
+              if (uploadError) throw uploadError;
+
+              // 2) Obtener URL pública
+              const { data } = supabase.storage
+                .from('propiedades-images')
+                .getPublicUrl(path);
+
+              if (!data?.publicUrl) {
+                throw new Error('No se pudo obtener la URL pública');
+              }
+
+              // 3) Insertar en vivienda_images
+              const { error: imgError } = await supabase
+                .from('vivienda_images')
+                .insert({
+                  vivienda_id: viviendaId,
+                  url: data.publicUrl,
+                  inserted_at: new Date().toISOString(),
+                });
+
+              if (imgError) throw imgError;
+            })
+          );
+
+          // Actualizar estado local para que se vean sin recargar
+          setExistingImages((prev) => [
+            ...prev,
+            ...images.map((file, index) => ({
+              // id fake temporal; si quieres el real, deberías leer de la inserción
+              id: Date.now() + index,
+              url: URL.createObjectURL(file), // o mejor volver a hacer fetch a la BD
+            })),
+          ]);
+
+        } catch (err) {
+          console.error('Error subiendo imágenes nuevas', err);
+          setSubmitMessage('⚠️ Propiedad actualizada, pero hubo un error subiendo las nuevas imágenes');
         }
-      }
+}
 
       setSubmitMessage('✅ Propiedad actualizada exitosamente');
       
