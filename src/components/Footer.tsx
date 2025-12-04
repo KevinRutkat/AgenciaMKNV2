@@ -17,7 +17,7 @@ export default function Footer() {
     "👥 Servicios",
     "📞 Contacto",
     "Contacto",
-    "📧 info@agenciamkn.com",
+    "📧 marionrutkat@gmail.com",
     "📞 +34 634 73 79 49",
   ];
 
@@ -109,7 +109,7 @@ export default function Footer() {
             <div className="space-y-1.5 sm:space-y-2 text-teal-100">
               <p className="text-sm sm:text-base break-all">
                 <a
-                  href="mailto:info@agenciamkn.com"
+                  href="mailto:marionrutkat@gmail.com"
                   className="hover:text-orange-300 transition-colors"
                 >
                   {emailText}
