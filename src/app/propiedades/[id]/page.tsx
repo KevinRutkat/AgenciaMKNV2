@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: `https://www.agenciamkn.com/propiedades/${params.id}`,
+      url: `https://agenciamkn.com/propiedades/${params.id}`,
       siteName: "Agencia MKN",
       type: "article",
     },
