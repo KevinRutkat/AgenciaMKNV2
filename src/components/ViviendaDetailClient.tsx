@@ -195,7 +195,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header con botón de volver */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
             onClick={() => router.back()}
@@ -207,10 +207,10 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 z-10">
         {/* Título y ubicación */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center flex-wrap gap-3">
+        <div className="mb-8 ">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center flex-wrap gap-3 relative z-10">
             {vivienda.name}
             {vivienda.is_sold && (
               <span className="inline-flex items-center px-3 py-1 rounded-full bg-red-600 text-white text-xs sm:text-sm font-semibold">
@@ -218,13 +218,13 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
               </span>
             )}
           </h1>
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex items-center gap-2 text-gray-600 relative z-10">
             <MapPinIcon className="h-5 w-5" />
             <span>{vivienda.location}</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
           {/* Galería de imágenes */}
           <div className="space-y-4">
             <div className="relative bg-gray-200 rounded-lg overflow-hidden aspect-[4/3]">
@@ -348,7 +348,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
           </div>
 
           {/* Información de la vivienda */}
-          <div className="space-y-6">
+          <div className="space-y-6 ">
             <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
               <div className="mb-6">
                 <div className="text-4xl font-bold text-gray-900 mb-2">
@@ -450,7 +450,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
 
         {/* Descripción */}
         {vivienda.descripcion && (
-          <div className="mt-8 bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+          <div className="mt-8 bg-white rounded-xl p-6 shadow-lg border border-gray-100 relative z-10">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
               {descripcionText}
             </h3>
@@ -461,7 +461,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
         )}
 
         {/* Ubicación */}
-        <div className="mt-8 bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+        <div className="mt-8 bg-white rounded-xl p-6 shadow-lg border border-gray-100 relative z-10">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">
             {ubicacionText}
           </h3>

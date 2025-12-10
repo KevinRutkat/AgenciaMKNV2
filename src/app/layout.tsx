@@ -13,6 +13,7 @@ import FloatingLanguageSelector from "@/components/FloatingLanguageSelector";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { GoogleMapsProvider } from "@/contexts/GoogleMapsContext";
+import Snowfall from "@/components/Snowfall";
 // Estilos globales
 import "./globals.css";
 
@@ -173,6 +174,7 @@ export default function RootLayout({
         <LanguageProvider>
           <AuthProvider>
             <GoogleMapsProvider>
+              <Snowfall/>
               <TranslationLoadingIndicator />
               <Header />
               {children}

@@ -72,7 +72,7 @@
 }
 
 .bg-kehre-gradient-light {
-  background: linear-gradient(135deg, var(--neutral-light) 0%, var(--neutral-gray) 50%, var(--primary-blue-light) 100%);
+  background: linear-gradient(180deg, var(--neutral-light) 0%, var(--neutral-gray) 50%, var(--primary-blue-light) 100%);
 }
 
 /* Utilidades responsive adicionales */
@@ -278,4 +278,38 @@ button, .cursor-pointer, [role="button"] {
   border-radius: 0 !important;
   transform: none !important;
   display: inline-block !important;
+}
+
+/* ============================================ */
+/* ESTILOS PARA COPOS DE NIEVE - IMPORTANTE */
+/* ============================================ */
+
+/* Asegurar que el contenido principal esté por encima de los copos de nieve */
+main, header, footer, nav {
+  position: relative;
+  z-index: 10;
+}
+
+/* Copos de nieve como caracteres ❄, visibles sobre fondo claro */
+.snowflake {
+  position: absolute;
+  top: -3rem; /* que aparezcan un poco por encima */
+  color: #ffffff;
+  text-shadow:
+    0 0 4px rgba(255, 255, 255, 1),
+    0 0 8px rgba(0, 0, 0, 0.2),
+    0 0 12px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* Animación de caída: usada desde el componente React */
+@keyframes snowfall {
+  0% {
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate3d(0, 110vh, 0) rotate(360deg);
+  }
 }

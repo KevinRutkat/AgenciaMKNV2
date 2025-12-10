@@ -160,7 +160,7 @@ export default function ContactoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-white to-teal-100">
       <Banner
         title={bannerTitle}
         subtitle={bannerSubtitle}

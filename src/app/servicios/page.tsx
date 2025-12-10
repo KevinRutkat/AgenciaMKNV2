@@ -392,7 +392,7 @@ export default function ServiciosPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-white to-amber-50">
       <Banner
         title={bannerTitle}
         subtitle={bannerSubtitle}

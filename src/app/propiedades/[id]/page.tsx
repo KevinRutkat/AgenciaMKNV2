@@ -68,7 +68,7 @@ export default async function ViviendaDetailPage({ params }: Props) {
   const images: ViviendaImage[] = imagesRaw || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-100 via-teal-50 to-teal-100">
+    <div className="min-h-screen bg-gradient-to-b from-orange-100 via-teal-50 to-teal-100 z-10">
       {/* Banner "Vendido" arriba si aplica */}
       {vivienda.is_sold && (
         <div className="bg-red-600 text-white text-center py-2">
