@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Vivienda, ViviendaImage } from "@/lib/supabase";
@@ -26,7 +26,6 @@ type Props = {
 
 export default function ViviendaDetailClient({ vivienda, images }: Props) {
   const router = useRouter();
-  const [propiedades, setPropiedades] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showContact, setShowContact] = useState(false);
 
@@ -50,7 +49,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     "Esta propiedad no tiene ubicación registrada",
     "Coordenadas:",
     "Dirección:",
-    "Vendido", // 👈 NUEVO TEXTO
+    "Vendido",
   ];
 
   const [
@@ -71,28 +70,26 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     propiedadSinUbicacionText,
     coordenadasLabel,
     direccionLabel,
-    soldText, // 👈 NUEVO
+    soldText,
   ] = useMultipleTranslations(textsToTranslate);
 
   const translatedDescription = useTranslation(vivienda.descripcion || "");
 
-  // Procesar propiedades (features) una sola vez
-  useEffect(() => {
+  // ⚡ MEJORA DE RENDIMIENTO: useMemo en lugar de useState + useEffect
+  const propiedades = useMemo(() => {
     if (Array.isArray(vivienda.propiedades)) {
-      setPropiedades(vivienda.propiedades);
+      return vivienda.propiedades;
     } else if (
       vivienda.propiedades &&
       typeof vivienda.propiedades === "string" &&
       vivienda.propiedades.trim().length > 0
     ) {
-      const propiedadesList = vivienda.propiedades
+      return vivienda.propiedades
         .split(",")
         .map((prop: string) => prop.trim())
         .filter((prop: string) => prop.length > 0);
-      setPropiedades(propiedadesList);
-    } else {
-      setPropiedades([]);
     }
+    return [];
   }, [vivienda.propiedades]);
 
   // Sincronizar scroll del preview
@@ -102,6 +99,20 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     }
   }, [currentImageIndex, images.length]);
 
+  const nextImage = useCallback(() => {
+    const newIndex =
+      currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
+    setCurrentImageIndex(newIndex);
+    scrollToPreview(newIndex);
+  }, [currentImageIndex, images.length]);
+
+  const prevImage = useCallback(() => {
+    const newIndex =
+      currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
+    setCurrentImageIndex(newIndex);
+    scrollToPreview(newIndex);
+  }, [currentImageIndex, images.length]);
+
   // Navegación con teclado
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -109,36 +120,16 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
 
       if (event.key === "ArrowLeft") {
         event.preventDefault();
-        const newIndex =
-          currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
-        setCurrentImageIndex(newIndex);
-        scrollToPreview(newIndex);
+        prevImage();
       } else if (event.key === "ArrowRight") {
         event.preventDefault();
-        const newIndex =
-          currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
-        setCurrentImageIndex(newIndex);
-        scrollToPreview(newIndex);
+        nextImage();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [images.length, currentImageIndex]);
-
-  const nextImage = () => {
-    const newIndex =
-      currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
-    setCurrentImageIndex(newIndex);
-    scrollToPreview(newIndex);
-  };
-
-  const prevImage = () => {
-    const newIndex =
-      currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
-    setCurrentImageIndex(newIndex);
-    scrollToPreview(newIndex);
-  };
+  }, [images.length, prevImage, nextImage]);
 
   const goToImage = (index: number) => {
     setCurrentImageIndex(index);
@@ -234,6 +225,8 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                     src={images[currentImageIndex].url}
                     alt={`${vivienda.name} - Imagen ${currentImageIndex + 1}`}
                     fill
+                    // ⚡ MEJORA: Prioridad en la imagen principal para LCP
+                    priority={true} 
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 50vw"
                     className={`object-cover ${
                       vivienda.is_sold ? "opacity-70" : ""
@@ -430,7 +423,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
               {caracteristicasText}
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-              {propiedades.map((propiedad, index) => {
+              {propiedades.map((propiedad: string, index: number) => {
                 const { emoji, label } = getFeatureDisplay(propiedad);
                 return (
                   <div
