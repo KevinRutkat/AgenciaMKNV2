@@ -38,8 +38,8 @@ const localBusinessSchema = {
   "@type": "RealEstateAgent",
   name: "Agencia MKN",
   priceRange: "$$$",
-  image: "https://agenciamkn.com/LogoPNG.png",
-  url: "https://agenciamkn.com",
+  image: "https://www.agenciamkn.com/LogoPNG.png",
+  url: "https://www.agenciamkn.com",
   telephone: "+34 634 73 79 49",
   address: {
     "@type": "PostalAddress",

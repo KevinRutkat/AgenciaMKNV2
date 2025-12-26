@@ -30,6 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `${data.name} en ${
     data.location ?? "Cabo de Palos"
   } | Agencia MKN`;
+
+  const canonical = `/propiedades/${id}`;
   
   const baseDescription =
     data.descripcion?.replace(/\s+/g, " ").trim() ||
@@ -43,12 +45,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
+    alternates: { canonical },
     openGraph: {
       title,
       description,
-      url: `https://agenciamkn.com/propiedades/${id}`,
+      url: `https://www.agenciamkn.com${canonical}`,
       siteName: "Agencia MKN",
       type: "article",
+      images: [
+        {
+          url: "https://www.agenciamkn.com/LogoPNG.png",
+          width: 1200,
+          height: 630,
+          alt: "Agencia MKN",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["https://www.agenciamkn.com/LogoPNG.png"],
     },
   };
 }
@@ -77,11 +94,21 @@ export default async function ViviendaDetailPage({ params }: Props) {
   const images: ViviendaImage[] = imagesRaw || [];
 
   // 🔹 SEO: Datos Estructurados (JSON-LD) para Google Rich Results
+  const postedDate =
+    vivienda.inserted_at && !Number.isNaN(Date.parse(vivienda.inserted_at))
+      ? new Date(vivienda.inserted_at).toISOString()
+      : undefined;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "RealEstateListing",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://www.agenciamkn.com/propiedades/${vivienda.id}`,
+    },
     "name": vivienda.name,
     "description": vivienda.descripcion,
+    "datePosted": postedDate,
     "image": images.length > 0 ? images.map((img) => img.url) : [],
     "url": `https://www.agenciamkn.com/propiedades/${vivienda.id}`,
 // Asumiendo que tienes created_at
