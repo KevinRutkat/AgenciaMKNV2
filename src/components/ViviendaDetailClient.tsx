@@ -319,7 +319,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                     >
                       <Image
                         src={image.url}
-                        alt={`Preview ${index + 1}`}
+                        alt={`${vivienda.name} - Vista previa ${index + 1}`}
                         fill
                         sizes="(max-width: 640px) 64px, 80px"
                         className="object-cover"

@@ -3,6 +3,40 @@ import { notFound } from "next/navigation";
 import { supabase, Vivienda, ViviendaImage } from "@/lib/supabase";
 import ViviendaDetailClient from "@/components/ViviendaDetailClient";
 
+const baseUrl = "https://www.agenciamkn.com";
+
+const normalizeImageUrl = (url?: string | null) => {
+  if (!url) return null;
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  const normalized = url.startsWith("/") ? url : `/${url}`;
+  return `${baseUrl}${normalized}`;
+};
+
+const toNumber = (value?: string | number | null) => {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : undefined;
+  }
+  const cleaned = value
+    .replace(/\s+/g, "")
+    .replace(/\u00A0/g, "")
+    .replace(/[\u20AC$]/g, "");
+  const lastDot = cleaned.lastIndexOf(".");
+  const lastComma = cleaned.lastIndexOf(",");
+  let normalized = cleaned;
+  if (lastComma > lastDot) {
+    normalized = cleaned.replace(/\./g, "").replace(",", ".");
+  } else if (lastDot > lastComma) {
+    normalized = cleaned.replace(/,/g, "");
+  } else {
+    normalized = cleaned.replace(/,/g, "");
+  }
+  const parsed = Number.parseFloat(normalized);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
 // ⚠️ ACTUALIZADO: params es una Promise en versiones modernas de Next.js
 type Props = {
   params: Promise<{ id: string }>;
@@ -18,6 +52,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .select("name, location, price, descripcion")
     .eq("id", id)
     .single<Vivienda>();
+
+  const { data: imageData } = await supabase
+    .from("vivienda_images")
+    .select("url")
+    .eq("vivienda_id", id)
+    .order("inserted_at", { ascending: true })
+    .limit(1);
 
   if (!data) {
     return {
@@ -39,8 +80,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   const description =
     baseDescription.length > 155
-      ? `${baseDescription.slice(0, 152)}…`
+      ? `${baseDescription.slice(0, 152)}...`
       : baseDescription;
+
+  const fallbackImage = "https://www.agenciamkn.com/LogoPNG.png";
+  const ogImage = normalizeImageUrl(imageData?.[0]?.url) || fallbackImage;
+  const ogImages = [
+    {
+      url: ogImage,
+      width: 1200,
+      height: 630,
+      alt: data.name || "Agencia MKN",
+    },
+  ];
 
   return {
     title,
@@ -49,23 +101,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: `https://www.agenciamkn.com${canonical}`,
+      url: `${baseUrl}${canonical}`,
       siteName: "Agencia MKN",
       type: "article",
-      images: [
-        {
-          url: "https://www.agenciamkn.com/LogoPNG.png",
-          width: 1200,
-          height: 630,
-          alt: "Agencia MKN",
-        },
-      ],
+      images: ogImages,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["https://www.agenciamkn.com/LogoPNG.png"],
+      images: [ogImage],
     },
   };
 }
@@ -92,6 +137,35 @@ export default async function ViviendaDetailPage({ params }: Props) {
     .order("inserted_at", { ascending: true });
 
   const images: ViviendaImage[] = imagesRaw || [];
+  const imageUrls = images
+    .map((img) => normalizeImageUrl(img.url))
+    .filter((url): url is string => Boolean(url));
+
+  const priceValue = toNumber(vivienda.price);
+  const sizeValue = toNumber(vivienda.metros);
+  const roomCount =
+    typeof vivienda.habitaciones === "number" && vivienda.habitaciones > 0
+      ? vivienda.habitaciones
+      : undefined;
+  const bathroomCount =
+    typeof vivienda.bathroom === "number" && vivienda.bathroom > 0
+      ? vivienda.bathroom
+      : undefined;
+  const floorCount =
+    typeof vivienda.plantas === "number" && vivienda.plantas > 0
+      ? vivienda.plantas
+      : undefined;
+  const floorSize = sizeValue
+    ? { "@type": "QuantitativeValue", value: sizeValue, unitCode: "MTK" }
+    : undefined;
+  const geo =
+    vivienda.lat && vivienda.lng
+      ? {
+          "@type": "GeoCoordinates",
+          latitude: vivienda.lat,
+          longitude: vivienda.lng,
+        }
+      : undefined;
 
   // 🔹 SEO: Datos Estructurados (JSON-LD) para Google Rich Results
   const postedDate =
@@ -99,19 +173,49 @@ export default async function ViviendaDetailPage({ params }: Props) {
       ? new Date(vivienda.inserted_at).toISOString()
       : undefined;
 
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Inicio",
+        item: `${baseUrl}/`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Propiedades",
+        item: `${baseUrl}/propiedades`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: vivienda.name,
+        item: `${baseUrl}/propiedades/${vivienda.id}`,
+      },
+    ],
+  };
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "RealEstateListing",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://www.agenciamkn.com/propiedades/${vivienda.id}`,
+      "@id": `${baseUrl}/propiedades/${vivienda.id}`,
     },
     "name": vivienda.name,
     "description": vivienda.descripcion,
     "datePosted": postedDate,
-    "image": images.length > 0 ? images.map((img) => img.url) : [],
-    "url": `https://www.agenciamkn.com/propiedades/${vivienda.id}`,
-// Asumiendo que tienes created_at
+    "category": vivienda.property_type,
+    "numberOfRooms": roomCount,
+    "numberOfBathroomsTotal": bathroomCount,
+    "numberOfFloors": floorCount,
+    "floorSize": floorSize,
+    "geo": geo,
+    "image": imageUrls,
+    "url": `${baseUrl}/propiedades/${vivienda.id}`,
     "address": {
       "@type": "PostalAddress",
       "addressLocality": vivienda.location,
@@ -120,7 +224,7 @@ export default async function ViviendaDetailPage({ params }: Props) {
     },
     "offers": {
       "@type": "Offer",
-      "price": vivienda.price,
+      "price": priceValue ?? vivienda.price,
       "priceCurrency": "EUR",
       "availability": vivienda.is_sold
         ? "https://schema.org/Sold"
@@ -134,6 +238,10 @@ export default async function ViviendaDetailPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
       {/* Banner "Vendido" arriba si aplica */}

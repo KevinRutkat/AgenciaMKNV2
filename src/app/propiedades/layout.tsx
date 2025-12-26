@@ -4,6 +4,18 @@ const title = "Propiedades en Cabo de Palos y La Manga";
 const description =
   "Explora viviendas en venta y alquiler en Cabo de Palos, La Manga y Cartagena con fotos, precios y detalles actualizados.";
 
+const collectionSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: title,
+  url: "https://www.agenciamkn.com/propiedades",
+  about: {
+    "@type": "RealEstateAgent",
+    name: "Agencia MKN",
+    url: "https://www.agenciamkn.com",
+  },
+};
+
 export const metadata: Metadata = {
   title,
   description,
@@ -36,5 +48,13 @@ export default function PropiedadesLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+      />
+    </>
+  );
 }

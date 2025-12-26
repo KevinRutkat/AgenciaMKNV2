@@ -4,6 +4,26 @@ const title = "Contacto Agencia MKN";
 const description =
   "Contacta con Agencia MKN para comprar, vender o alquilar vivienda en Cabo de Palos, La Manga y Cartagena.";
 
+const contactSchema = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  name: "Contacto Agencia MKN",
+  url: "https://www.agenciamkn.com/contacto",
+  about: {
+    "@type": "RealEstateAgent",
+    name: "Agencia MKN",
+    url: "https://www.agenciamkn.com",
+  },
+  mainEntity: {
+    "@type": "ContactPoint",
+    telephone: "+34 634 73 79 49",
+    contactType: "customer service",
+    email: "marionrutkat@gmail.com",
+    areaServed: "ES",
+    availableLanguage: ["es", "de", "en"],
+  },
+};
+
 export const metadata: Metadata = {
   title,
   description,
@@ -36,5 +56,13 @@ export default function ContactoLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactSchema) }}
+      />
+    </>
+  );
 }

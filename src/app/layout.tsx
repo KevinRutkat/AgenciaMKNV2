@@ -30,6 +30,7 @@ const websiteSchema = {
   name: "Agencia MKN",
   alternateName: "Agencia MKN Inmobiliaria y Traductora",
   url: "https://www.agenciamkn.com",
+  inLanguage: "es-ES",
 };
 
 // JSON-LD para negocio local / agencia inmobiliaria
@@ -37,10 +38,23 @@ const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": "RealEstateAgent",
   name: "Agencia MKN",
+  description:
+    "Agencia inmobiliaria y servicios de traduccion en Cabo de Palos, Cartagena y La Manga.",
   priceRange: "$$$",
   image: "https://www.agenciamkn.com/LogoPNG.png",
   url: "https://www.agenciamkn.com",
   telephone: "+34 634 73 79 49",
+  email: "marionrutkat@gmail.com",
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      telephone: "+34 634 73 79 49",
+      contactType: "customer service",
+      areaServed: "ES",
+      availableLanguage: ["es", "de", "en"],
+    },
+  ],
+  knowsLanguage: ["es-ES", "de-DE", "en-GB"],
   address: {
     "@type": "PostalAddress",
     streetAddress: "Ctra. a Cabo de Palos, Km. 25",
@@ -85,9 +99,6 @@ const localBusinessSchema = {
 // Metadatos globales
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.agenciamkn.com"),
-  alternates: {
-    canonical: "/", 
-  },
   title: {
     default: "Agencia MKN - Inmobiliaria y Traductora",
     template: "%s | Agencia MKN",
