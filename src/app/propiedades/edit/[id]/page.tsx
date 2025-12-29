@@ -9,6 +9,19 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useGoogleMaps } from '@/contexts/GoogleMapsContext';
 import { supabase } from '@/lib/supabase';
 import { FEATURES, normalizeFeature } from '@/lib/features';
+import {
+  MagnifyingGlassIcon,
+  PhotoIcon,
+  InformationCircleIcon,
+  ExclamationTriangleIcon,
+  TrashIcon,
+  XMarkIcon,
+  ArrowLeftIcon,
+  ArrowUpTrayIcon,
+  ArrowPathIcon,
+  CheckCircleIcon,
+  StarIcon,
+} from '@heroicons/react/24/outline';
 
 export default function EditPropertyPage() {
   const router = useRouter();
@@ -62,6 +75,7 @@ export default function EditPropertyPage() {
   // Estado para el envío
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+  const isSubmitError = submitMessage.toLowerCase().includes('error');
   const [isLoading, setIsLoading] = useState(true);
 
   // Estado para buscador de características
@@ -90,7 +104,7 @@ export default function EditPropertyPage() {
       if (viviendaError) {
         console.error('Error loading property:', viviendaError);
         setSubmitMessage(
-          '❌ Error al cargar la propiedad: ' + viviendaError.message,
+          ' Error al cargar la propiedad: ' + viviendaError.message,
         );
         return;
       }
@@ -98,7 +112,7 @@ export default function EditPropertyPage() {
       if (!vivienda) {
         console.error('Property not found with ID:', propertyId);
         setSubmitMessage(
-          '❌ No se encontró la propiedad con ID: ' + propertyId,
+          ' No se encontró la propiedad con ID: ' + propertyId,
         );
         return;
       }
@@ -165,7 +179,7 @@ export default function EditPropertyPage() {
     } catch (error) {
       console.error('Error loading property data:', error);
       setSubmitMessage(
-        `❌ Error al cargar los datos de la propiedad: ${
+        ` Error al cargar los datos de la propiedad: ${
           error instanceof Error ? error.message : 'Error desconocido'
         }`,
       );
@@ -218,7 +232,7 @@ export default function EditPropertyPage() {
   };
 
   const handleCaracteristicaChange = (caracteristica: string) => {
-    const label = caracteristica.replace(/^[^\p{L}\p{N}]\s*/u, '').trim();
+    const label = caracteristica.trim();
     setFormData((prev) => ({
       ...prev,
       propiedades: prev.propiedades.includes(label)
@@ -291,7 +305,7 @@ export default function EditPropertyPage() {
 
       if (totalFiles > 20) {
         setSubmitMessage(
-          `❌ Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${newFiles.length}`,
+          ` Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${newFiles.length}`,
         );
         return;
       }
@@ -300,7 +314,7 @@ export default function EditPropertyPage() {
       const oversizedFiles = newFiles.filter((file) => file.size > maxSize);
       if (oversizedFiles.length > 0) {
         setSubmitMessage(
-          '❌ Error: Algunas imágenes superan los 5MB. Por favor, reduce el tamaño',
+          ' Error: Algunas imágenes superan los 5MB. Por favor, reduce el tamaño',
         );
         return;
       }
@@ -316,7 +330,7 @@ export default function EditPropertyPage() {
       );
       if (invalidFiles.length > 0) {
         setSubmitMessage(
-          '❌ Error: Solo se permiten imágenes en formato JPG, PNG o WebP',
+          ' Error: Solo se permiten imágenes en formato JPG, PNG o WebP',
         );
         return;
       }
@@ -397,7 +411,7 @@ export default function EditPropertyPage() {
 
     if (imageFiles.length === 0) {
       setSubmitMessage(
-        '❌ Error: Solo se permiten imágenes en formato JPG, PNG o WebP',
+        ' Error: Solo se permiten imágenes en formato JPG, PNG o WebP',
       );
       return;
     }
@@ -406,7 +420,7 @@ export default function EditPropertyPage() {
 
     if (totalFiles > 20) {
       setSubmitMessage(
-        `❌ Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${imageFiles.length}`,
+        ` Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${imageFiles.length}`,
       );
       return;
     }
@@ -415,7 +429,7 @@ export default function EditPropertyPage() {
     const oversizedFiles = imageFiles.filter((file) => file.size > maxSize);
     if (oversizedFiles.length > 0) {
       setSubmitMessage(
-        '❌ Error: Algunas imágenes superan los 5MB. Por favor, reduce el tamaño',
+        ' Error: Algunas imágenes superan los 5MB. Por favor, reduce el tamaño',
       );
       return;
     }
@@ -445,7 +459,7 @@ export default function EditPropertyPage() {
       } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
-        setSubmitMessage('❌ Error: No hay sesión activa');
+        setSubmitMessage('Error: No hay sesión activa');
         setIsSubmitting(false);
         return;
       }
@@ -465,7 +479,7 @@ export default function EditPropertyPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        setSubmitMessage(`❌ Error: ${errorData.error}`);
+        setSubmitMessage(`Error: ${errorData.error}`);
         return;
       }
 
@@ -513,18 +527,18 @@ export default function EditPropertyPage() {
         } catch (err) {
           console.error('Error subiendo imágenes nuevas', err);
           setSubmitMessage(
-            '⚠️ Propiedad actualizada, pero hubo un error subiendo las nuevas imágenes',
+            ' Propiedad actualizada, pero hubo un error subiendo las nuevas imágenes',
           );
         }
       }
 
-      setSubmitMessage('✅ Propiedad actualizada exitosamente');
+      setSubmitMessage('Propiedad actualizada exitosamente');
 
       setTimeout(() => {
         router.push('/propiedades');
       }, 2000);
     } catch (error) {
-      setSubmitMessage(`❌ Error al actualizar la propiedad: ${error}`);
+      setSubmitMessage(` Error al actualizar la propiedad: ${error}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -546,7 +560,7 @@ export default function EditPropertyPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white">
       <Banner
-        title="✏️ Editar Propiedad"
+        title="Editar Propiedad"
         subtitle={`Modificando: ${formData.name || 'Propiedad'}`}
         height="small"
         showCarousel={false}
@@ -562,7 +576,7 @@ export default function EditPropertyPage() {
                   htmlFor="name"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  🏠 Nombre de la propiedad *
+                   Nombre de la propiedad *
                 </label>
                 <input
                   type="text"
@@ -583,7 +597,7 @@ export default function EditPropertyPage() {
                 htmlFor="descripcion"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                📝 Descripción *
+                 Descripción *
               </label>
               <textarea
                 id="descripcion"
@@ -604,7 +618,7 @@ export default function EditPropertyPage() {
                   htmlFor="price"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  💰 Precio *
+                   Precio *
                 </label>
                 <input
                   type="text"
@@ -623,7 +637,7 @@ export default function EditPropertyPage() {
                   htmlFor="oldprice"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  💸 Precio anterior (opcional)
+                   Precio anterior (opcional)
                 </label>
                 <input
                   type="text"
@@ -641,7 +655,7 @@ export default function EditPropertyPage() {
                   htmlFor="metros"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  📐 Metros cuadrados *
+                   Metros cuadrados *
                 </label>
                 <input
                   type="text"
@@ -663,7 +677,7 @@ export default function EditPropertyPage() {
                   htmlFor="habitaciones"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  🛏️ Habitaciones *
+                   Habitaciones *
                 </label>
                 <input
                   type="number"
@@ -682,7 +696,7 @@ export default function EditPropertyPage() {
                   htmlFor="bathroom"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  🚿 Baños *
+                   Baños *
                 </label>
                 <input
                   type="number"
@@ -701,7 +715,7 @@ export default function EditPropertyPage() {
                   htmlFor="plantas"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  🏗️ Plantas *
+                   Plantas *
                 </label>
                 <input
                   type="number"
@@ -720,7 +734,7 @@ export default function EditPropertyPage() {
                   htmlFor="property_type"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  🏠 Tipo de vivienda *
+                   Tipo de vivienda *
                 </label>
                 <select
                   id="property_type"
@@ -749,7 +763,7 @@ export default function EditPropertyPage() {
                   htmlFor="location"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  📍 Ubicación *
+                   Ubicación *
                 </label>
                 <Autocomplete
                   onLoad={(autocomplete) => setAutocompleteObj(autocomplete)}
@@ -777,7 +791,7 @@ export default function EditPropertyPage() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      🗺️ Vista previa de la ubicación
+                       Vista previa de la ubicación
                     </label>
                     <div className="h-64 rounded-lg overflow-hidden border border-gray-300">
                       <GoogleMap
@@ -803,7 +817,7 @@ export default function EditPropertyPage() {
                         htmlFor="lat"
                         className="block text-sm font-medium text-gray-700 mb-2"
                       >
-                        🌐 Latitud
+                         Latitud
                       </label>
                       <input
                         type="number"
@@ -822,7 +836,7 @@ export default function EditPropertyPage() {
                         htmlFor="lng"
                         className="block text-sm font-medium text-gray-700 mb-2"
                       >
-                        🌐 Longitud
+                         Longitud
                       </label>
                       <input
                         type="number"
@@ -849,7 +863,7 @@ export default function EditPropertyPage() {
                     htmlFor="category"
                     className="block text-sm font-medium text-gray-700 mb-2"
                   >
-                    🏷️ Categoría *
+                     Categoría *
                   </label>
                   <select
                     id="category"
@@ -868,7 +882,7 @@ export default function EditPropertyPage() {
 
                 <div className="space-y-4">
                   <label className="block text-sm font-medium text-gray-700">
-                    ⭐ Propiedades especiales
+                     Propiedades especiales
                   </label>
                   <div className="space-y-3">
                     <label className="flex items-center">
@@ -880,7 +894,7 @@ export default function EditPropertyPage() {
                         className="mr-3 h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
                       />
                       <span className="text-sm text-gray-700">
-                        🌟 Propiedad destacada
+                         Propiedad destacada
                       </span>
                     </label>
 
@@ -893,7 +907,7 @@ export default function EditPropertyPage() {
                         className="mr-3 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                       />
                       <span className="text-sm text-gray-700">
-                        🔴 Vendido
+                         Vendido
                       </span>
                     </label>
                   </div>
@@ -903,7 +917,7 @@ export default function EditPropertyPage() {
               {/* Características de la propiedad */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                  🏡 Características de la propiedad
+                   Características de la propiedad
                 </label>
 
                 <div className="mb-4">
@@ -914,8 +928,8 @@ export default function EditPropertyPage() {
                       onChange={(e) =>
                         setSearchCaracteristicas(e.target.value)
                       }
-                      placeholder="🔍 Buscar características... (ej: piscina, terraza, garaje)"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm"
+                      placeholder=" Buscar características... (ej: piscina, terraza, garaje)"
+                      className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm"
                     />
                   </div>
                   {searchCaracteristicas && (
@@ -984,7 +998,7 @@ export default function EditPropertyPage() {
                             className="ml-1 text-teal-600 hover:text-teal-800"
                             title="Quitar característica"
                           >
-                            ✕
+                            <XMarkIcon className="h-3 w-3" />
                           </button>
                         </span>
                       ))}
@@ -997,7 +1011,10 @@ export default function EditPropertyPage() {
             {/* Imágenes */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                📸 Gestión de imágenes
+                <span className="inline-flex items-center gap-2">
+                  <PhotoIcon className="h-4 w-4 text-gray-500" />
+                  Gestión de imágenes
+                </span>
               </label>
 
               {existingImages.length > 0 && (
@@ -1021,7 +1038,7 @@ export default function EditPropertyPage() {
                           className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                           title="Eliminar imagen"
                         >
-                          ✕
+                          <XMarkIcon className="h-3 w-3" />
                         </button>
                         <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
                           Actual
@@ -1046,7 +1063,7 @@ export default function EditPropertyPage() {
                       onDrop={handleDrop}
                     >
                       <div className="flex flex-col items-center space-y-2">
-                        <div className="text-3xl">📸</div>
+                        <ArrowUpTrayIcon className="h-8 w-8 text-teal-600" />
                         <div className="text-teal-700 font-medium">
                           {isDragOver
                             ? 'Suelta las imágenes aquí'
@@ -1081,8 +1098,9 @@ export default function EditPropertyPage() {
                 </div>
 
                 <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                  <p className="text-sm text-blue-700 font-medium mb-1">
-                    💡 Funcionalidad mejorada de selección de imágenes
+                  <p className="inline-flex items-center gap-2 text-sm text-blue-700 font-medium mb-1">
+                    <InformationCircleIcon className="h-4 w-4" />
+                    Funcionalidad mejorada de selección de imágenes
                   </p>
                   <p className="text-xs text-blue-600">
                     • Selecciona múltiples imágenes manteniendo{' '}
@@ -1128,7 +1146,7 @@ export default function EditPropertyPage() {
                       </span>
                       {existingImages.length + images.length === 20 && (
                         <span className="text-amber-600 ml-2">
-                          ⚠️ Límite máximo alcanzado
+                           Límite máximo alcanzado
                         </span>
                       )}
                     </div>
@@ -1143,7 +1161,10 @@ export default function EditPropertyPage() {
                       className="text-xs px-3 py-1 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
                       title="Eliminar todas las imágenes nuevas"
                     >
-                      🗑️ Limpiar nuevas
+                      <span className="inline-flex items-center gap-2">
+                        <TrashIcon className="h-4 w-4" />
+                        Limpiar nuevas
+                      </span>
                     </button>
                   </div>
                 )}
@@ -1155,8 +1176,9 @@ export default function EditPropertyPage() {
                     <h4 className="text-sm font-medium text-gray-700">
                       Vista previa de nuevas imágenes ({images.length}):
                     </h4>
-                    <span className="text-xs text-gray-500">
-                      Haz clic en ✕ para eliminar una imagen individual
+                    <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
+                      <XMarkIcon className="h-3 w-3" />
+                      Haz clic en el icono para eliminar una imagen individual
                     </span>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -1175,7 +1197,7 @@ export default function EditPropertyPage() {
                           className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                           title="Eliminar imagen"
                         >
-                          ✕
+                          <XMarkIcon className="h-3 w-3" />
                         </button>
                         <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
                           Nueva {index + 1}
@@ -1189,14 +1211,20 @@ export default function EditPropertyPage() {
 
             {submitMessage && (
               <div
-                className={`p-4 rounded-lg text-center ${
-                  submitMessage.includes('Error') ||
-                  submitMessage.includes('❌')
-                    ? 'bg-red-100 text-red-700 border border-red-200'
-                    : 'bg-green-100 text-green-700 border border-green-200'
+                className={`p-4 rounded-lg text-center border ${
+                  isSubmitError
+                    ? 'bg-red-100 text-red-700 border-red-200'
+                    : 'bg-green-100 text-green-700 border-green-200'
                 }`}
               >
-                {submitMessage}
+                <div className="inline-flex items-center gap-2">
+                  {isSubmitError ? (
+                    <ExclamationTriangleIcon className="h-4 w-4" />
+                  ) : (
+                    <CheckCircleIcon className="h-4 w-4" />
+                  )}
+                  <span>{submitMessage}</span>
+                </div>
               </div>
             )}
 
@@ -1206,7 +1234,10 @@ export default function EditPropertyPage() {
                 onClick={() => router.back()}
                 className="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-600 transition-colors"
               >
-                ⬅️ Cancelar
+                <span className="inline-flex items-center gap-2">
+                  <ArrowLeftIcon className="h-4 w-4" />
+                  Cancelar
+                </span>
               </button>
 
               <button
@@ -1214,7 +1245,17 @@ export default function EditPropertyPage() {
                 disabled={isSubmitting}
                 className="flex-1 bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 px-6 rounded-lg font-semibold hover:from-teal-700 hover:to-teal-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                {isSubmitting ? '📤 Actualizando...' : '✅ Actualizar Propiedad'}
+                {isSubmitting ? (
+                  <span className="inline-flex items-center gap-2">
+                    <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                    Actualizando...
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-2">
+                    <ArrowUpTrayIcon className="h-4 w-4" />
+                    Actualizar Propiedad
+                  </span>
+                )}
               </button>
             </div>
           </form>

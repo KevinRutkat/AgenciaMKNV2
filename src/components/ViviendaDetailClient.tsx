@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
@@ -8,13 +8,17 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ArrowLeftIcon,
+  Squares2X2Icon,
+  ArrowsPointingOutIcon,
+  BuildingOffice2Icon,
+  CheckCircleIcon,
+  GlobeAltIcon,
+  SparklesIcon,
+  TagIcon,
 } from "@heroicons/react/24/outline";
-import { HomeIcon, MapPinIcon } from "@heroicons/react/24/solid";
+import { HomeIcon, MapPinIcon, CheckBadgeIcon } from "@heroicons/react/24/solid";
 import { GoogleMap, Marker } from "@react-google-maps/api";
-import {
-  useMultipleTranslations,
-  useTranslation,
-} from "@/hooks/useTranslation";
+import { useMultipleTranslations, useTranslation } from "@/hooks/useTranslation";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 import ContactPopup from "@/components/ContactPopup";
 import { FEATURES, normalizeFeature } from "@/lib/features";
@@ -35,14 +39,14 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     "Volver a propiedades",
     "Alquiler",
     "Venta",
-    "No Aplicable",
+    "No aplica",
     "Habitaciones",
     "Baños",
     "Plantas",
-    "📞 Contactar",
-    "✨ Características",
-    "📝 Descripción",
-    "📍 Ubicación",
+    "Contactar",
+    "Características",
+    "Descripción",
+    "Ubicación",
     "Error cargando Google Maps",
     "Cargando mapa...",
     "Coordenadas no disponibles",
@@ -58,7 +62,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     ventaText,
     noAplicableText,
     habitacionesText,
-    bañosText,
+    banosText,
     plantasText,
     contactarText,
     caracteristicasText,
@@ -75,7 +79,6 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
 
   const translatedDescription = useTranslation(vivienda.descripcion || "");
 
-  // ⚡ MEJORA DE RENDIMIENTO: useMemo en lugar de useState + useEffect
   const propiedades = useMemo(() => {
     if (Array.isArray(vivienda.propiedades)) {
       return vivienda.propiedades;
@@ -92,7 +95,6 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     return [];
   }, [vivienda.propiedades]);
 
-  // Sincronizar scroll del preview
   useEffect(() => {
     if (images.length > 1) {
       scrollToPreview(currentImageIndex);
@@ -113,7 +115,6 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     scrollToPreview(newIndex);
   }, [currentImageIndex, images.length]);
 
-  // Navegación con teclado
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (images.length <= 1) return;
@@ -162,35 +163,32 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     }
   };
 
-  const getFeatureDisplay = (
-    property: string,
-  ): { emoji: string; label: string } => {
+  const getFeatureLabel = (property: string): string => {
     const normalized = normalizeFeature(property);
     const match = FEATURES.find(
       (f) => f.key === normalized || normalizeFeature(f.label) === normalized,
     );
 
     if (match) {
-      return {
-        emoji: match.emoji ?? "✨",
-        label: match.label,
-      };
+      return match.label;
     }
 
-    return {
-      emoji: "✨",
-      label: property,
-    };
+    return property;
+  };
+
+  const formatPrice = (value: string | null | undefined) => {
+    if (!value) return "";
+    const cleaned = value.replace(/\s+/g, "").replace(/ /g, "");
+    return /€$/.test(cleaned) ? cleaned : `${cleaned}€`;
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header con botón de volver */}
-      <div className="bg-white shadow-sm border-b ">
+    <div className="min-h-screen bg-kehre-gradient-light">
+      <div className="bg-white border-b border-neutral-gray">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
+            className="flex items-center gap-2 text-neutral-muted hover-text-neutral-dark transition-colors"
           >
             <ArrowLeftIcon className="h-5 w-5" />
             {volverText}
@@ -198,58 +196,55 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 z-10">
-        {/* Título y ubicación */}
-        <div className="mb-8 ">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center flex-wrap gap-3 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl sm:text-4xl font-semibold text-neutral-dark mb-2 flex items-center flex-wrap gap-3 font-display">
             {vivienda.name}
             {vivienda.is_sold && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-red-600 text-white text-xs sm:text-sm font-semibold">
-                🔴 {soldText}
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-dark text-white text-xs sm:text-sm font-semibold">
+                <CheckBadgeIcon className="h-4 w-4" />
+                {soldText}
               </span>
             )}
           </h1>
-          <div className="flex items-center gap-2 text-gray-600 relative z-10">
+          <div className="flex items-center gap-2 text-neutral-muted">
             <MapPinIcon className="h-5 w-5" />
             <span>{vivienda.location}</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Galería de imágenes */}
           <div className="space-y-4">
-            <div className="relative bg-gray-200 rounded-lg overflow-hidden aspect-[4/3]">
+            <div className="relative bg-neutral-light rounded-2xl overflow-hidden aspect-[4/3] border border-neutral-gray">
               {images.length > 0 ? (
                 <>
                   <Image
                     src={images[currentImageIndex].url}
                     alt={`${vivienda.name} - Imagen ${currentImageIndex + 1}`}
                     fill
-                    // ⚡ MEJORA: Prioridad en la imagen principal para LCP
-                    priority={true} 
+                    priority={true}
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 50vw"
-                    className={`object-cover ${
-                      vivienda.is_sold ? "opacity-70" : ""
-                    }`}
+                    className={`object-cover ${vivienda.is_sold ? "opacity-70" : ""}`}
                   />
 
                   {images.length > 1 && (
                     <>
                       <button
                         onClick={prevImage}
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 gallery-nav-button rounded-full p-2 shadow-lg gallery-transition cursor-pointer"
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-sm border border-neutral-gray"
                       >
-                        <ChevronLeftIcon className="h-6 w-6 text-gray-700" />
+                        <ChevronLeftIcon className="h-6 w-6 text-neutral-muted" />
                       </button>
 
                       <button
                         onClick={nextImage}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 gallery-nav-button rounded-full p-2 shadow-lg gallery-transition cursor-pointer"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-sm border border-neutral-gray"
                       >
-                        <ChevronRightIcon className="h-6 w-6 text-gray-700" />
+                        <ChevronRightIcon className="h-6 w-6 text-neutral-muted" />
                       </button>
 
-                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/80 text-neutral-dark px-3 py-1 rounded-full text-sm border border-neutral-gray">
                         {currentImageIndex + 1} / {images.length}
                       </div>
                     </>
@@ -257,7 +252,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                 </>
               ) : (
                 <div className="flex items-center justify-center h-full">
-                  <HomeIcon className="h-16 w-16 text-gray-400" />
+                  <HomeIcon className="h-16 w-16 text-neutral-muted" />
                 </div>
               )}
             </div>
@@ -279,10 +274,10 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                       });
                     }
                   }}
-                  className="absolute left-0 top-1/2 transform -translate-y-1/2 z-20 bg-white/95 backdrop-blur-sm hover:bg-white rounded-full p-2 shadow-lg border border-gray-200 transition-all duration-200 cursor-pointer hover:scale-110"
+                  className="absolute left-0 top-1/2 transform -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-sm border border-neutral-gray"
                   style={{ marginLeft: "-12px" }}
                 >
-                  <ChevronLeftIcon className="h-4 w-4 text-gray-700" />
+                  <ChevronLeftIcon className="h-4 w-4 text-neutral-muted" />
                 </button>
 
                 <button
@@ -293,10 +288,10 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                       container.scrollBy({ left: 160, behavior: "smooth" });
                     }
                   }}
-                  className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20 bg-white/95 backdrop-blur-sm hover:bg-white rounded-full p-2 shadow-lg border border-gray-200 transition-all duration-200 cursor-pointer hover:scale-110"
+                  className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-sm border border-neutral-gray"
                   style={{ marginRight: "-12px" }}
                 >
-                  <ChevronRightIcon className="h-4 w-4 text-gray-700" />
+                  <ChevronRightIcon className="h-4 w-4 text-neutral-muted" />
                 </button>
 
                 <div
@@ -304,17 +299,17 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                   className="flex gap-3 overflow-x-auto pb-2 scroll-smooth px-6"
                   style={{
                     scrollbarWidth: "thin",
-                    scrollbarColor: "#6B7280 #F3F4F6",
+                    scrollbarColor: "#9ca3af #f3f4f6",
                   }}
                 >
                   {images.map((image, index) => (
                     <button
                       key={image.id}
                       onClick={() => goToImage(index)}
-                      className={`relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 cursor-pointer ${
+                      className={`relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                         index === currentImageIndex
-                          ? "border-blue-600 scale-110 shadow-lg ring-2 ring-blue-200"
-                          : "border-gray-300 hover:border-gray-500 hover:scale-105"
+                          ? "border-primary-blue scale-105 shadow-sm"
+                          : "border-neutral-gray hover:border-neutral-muted"
                       }`}
                     >
                       <Image
@@ -327,8 +322,8 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                       <div
                         className={`absolute top-0.5 left-0.5 text-xs font-bold px-1 rounded text-white ${
                           index === currentImageIndex
-                            ? "bg-blue-600"
-                            : "bg-black/60"
+                            ? "bg-primary-blue"
+                            : "bg-black/50"
                         }`}
                       >
                         {index + 1}
@@ -341,66 +336,67 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
           </div>
 
           {/* Información de la vivienda */}
-          <div className="space-y-6 ">
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl p-6 border border-neutral-gray shadow-sm">
               <div className="mb-6">
-                <div className="text-4xl font-bold text-gray-900 mb-2">
-                  💰 {vivienda.price}€
+                <div className="text-3xl font-semibold text-neutral-dark mb-2">
+                  {formatPrice(vivienda.price)}
                   {vivienda.oldprice && (
-                    <span className="text-xl text-gray-500 line-through ml-3">
-                      {vivienda.oldprice}€
+                    <span className="text-lg text-accent-coral line-through ml-3">
+                      {formatPrice(vivienda.oldprice)}
                     </span>
                   )}
                 </div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
-                  <div
-                    className={`w-2 h-2 rounded-full ${
-                      vivienda.is_rent ? "bg-gray-600" : "bg-gray-800"
-                    }`}
-                  />
-                  {vivienda.is_rent ? alquilerText : ventaText} •{" "}
-                  {vivienda.property_type}
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-neutral-light text-neutral-muted rounded-full text-sm font-medium border border-neutral-gray">
+                  {!vivienda.is_rent && (
+                    <TagIcon className="h-4 w-4 text-neutral-muted" />
+                  )}
+                  <span>{vivienda.is_rent ? alquilerText : ventaText}</span>
+                  {vivienda.property_type && (
+                    <>
+                      <span className="text-neutral-muted">&middot;</span>
+                      <span>
+                        {`${vivienda.property_type.charAt(0).toUpperCase()}${vivienda.property_type.slice(1)}`}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-200">
-                  <div className="text-3xl font-bold text-gray-900 mb-1">
-                    🛏️{" "}
-                    {Number(vivienda.habitaciones) === 0
-                      ? "N/A"
-                      : vivienda.habitaciones}
+                <div className="bg-neutral-light p-4 rounded-xl text-center border border-neutral-gray">
+                  <div className="flex items-center justify-center gap-2 text-2xl font-semibold text-neutral-dark mb-1">
+                    <Squares2X2Icon className="h-5 w-5 text-neutral-muted" />
+                    <span>{Number(vivienda.habitaciones) === 0 ? "N/A" : vivienda.habitaciones}</span>
                   </div>
-                  <div className="text-sm text-gray-600 font-medium">
+                  <div className="text-sm text-neutral-muted font-medium">
                     {Number(vivienda.habitaciones) === 0
                       ? noAplicableText
                       : habitacionesText}
                   </div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-200">
-                  <div className="text-3xl font-bold text-gray-900 mb-1">
-                    🚿{" "}
-                    {Number(vivienda.bathroom) === 0
-                      ? "N/A"
-                      : vivienda.bathroom}
+                <div className="bg-neutral-light p-4 rounded-xl text-center border border-neutral-gray">
+                  <div className="flex items-center justify-center gap-2 text-2xl font-semibold text-neutral-dark mb-1">
+                    <SparklesIcon className="h-5 w-5 text-neutral-muted" />
+                    <span>{Number(vivienda.bathroom) === 0 ? "N/A" : vivienda.bathroom}</span>
                   </div>
-                  <div className="text-sm text-gray-600 font-medium">
-                    {Number(vivienda.bathroom) === 0
-                      ? noAplicableText
-                      : bañosText}
+                  <div className="text-sm text-neutral-muted font-medium">
+                    {Number(vivienda.bathroom) === 0 ? noAplicableText : banosText}
                   </div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-200">
-                  <div className="text-3xl font-bold text-gray-900 mb-1">
-                    📐 {vivienda.metros}
+                <div className="bg-neutral-light p-4 rounded-xl text-center border border-neutral-gray">
+                  <div className="flex items-center justify-center gap-2 text-2xl font-semibold text-neutral-dark mb-1">
+                    <ArrowsPointingOutIcon className="h-5 w-5 text-neutral-muted" />
+                    <span>{vivienda.metros}</span>
                   </div>
-                  <div className="text-sm text-gray-600 font-medium">m²</div>
+                  <div className="text-sm text-neutral-muted font-medium">m²</div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-xl text-center border border-gray-200">
-                  <div className="text-3xl font-bold text-gray-900 mb-1">
-                    🏢 {vivienda.plantas}
+                <div className="bg-neutral-light p-4 rounded-xl text-center border border-neutral-gray">
+                  <div className="flex items-center justify-center gap-2 text-2xl font-semibold text-neutral-dark mb-1">
+                    <BuildingOffice2Icon className="h-5 w-5 text-neutral-muted" />
+                    <span>{vivienda.plantas}</span>
                   </div>
-                  <div className="text-sm text-gray-600 font-medium">
+                  <div className="text-sm text-neutral-muted font-medium">
                     {plantasText}
                   </div>
                 </div>
@@ -408,7 +404,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
 
               <button
                 onClick={() => setShowContact(true)}
-                className="w-full bg-gray-900 text-white py-4 px-6 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer"
+                className="w-full bg-primary-blue text-white py-3 px-6 rounded-full font-semibold hover-bg-primary-blue-dark transition-all duration-200"
               >
                 {contactarText}
               </button>
@@ -418,20 +414,20 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
 
         {/* Características */}
         {propiedades.length > 0 && (
-          <div className="mt-8 bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+          <div className="mt-8 bg-white rounded-2xl p-6 border border-neutral-gray shadow-sm">
+            <h3 className="text-2xl font-semibold text-neutral-dark mb-6 font-display">
               {caracteristicasText}
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
               {propiedades.map((propiedad: string, index: number) => {
-                const { emoji, label } = getFeatureDisplay(propiedad);
+                const label = getFeatureLabel(propiedad);
                 return (
                   <div
                     key={index}
-                    className="flex items-center gap-2 text-gray-700 p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200 text-sm"
+                    className="flex items-center gap-2 text-neutral-muted p-2 rounded-md bg-neutral-light border border-neutral-gray text-sm"
                   >
-                    <span className="text-sm flex-shrink-0">{emoji}</span>
-                    <span className="capitalize font-medium text-xs leading-tight">
+                    <CheckCircleIcon className="h-4 w-4 text-primary-blue flex-shrink-0" />
+                    <span className="capitalize font-medium text-xs leading-tight text-neutral-dark">
                       {label}
                     </span>
                   </div>
@@ -443,19 +439,19 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
 
         {/* Descripción */}
         {vivienda.descripcion && (
-          <div className="mt-8 bg-white rounded-xl p-6 shadow-lg border border-gray-100 relative z-10">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="mt-8 bg-white rounded-2xl p-6 border border-neutral-gray shadow-sm">
+            <h3 className="text-xl font-semibold text-neutral-dark mb-4">
               {descripcionText}
             </h3>
-            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+            <p className="text-neutral-muted leading-relaxed whitespace-pre-line">
               {translatedDescription}
             </p>
           </div>
         )}
 
         {/* Ubicación */}
-        <div className="mt-8 bg-white rounded-xl p-6 shadow-lg border border-gray-100 relative z-10">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="mt-8 bg-white rounded-2xl p-6 border border-neutral-gray shadow-sm">
+          <h3 className="text-xl font-semibold text-neutral-dark mb-4">
             {ubicacionText}
           </h3>
 
@@ -469,16 +465,16 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
           )}
 
           {!isLoaded && !loadError && (
-            <div className="bg-gray-100 rounded-xl h-64 flex items-center justify-center border border-gray-200">
-              <div className="text-center text-gray-500">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600 mx-auto mb-2" />
+            <div className="bg-neutral-light rounded-xl h-64 flex items-center justify-center border border-neutral-gray">
+              <div className="text-center text-neutral-muted">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-dark mx-auto mb-2" />
                 <p>{cargandoMapaText}</p>
               </div>
             </div>
           )}
 
           {isLoaded && !loadError && vivienda.lat && vivienda.lng && (
-            <div className="rounded-xl overflow-hidden border border-gray-200">
+            <div className="rounded-xl overflow-hidden border border-neutral-gray">
               <GoogleMap
                 mapContainerStyle={{ height: "300px", width: "100%" }}
                 zoom={15}
@@ -510,15 +506,17 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
           )}
 
           {vivienda.lat && vivienda.lng && (
-            <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-sm text-gray-600">
-                📍 <span className="font-medium">{coordenadasLabel}</span>{" "}
-                {vivienda.lat.toFixed(6)}, {vivienda.lng.toFixed(6)}
+            <div className="mt-4 p-3 bg-neutral-light rounded-lg border border-neutral-gray">
+              <p className="text-sm text-neutral-muted flex items-center gap-2">
+                <GlobeAltIcon className="h-4 w-4 text-neutral-muted" />
+                <span className="font-medium text-neutral-dark">{coordenadasLabel}</span>
+                <span>{vivienda.lat.toFixed(6)}, {vivienda.lng.toFixed(6)}</span>
               </p>
               {vivienda.location && (
-                <p className="text-sm text-gray-600 mt-1">
-                  🏠 <span className="font-medium">{direccionLabel}</span>{" "}
-                  {vivienda.location}
+                <p className="text-sm text-neutral-muted mt-1 flex items-center gap-2">
+                  <MapPinIcon className="h-4 w-4 text-neutral-muted" />
+                  <span className="font-medium text-neutral-dark">{direccionLabel}</span>
+                  <span>{vivienda.location}</span>
                 </p>
               )}
             </div>

@@ -87,7 +87,6 @@ export default function Banner({
             className={`object-cover object-center transition-opacity duration-1000 ease-in-out ${
               index === currentImageIndex ? 'opacity-100' : 'opacity-0'
             }`}
-            style={{ filter: 'blur(1px)' }}
             priority={index === 0} // Solo la primera imagen tiene priority
           />
         ))
@@ -97,35 +96,31 @@ export default function Banner({
           alt="Costa con faro - Agencia Inmobiliaria MKN"
           fill
           className="object-cover object-center"
-          style={{ filter: 'blur(1px)' }}
           priority
         />
       )}
       
       {/* Overlay con gradiente para mejor legibilidad del texto */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-black/40"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-white/85 via-white/60 to-white/40"></div>
       
       {/* Contenido sobre el banner */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center text-white px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 drop-shadow-lg leading-tight text-shadow-lg">
+      <div className="absolute inset-0 flex items-center">
+        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl bg-white/70 backdrop-blur-sm border border-neutral-gray rounded-2xl p-6 sm:p-8 shadow-sm">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-neutral-dark mb-3 leading-tight font-display">
             {title}
           </h1>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 max-w-4xl mx-auto drop-shadow-md leading-relaxed">
+          <p className="text-base sm:text-lg text-neutral-muted mb-6 leading-relaxed">
             {subtitle}
           </p>
           
-          {/* Espacio adicional para contenido SEO futuro */}
-          <div className="mb-6 sm:mb-8 max-w-5xl mx-auto">
-            {/* Este espacio está reservado para contenido SEO adicional */}
-          </div>
           
           {/* Botones de acción */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-start items-center">
             {buttonText && buttonLink && (
               <Link 
                 href={buttonLink}
-                className="inline-block bg-primary-blue hover-bg-primary-blue-dark text-white px-6 sm:px-8 lg:px-10 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg cursor-pointer w-full sm:w-auto text-center"
+                className="inline-flex items-center justify-center bg-primary-blue hover-bg-primary-blue-dark text-white px-5 sm:px-6 py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 shadow-sm cursor-pointer w-full sm:w-auto text-center"
               >
                 {buttonText}
               </Link>
@@ -134,11 +129,12 @@ export default function Banner({
             {secondButtonText && secondButtonLink && (
               <Link 
                 href={secondButtonLink}
-                className="inline-block bg-accent-coral hover-bg-accent-coral-dark text-white px-6 sm:px-8 lg:px-10 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg cursor-pointer w-full sm:w-auto text-center"
+                className="inline-flex items-center justify-center border border-neutral-gray text-neutral-dark bg-white/70 px-5 sm:px-6 py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 hover:bg-white cursor-pointer w-full sm:w-auto text-center"
               >
                 {secondButtonText}
               </Link>
             )}
+          </div>
           </div>
         </div>
       </div>

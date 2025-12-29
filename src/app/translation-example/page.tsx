@@ -81,7 +81,7 @@ export default function TranslationExample() {
                   key={index}
                   className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"
                 >
-                  <span className="text-green-500">✓</span>
+                  <CheckIcon className="h-4 w-4 text-green-500" />
                   <span className="text-gray-700">{feature}</span>
                 </li>
               ))}

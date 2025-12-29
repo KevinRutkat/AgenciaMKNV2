@@ -1,48 +1,59 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import MapSection from "@/components/MapSection";
 import Banner from "@/components/Banner";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
+import {
+  HomeModernIcon,
+  MapPinIcon,
+  BriefcaseIcon,
+  PhoneIcon,
+  EnvelopeIcon,
+  BuildingOffice2Icon,
+  LanguageIcon,
+} from "@heroicons/react/24/outline";
 
 export default function HomePageClient() {
   const textsToTranslate = [
     // Banner
-    "Agencia Inmobiliaria y Servicios de Traducción en Cabo de Palos",
-    "Gestión inmobiliaria profesional y servicios de traducción especializada en La Manga, Cartagena y Alicante. Tu agencia de confianza para compra, venta, alquiler de propiedades y traducción de todo tipo.",
-    "Ver Propiedades",
-    "Ver Servicios",
+    "Gestión de viviendas y traducciones profesionales en Cabo de Palos",
+    "Inmobiliaria y agencia de traducción en español, alemán e inglés. Te acompañamos en compra, venta, alquiler y trámites de todo tipo.",
+    "Ver propiedades",
+    "Ver servicios",
 
     // Sección: Sobre Agencia MKN
-    "🏠 Sobre Agencia MKN",
-    "Agencia MKN es una inmobiliaria especializada en vivienda a lo largo de Cabo de Palos, Cartagena y Alicante. Nos dedicamos a ayudar y apoyar a nuestros clientes en todas sus gestiones inmobiliarias, desde la búsqueda de la vivienda hasta la firma del contrato, convirtiéndonos en una agencia completa y profesional.",
-    "Ubicados estratégicamente en Cabo de Palos, ofrecemos gestión inmobiliaria integral: compraventa, alquiler, documentación, asesoramiento legal y acompañamiento personalizado durante todo el proceso.",
-    "Como agencia ubicada en una zona multicultural, también destacamos por nuestros servicios de traducción profesional en español, alemán e inglés. Ofrecemos traducción presencial y especializada en gestiones administrativas, cuestiones médicas y procedimientos legales.",
+    "Sobre Agencia MKN",
+    "Somos una agencia especializada en gestión de viviendas y terrenos en Cabo de Palos, Cartagena y Alicante.",
+    "Nos ocupamos de todo el proceso inmobiliario: valoración, promoción, visitas, documentación y acompañamiento hasta la firma.",
+    "También ofrecemos traducción profesional en español, alemán e inglés para trámites inmobiliarios, administrativos y médicos, tanto presenciales como documentales.",
     "Foto de Agencia MKN - Oficina en Cabo de Palos",
 
     // Sección: Nuestra ubicación
-    "📍 Nuestra Ubicación",
-    "📍 Cabo de Palos, Cartagena",
-    "Ubicados en el privilegiado enclave de Cabo de Palos, conocido por sus aguas cristalinas y su proximidad a la Reserva Marina de Islas Hormigas, ofrecemos las mejores oportunidades inmobiliarias en La Manga del Mar Menor y toda la región de Cartagena.",
-    "En Agencia MKN, nuestro mayor valor es la relación de confianza que establecemos con cada cliente. Nos comprometemos a ofrecer una experiencia inigualable, basada en la transparencia, la profesionalidad y el trato cercano que nos caracteriza.",
+    "Nuestra ubicación",
+    "Cabo de Palos, Cartagena",
+    "Ubicados en un enclave privilegiado frente al mar, conectamos propiedades y personas en La Manga, Cartagena y la costa de Alicante.",
+    "La confianza es nuestro valor central: ofrecemos un trato cercano, transparente y profesional en cada gestión.",
+    "Trabajamos con viviendas en Cabo de Palos, La Manga del Mar Menor, Cartagena y la Costa Calida.",
+    "Atendemos clientes nacionales e internacionales en la Region de Murcia y Alicante.",
     "Dirección:",
     "Teléfono:",
     "Email:",
 
     // Sección: Nuestros servicios
-    "🛠️ Nuestros Servicios",
-    "Gestión Inmobiliaria Integral",
-    "Gestión completa de compraventa y alquiler. Nos encargamos de todos los trámites, documentación, asesoramiento legal y acompañamiento personalizado durante todo el proceso.",
-    "Servicios de Traducción",
-    "Traducción profesional en español, alemán e inglés. Ofrecemos traducción en gestiones oficiales como Hacienda o Ayuntamientos, servicios notariales, traducción médica y hospitalaria, así como traducción presencial en reuniones y documentos inmobiliarios.",
+    "Nuestros servicios",
+    "Gestión inmobiliaria",
+    "Venta, alquiler y asesoramiento legal con seguimiento completo y personalizado.",
+    "Traducción e interpretación",
+    "Traducciones de todo tipo en español, alemán e inglés: inmobiliarias, médicas, administrativas y legales.",
     "¿Necesitas más información sobre nuestros servicios?",
-    "Ver Servicios",
+    "Ver servicios",
 
     // CTA final
-    "¿Quieres contactar con nosotros?",
-    "Estamos aquí para ayudarte con tus necesidades inmobiliarias y de traducción.",
-    "Contáctanos",
+    "¿Hablamos?",
+    "Estamos aquí para ayudarte con viviendas, terrenos o traducciones profesionales.",
+    "Contactar",
   ];
 
   const [
@@ -64,6 +75,8 @@ export default function HomePageClient() {
     locationSubtitle,
     locationP1,
     locationP2,
+    locationP3,
+    locationP4,
     addressLabel,
     phoneLabel,
     emailLabel,
@@ -97,28 +110,31 @@ export default function HomePageClient() {
       />
 
       {/* Contenido principal */}
-      <main className="px-4 sm:px-6 md:px-8 py-8 sm:py-12">
+      <main className="px-4 sm:px-6 md:px-8 py-10 sm:py-14">
         <div className="max-w-7xl mx-auto">
           {/* Sección: Quiénes somos */}
-          <section className="mb-12 sm:mb-16">
+          <section className="mb-16 sm:mb-20">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">
-                  {aboutTitle}
+                <h2 className="text-2xl sm:text-3xl font-semibold text-neutral-dark mb-4 font-display">
+                  <span className="inline-flex items-center gap-2">
+                    <HomeModernIcon className="h-6 w-6 text-primary-blue" />
+                    {aboutTitle}
+                  </span>
                 </h2>
-                <p className="text-base sm:text-lg text-gray-700 mb-3 leading-relaxed">
+                <p className="text-base sm:text-lg text-neutral-muted mb-3 leading-relaxed">
                   {aboutP1}
                 </p>
-                <p className="text-base sm:text-lg text-gray-700 mb-3 leading-relaxed">
+                <p className="text-base sm:text-lg text-neutral-muted mb-3 leading-relaxed">
                   {aboutP2}
                 </p>
-                <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
+                <p className="text-base sm:text-lg text-neutral-muted leading-relaxed">
                   {aboutP3}
                 </p>
               </div>
-              <div className="relative h-80 sm:h-96 rounded-xl overflow-hidden shadow-xl">
+              <div className="relative h-80 sm:h-96 rounded-2xl overflow-hidden border border-neutral-gray shadow-sm">
                 <Image
-                  src="/FotoLocal.jpg"
+                  src="/FotoLocal.png"
                   alt={officeAlt}
                   fill
                   className="object-cover"
@@ -129,45 +145,54 @@ export default function HomePageClient() {
           </section>
 
           {/* Sección: Nuestra ubicación */}
-          <section className="mb-12 sm:mb-16">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 sm:p-8 shadow-lg">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6 sm:mb-8 text-center">
-                {locationSectionTitle}
+          <section className="mb-16 sm:mb-20">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-neutral-gray shadow-sm">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-neutral-dark mb-6 sm:mb-8 text-center font-display">
+                <span className="inline-flex items-center gap-2">
+                  <MapPinIcon className="h-7 w-7 text-primary-blue" />
+                  {locationSectionTitle}
+                </span>
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Texto de ubicación */}
                 <div>
-                  <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                  <h3 className="text-xl sm:text-2xl font-semibold text-neutral-dark mb-4">
                     {locationSubtitle}
                   </h3>
-                  <p className="text-gray-700 mb-4 leading-relaxed">
+                  <p className="text-neutral-muted mb-4 leading-relaxed">
                     {locationP1}
                   </p>
-                  <p className="text-gray-700 mb-4 leading-relaxed">
+                  <p className="text-neutral-muted mb-4 leading-relaxed">
                     {locationP2}
                   </p>
-                  <div className="space-y-2 text-gray-700">
+                  <p className="text-neutral-muted mb-4 leading-relaxed">
+                    {locationP3}
+                  </p>
+                  <p className="text-neutral-muted mb-4 leading-relaxed">
+                    {locationP4}
+                  </p>
+                  <div className="space-y-2 text-neutral-muted">
                     <p className="flex items-center">
-                      <span className="mr-3">📍</span>
-                      <strong className="mr-2">{addressLabel}</strong>
+                      <MapPinIcon className="h-5 w-5 text-primary-blue mr-3" />
+                      <strong className="mr-2 text-neutral-dark">{addressLabel}</strong>
                       Ctra. a Cabo de Palos, Km. 25, 30370 Cabo de Palos, Murcia
                     </p>
                     <p className="flex items-center">
-                      <span className="mr-3">📞</span>
-                      <strong className="mr-2">{phoneLabel}</strong>
+                      <PhoneIcon className="h-5 w-5 text-primary-blue mr-3" />
+                      <strong className="mr-2 text-neutral-dark">{phoneLabel}</strong>
                       <a
                         href="tel:+34634737949"
-                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                        className="text-primary-blue hover-text-primary-blue-dark transition-colors"
                       >
                         +34 634 73 79 49
                       </a>
                     </p>
                     <p className="flex items-center">
-                      <span className="mr-3">✉️</span>
-                      <strong className="mr-2">{emailLabel}</strong>
+                      <EnvelopeIcon className="h-5 w-5 text-primary-blue mr-3" />
+                      <strong className="mr-2 text-neutral-dark">{emailLabel}</strong>
                       <a
                         href="mailto:marionrutkat@gmail.com"
-                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                        className="text-primary-blue hover-text-primary-blue-dark transition-colors"
                       >
                         marionrutkat@gmail.com
                       </a>
@@ -183,54 +208,55 @@ export default function HomePageClient() {
 
           {/* Sección: Nuestros servicios */}
           <section className="mb-16">
-            <h2 className="text-4xl font-bold text-gray-800 mb-8 text-center">
-              {servicesSectionTitle}
+            <h2 className="text-3xl sm:text-4xl font-semibold text-neutral-dark mb-8 text-center font-display">
+              <span className="inline-flex items-center gap-2">
+                <BriefcaseIcon className="h-7 w-7 text-primary-blue" />
+                {servicesSectionTitle}
+              </span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              <div className="bg-white rounded-xl p-6 shadow-lg text-center transform hover:scale-105 transition-all duration-300 border border-gray-200">
-                <div className="text-4xl mb-4">🏡</div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-3">
+              <div className="bg-white rounded-2xl p-6 border border-neutral-gray shadow-sm text-center">
+                <BuildingOffice2Icon className="h-10 w-10 text-primary-blue mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-neutral-dark mb-3">
                   {servicesCard1Title}
                 </h3>
-                <p className="text-gray-700">{servicesCard1Desc}</p>
+                <p className="text-neutral-muted">{servicesCard1Desc}</p>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-lg text-center transform hover:scale-105 transition-all duration-300 border border-gray-200">
-                <div className="text-4xl mb-4">🌐</div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-3">
+              <div className="bg-white rounded-2xl p-6 border border-neutral-gray shadow-sm text-center">
+                <LanguageIcon className="h-10 w-10 text-primary-blue mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-neutral-dark mb-3">
                   {servicesCard2Title}
                 </h3>
-                <p className="text-gray-700">{servicesCard2Desc}</p>
+                <p className="text-neutral-muted">{servicesCard2Desc}</p>
               </div>
             </div>
 
             {/* Call to action Servicios */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 text-center border border-blue-100 shadow-sm">
-              <p className="text-gray-700 mb-4 text-lg">
+            <div className="bg-white/80 rounded-2xl p-6 text-center border border-neutral-gray shadow-sm">
+              <p className="text-neutral-muted mb-4 text-lg">
                 {servicesCtaText}
               </p>
               <Link
                 href="/servicios"
-                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold transition-all duration-300 hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5"
+                className="inline-flex items-center px-6 py-3 bg-primary-blue text-white rounded-full font-semibold transition-all duration-300 hover-bg-primary-blue-dark"
               >
-                <span className="mr-2">📄</span>
                 {servicesCtaButtonText}
-                <span className="ml-2">➡️</span>
               </Link>
             </div>
           </section>
 
           {/* Call to Action final */}
           <section className="text-center">
-            <div className="bg-kehre-gradient rounded-xl p-8 text-white shadow-xl">
-              <h2 className="text-3xl font-bold mb-4">
+            <div className="bg-primary-blue rounded-2xl p-8 text-white shadow-sm">
+              <h2 className="text-3xl font-semibold mb-4 font-display">
                 {finalCtaTitle}
               </h2>
-              <p className="text-xl mb-6 opacity-90">
+              <p className="text-lg mb-6 opacity-90">
                 {finalCtaText}
               </p>
               <Link
                 href="/contacto"
-                className="inline-block bg-white text-blue-800 px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover:bg-gray-100"
+                className="inline-block bg-white text-primary-blue px-8 py-3 rounded-full font-semibold transition-all duration-300 hover-bg-neutral-gray"
               >
                 {finalCtaButtonText}
               </Link>

@@ -4,6 +4,15 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Banner from '@/components/Banner';
+import {
+  LockClosedIcon,
+  BuildingOffice2Icon,
+  EnvelopeIcon,
+  KeyIcon,
+  ExclamationTriangleIcon,
+  ArrowPathIcon,
+  ArrowRightOnRectangleIcon,
+} from '@heroicons/react/24/outline';
 
 export default function SessionPage() {
   const { signIn, user, loading } = useAuth();
@@ -65,7 +74,7 @@ export default function SessionPage() {
     <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white">
       {/* Banner Component */}
       <Banner 
-        title="🔐 Acceso Administrador"
+        title="Acceso Administrador"
         subtitle="Inicia sesión para gestionar las propiedades de la web"
         height="small"
         showCarousel={false}
@@ -75,7 +84,10 @@ export default function SessionPage() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-teal-800 mb-2">
-              🏢 Portal de Administración
+              <span className="inline-flex items-center gap-2 justify-center">
+                <BuildingOffice2Icon className="h-6 w-6 text-teal-700" />
+                Portal de Administración
+              </span>
             </h2>
             <p className="text-gray-600">
               Accede con tus credenciales para gestionar las propiedades
@@ -86,7 +98,10 @@ export default function SessionPage() {
             {/* Campo Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                📧 Correo electrónico
+                <span className="inline-flex items-center gap-2">
+                  <EnvelopeIcon className="h-4 w-4 text-gray-500" />
+                  Correo electrónico
+                </span>
               </label>
               <input
                 type="email"
@@ -103,7 +118,10 @@ export default function SessionPage() {
             {/* Campo Contraseña */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                🔑 Contraseña
+                <span className="inline-flex items-center gap-2">
+                  <KeyIcon className="h-4 w-4 text-gray-500" />
+                  Contraseña
+                </span>
               </label>
               <input
                 type="password"
@@ -120,7 +138,10 @@ export default function SessionPage() {
             {/* Mensaje de error */}
             {error && (
               <div className="p-3 rounded-lg bg-red-100 text-red-700 border border-red-200 text-sm">
-                ❌ {error}
+                <span className="inline-flex items-center gap-2">
+                  <ExclamationTriangleIcon className="h-4 w-4" />
+                  {error}
+                </span>
               </div>
             )}
 
@@ -130,13 +151,26 @@ export default function SessionPage() {
               disabled={isSubmitting}
               className="w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 px-6 rounded-lg font-semibold hover:from-teal-700 hover:to-teal-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
             >
-              {isSubmitting ? '🔄 Iniciando sesión...' : '🚪 Iniciar sesión'}
+              {isSubmitting ? (
+                <span className="inline-flex items-center gap-2">
+                  <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                  Iniciando sesión...
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-2">
+                  <ArrowRightOnRectangleIcon className="h-4 w-4" />
+                  Iniciar sesión
+                </span>
+              )}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
-              🔒 Esta página es solo para administradores
+              <span className="inline-flex items-center gap-2">
+                <LockClosedIcon className="h-4 w-4" />
+                Esta página es solo para administradores
+              </span>
             </p>
           </div>
         </div>

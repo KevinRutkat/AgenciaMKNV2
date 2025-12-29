@@ -1,16 +1,22 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Banner from "@/components/Banner";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
+import {
+  EnvelopeIcon,
+  PhoneIcon,
+  MapPinIcon,
+  ClockIcon,
+  MapIcon,
+  ArrowTopRightOnSquareIcon,
+} from "@heroicons/react/24/outline";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 
 export default function ContactoPage() {
-  // Google Maps desde contexto global
   const { isLoaded, loadError } = useGoogleMaps();
 
-  // Coordenadas de la Agencia MKN en Cabo de Palos
   const agencyLocation = {
     lat: 37.627368,
     lng: -0.710618,
@@ -41,29 +47,29 @@ export default function ContactoPage() {
 
   const textsToTranslate = [
     // Banner
-    "📞 Contáctanos",
-    "Estamos aquí para ayudarte a encontrar la propiedad de tus sueños. No dudes en contactarnos para cualquier consulta.",
+    "Contáctanos",
+    "Estamos aquí para ayudarte con viviendas, terrenos o traducciones profesionales.",
 
     // Formulario
-    "📝 Envíanos un mensaje",
-    "Y nos pondremos en contacto con usted lo antes posible",
-    "👤 Nombre completo *",
+    "Envíanos un mensaje",
+    "Te responderemos lo antes posible",
+    "Nombre completo *",
     "Ingresa tu nombre completo",
-    "📧 Correo electrónico *",
+    "Correo electrónico *",
     "tu@email.com",
-    "📱 Número de teléfono *",
+    "Teléfono *",
     "+34 123 456 789",
-    "💬 Motivo del contacto *",
-    "Describe el motivo de tu contacto (compra, venta, alquiler, valoración, etc.)",
-    "📤 Enviando...",
-    "📩 Enviar mensaje",
+    "Motivo del contacto *",
+    "Cuéntanos tu consulta (compra, venta, alquiler, traducción, etc.)",
+    "Enviando…",
+    "Enviar mensaje",
 
     // Mensajes de estado
     "¡Gracias por contactarnos! Tu mensaje ha sido enviado y te responderemos pronto.",
     "Error al enviar el mensaje. Por favor intenta de nuevo.",
 
     // Información de contacto
-    "🏢 Nuestra oficina",
+    "Nuestra oficina",
     "Correo electrónico",
     "Teléfono",
     "Dirección",
@@ -71,20 +77,19 @@ export default function ContactoPage() {
     "30370 Cabo de Palos",
     "Murcia, España",
     "Horario de atención",
-    "• Trámites fuera de Oficina: 9:00 - 12:00",
-    "• Lunes a Viernes: 12:00 - 16:00",
-    "• Sábados: 11:00 - 14:00",
-    "• Domingo: Descanso",
+    "Trámites fuera de oficina: 9:00 - 12:00",
+    "Lunes a viernes: 12:00 - 16:00",
+    "Sábados: 11:00 - 14:00",
+    "Domingo: Descanso",
 
     // Mapa
-    "🗺️ Ubicación",
+    "Ubicación",
     "Error cargando el mapa",
-    "Cargando mapa...",
-    "🔗 Ver en Google Maps",
+    "Cargando mapa…",
+    "Ver en Google Maps",
   ];
 
   const [
-    // Banner
     bannerTitle,
     bannerSubtitle,
 
@@ -160,7 +165,7 @@ export default function ContactoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-teal-100">
+    <div className="min-h-screen bg-kehre-gradient-light">
       <Banner
         title={bannerTitle}
         subtitle={bannerSubtitle}
@@ -171,15 +176,20 @@ export default function ContactoPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           {/* Formulario */}
-          <section aria-label="Formulario de contacto" className="bg-white rounded-2xl shadow-xl p-6 h-fit">
-            <h2 className="text-2xl font-bold text-teal-800 mb-2">{formTitle}</h2>
-            <p className="text-gray-600 text-sm mb-4">{formSubtitle}</p>
+          <section
+            aria-label="Formulario de contacto"
+            className="bg-white rounded-2xl border border-neutral-gray shadow-sm p-6 h-fit"
+          >
+            <h2 className="text-2xl font-semibold text-neutral-dark mb-2">
+              {formTitle}
+            </h2>
+            <p className="text-neutral-muted text-sm mb-4">{formSubtitle}</p>
 
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
                 <label
                   htmlFor="nombre"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-neutral-dark mb-1"
                 >
                   {nombreLabel}
                 </label>
@@ -190,7 +200,7 @@ export default function ContactoPage() {
                   value={formData.nombre}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
+                  className="w-full px-3 py-2 border border-neutral-gray rounded-lg focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                   placeholder={nombrePlaceholder}
                 />
               </div>
@@ -198,7 +208,7 @@ export default function ContactoPage() {
               <div>
                 <label
                   htmlFor="correo"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-neutral-dark mb-1"
                 >
                   {correoLabel}
                 </label>
@@ -209,7 +219,7 @@ export default function ContactoPage() {
                   value={formData.correo}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
+                  className="w-full px-3 py-2 border border-neutral-gray rounded-lg focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                   placeholder={correoPlaceholder}
                 />
               </div>
@@ -217,7 +227,7 @@ export default function ContactoPage() {
               <div>
                 <label
                   htmlFor="telefono"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-neutral-dark mb-1"
                 >
                   {telefonoLabel}
                 </label>
@@ -228,7 +238,7 @@ export default function ContactoPage() {
                   value={formData.telefono}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
+                  className="w-full px-3 py-2 border border-neutral-gray rounded-lg focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                   placeholder={telefonoPlaceholder}
                 />
               </div>
@@ -236,7 +246,7 @@ export default function ContactoPage() {
               <div>
                 <label
                   htmlFor="motivo"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-neutral-dark mb-1"
                 >
                   {motivoLabel}
                 </label>
@@ -247,7 +257,7 @@ export default function ContactoPage() {
                   onChange={handleInputChange}
                   required
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors resize-none"
+                  className="w-full px-3 py-2 border border-neutral-gray rounded-lg focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors resize-none"
                   placeholder={motivoPlaceholder}
                 />
               </div>
@@ -256,7 +266,7 @@ export default function ContactoPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-2.5 px-6 rounded-lg font-semibold hover:from-teal-700 hover:to-teal-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
+                  className="w-full bg-primary-blue text-white py-2.5 px-6 rounded-full font-semibold hover-bg-primary-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   {isSubmitting ? enviandoText : enviarText}
                 </button>
@@ -264,10 +274,10 @@ export default function ContactoPage() {
 
               {submitMessage && (
                 <div
-                  className={`p-3 rounded-lg text-center text-sm ${
+                  className={`p-3 rounded-lg text-center text-sm border ${
                     submitMessage.includes("Error")
-                      ? "bg-red-100 text-red-700 border border-red-200"
-                      : "bg-green-100 text-green-700 border border-green-200"
+                      ? "bg-red-50 text-red-700 border-red-200"
+                      : "bg-green-50 text-green-700 border-green-200"
                   }`}
                 >
                   {submitMessage}
@@ -280,69 +290,63 @@ export default function ContactoPage() {
           <div className="space-y-6">
             <section
               aria-label="Información de contacto"
-              className="bg-white rounded-2xl shadow-xl p-6"
+              className="bg-white rounded-2xl border border-neutral-gray shadow-sm p-6"
             >
-              <h2 className="text-2xl font-bold text-teal-800 mb-4">
+              <h2 className="text-2xl font-semibold text-neutral-dark mb-4">
                 {oficinaTitle}
               </h2>
 
               <div className="space-y-6">
-                <div className="flex items-start">
-                  <div className="w-8 text-xl flex-shrink-0">📧</div>
+                <div className="flex items-start gap-2">
+                  <EnvelopeIcon className="h-5 w-5 text-neutral-muted flex-shrink-0" />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-sm mb-1">
+                    <h3 className="font-semibold text-neutral-dark text-sm mb-1">
                       {correoInfoLabel}
                     </h3>
-                    <p className="text-gray-600 text-sm">
-                      <a
-                        href="mailto:marionrutkat@gmail.com"
-                        className="hover:underline"
-                      >
+                    <p className="text-neutral-muted text-sm">
+                      <a href="mailto:marionrutkat@gmail.com" className="hover:underline">
                         marionrutkat@gmail.com
                       </a>
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start">
-                  <div className="w-8 text-xl flex-shrink-0">📞</div>
+                <div className="flex items-start gap-2">
+                  <PhoneIcon className="h-5 w-5 text-neutral-muted flex-shrink-0" />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-sm mb-1">
+                    <h3 className="font-semibold text-neutral-dark text-sm mb-1">
                       {telefonoInfoLabel}
                     </h3>
-                    <p className="text-gray-600 text-sm">
-                      <a
-                        href="tel:+34634737949"
-                        className="hover:underline"
-                      >
+                    <p className="text-neutral-muted text-sm">
+                      <a href="tel:+34634737949" className="hover:underline">
                         +34 634 73 79 49
                       </a>
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start">
-                  <div className="w-8 text-xl flex-shrink-0">📍</div>
+                <div className="flex items-start gap-2">
+                  <MapPinIcon className="h-5 w-5 text-neutral-muted flex-shrink-0" />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-sm mb-1">
+                    <h3 className="font-semibold text-neutral-dark text-sm mb-1">
                       {direccionLabel}
                     </h3>
-                    <p className="text-gray-600 text-sm">{direccion1}</p>
-                    <p className="text-gray-600 text-sm">{direccion2}</p>
-                    <p className="text-gray-600 text-sm">{direccion3}</p>
+                    <p className="text-neutral-muted text-sm">{direccion1}</p>
+                    <p className="text-neutral-muted text-sm">{direccion2}</p>
+                    <p className="text-neutral-muted text-sm">{direccion3}</p>
                   </div>
                 </div>
 
-                <div className="flex items-start">
-                  <div className="w-8 text-xl flex-shrink-0">🕒</div>
+                <div className="flex items-start gap-2">
+                  <ClockIcon className="h-5 w-5 text-neutral-muted flex-shrink-0" />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-sm mb-1">
+                    <h3 className="font-semibold text-neutral-dark text-sm mb-1">
                       {horarioLabel}
                     </h3>
-                    <p className="text-gray-600 text-sm">{horario1}</p>
-                    <p className="text-gray-600 text-sm">{horario2}</p>
-                    <p className="text-gray-600 text-sm">{horario3}</p>
-                    <p className="text-gray-600 text-sm">{horario4}</p>
+                    <p className="text-neutral-muted text-sm">{horario1}</p>
+                    <p className="text-neutral-muted text-sm">{horario2}</p>
+                    <p className="text-neutral-muted text-sm">{horario3}</p>
+                    <p className="text-neutral-muted text-sm">{horario4}</p>
                   </div>
                 </div>
               </div>
@@ -350,13 +354,13 @@ export default function ContactoPage() {
 
             <section
               aria-label="Mapa de ubicación"
-              className="bg-white rounded-2xl shadow-xl p-6"
+              className="bg-white rounded-2xl border border-neutral-gray shadow-sm p-6"
             >
-              <h2 className="text-2xl font-bold text-teal-800 mb-4">
+              <h2 className="text-2xl font-semibold text-neutral-dark mb-4">
                 {ubicacionTitle}
               </h2>
 
-              <div className="relative h-64 rounded-lg overflow-hidden shadow-md">
+              <div className="relative h-64 rounded-lg overflow-hidden border border-neutral-gray">
                 {isLoaded && !loadError ? (
                   <GoogleMap
                     mapContainerStyle={{ height: "100%", width: "100%" }}
@@ -377,15 +381,13 @@ export default function ContactoPage() {
                     />
                   </GoogleMap>
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-teal-100 to-blue-200 flex items-center justify-center">
-                    <div className="text-center text-teal-700">
-                      <div className="text-3xl mb-4">🗺️</div>
+                  <div className="w-full h-full bg-neutral-light flex items-center justify-center">
+                    <div className="text-center text-neutral-muted">
+                      <MapIcon className="h-10 w-10 text-primary-blue mx-auto mb-4" />
                       <p className="text-lg font-semibold">
                         {loadError ? errorCargandoMapa : cargandoMapa}
                       </p>
-                      <p className="text-sm opacity-70">
-                        Cabo de Palos, Cartagena
-                      </p>
+                      <p className="text-sm opacity-70">Cabo de Palos, Cartagena</p>
                     </div>
                   </div>
                 )}
@@ -396,8 +398,9 @@ export default function ContactoPage() {
                   href="https://maps.google.com/?q=Agencia+MKN+Cabo+de+Palos+Murcia"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-3 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors text-sm"
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-primary-blue text-white rounded-full hover-bg-primary-blue-dark transition-colors text-sm"
                 >
+                  <ArrowTopRightOnSquareIcon className="h-4 w-4" />
                   {mapaLink}
                 </a>
               </div>

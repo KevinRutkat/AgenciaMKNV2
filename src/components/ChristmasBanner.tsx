@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react';
+import { SparklesIcon } from '@heroicons/react/24/solid';
 
 export default function ChristmasBanner() {
   const [showText, setShowText] = useState(false);
@@ -40,7 +41,7 @@ export default function ChristmasBanner() {
       </div>
       
       <div className="relative max-w-7xl mx-auto px-4 flex items-center justify-center gap-1 z-10">
-        <span className="text-3xl animate-swing emoji-fade">🎄</span>
+        <SparklesIcon className="h-7 w-7 text-white animate-swing icon-fade" />
 
         {/* Texto en SVG con animación de escritura */}
         {showText && (
@@ -64,7 +65,7 @@ export default function ChristmasBanner() {
           </svg>
         )}
 
-        <span className="text-3xl animate-bounce-slow emoji-fade">🎅</span>
+        <SparklesIcon className="h-7 w-7 text-white animate-bounce-slow icon-fade" />
       </div>
 
       <style jsx>{`
@@ -124,17 +125,17 @@ export default function ChristmasBanner() {
           display: inline-block;
         }
 
-        .emoji-fade {
+        .icon-fade {
           opacity: 0;
           animation-fill-mode: forwards;
           visibility: hidden;
         }
 
-        .emoji-fade:first-child {
+        .icon-fade:first-child {
           animation: fadeIn 0.4s ease-out 0.2s forwards, swing 3s ease-in-out 0.6s infinite;
         }
 
-        .emoji-fade:last-child {
+        .icon-fade:last-child {
           animation: fadeIn 0.4s ease-out 0.2s forwards, bounce-slow 2s ease-in-out 0.6s infinite;
         }
 

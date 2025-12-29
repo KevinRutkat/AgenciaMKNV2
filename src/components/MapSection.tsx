@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import { GoogleMap, Marker } from "@react-google-maps/api";
+import { MapIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 
 const agencyLocation = {
@@ -13,7 +14,7 @@ export default function MapSection() {
 
   return (
     <div>
-      <div className="relative h-80 lg:h-96 rounded-lg overflow-hidden shadow-md">
+      <div className="relative h-80 lg:h-96 rounded-2xl overflow-hidden border border-neutral-gray shadow-sm">
         {isLoaded && !loadError ? (
           <GoogleMap
             mapContainerStyle={{ height: "100%", width: "100%" }}
@@ -34,10 +35,10 @@ export default function MapSection() {
             />
           </GoogleMap>
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-            <div className="text-center text-gray-700">
-              <div className="text-5xl mb-4">🗺️</div>
-              <p className="text-lg font-semibold">
+          <div className="w-full h-full bg-neutral-light flex items-center justify-center">
+            <div className="text-center text-neutral-muted">
+              <MapIcon className="h-10 w-10 text-primary-blue mx-auto mb-4" />
+              <p className="text-base font-semibold">
                 {loadError ? "Error cargando el mapa" : "Cargando mapa..."}
               </p>
               <p className="text-sm opacity-70">Cabo de Palos, Cartagena</p>
@@ -51,9 +52,9 @@ export default function MapSection() {
           href="https://maps.google.com/?q=Agencia+MKN+Cabo+de+Palos+Murcia"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-blue text-white rounded-full hover-bg-primary-blue-dark transition-colors text-sm font-medium"
         >
-          🔗 Ver en Google Maps
+          <ArrowTopRightOnSquareIcon className="h-4 w-4" /> Ver en Google Maps
         </a>
       </div>
     </div>

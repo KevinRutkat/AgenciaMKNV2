@@ -2,6 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import {
+  BeakerIcon,
+  ArrowPathIcon,
+  PaperAirplaneIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+} from '@heroicons/react/24/outline';
 
 export default function TestTranslationPage() {
   const [result, setResult] = useState('');
@@ -11,7 +18,7 @@ export default function TestTranslationPage() {
   const testTranslation = async () => {
     setLoading(true);
     setError('');
-    setResult('');
+    setResult(`Traduccion exitosa: "${data.translatedText}"`);
 
     try {
       const response = await fetch('/api/translate', {
@@ -28,12 +35,12 @@ export default function TestTranslationPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setResult(`✅ Traducción exitosa: "${data.translatedText}"`);
+        setResult(` Traducción exitosa: "${data.translatedText}"`);
       } else {
-        setError(`❌ Error: ${data.error || 'Error desconocido'}`);
+        setError(`Error: ${data.error || 'Error desconocido'}`);
       }
     } catch (err) {
-      setError(`❌ Error de conexión: ${err instanceof Error ? err.message : 'Error desconocido'}`);
+      setError(`Error de conexion: ${err instanceof Error ? err.message : 'Error desconocido'}`);
     } finally {
       setLoading(false);
     }
@@ -43,7 +50,7 @@ export default function TestTranslationPage() {
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-center mb-8">
-          🧪 Prueba de Traducción
+           Prueba de Traducción
         </h1>
 
         <div className="bg-white rounded-lg shadow-sm border p-8">
@@ -67,7 +74,7 @@ export default function TestTranslationPage() {
             disabled={loading}
             className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {loading ? '🔄 Traduciendo...' : '🚀 Probar Traducción'}
+            {loading ? ' Traduciendo...' : ' Probar Traducción'}
           </button>
 
           {result && (
@@ -96,7 +103,7 @@ export default function TestTranslationPage() {
           <div className="mt-8 p-4 bg-gray-50 rounded-lg">
             <h3 className="font-semibold text-gray-800 mb-2">Configuración actual:</h3>
             <div className="text-sm text-gray-600 space-y-1">
-              <p>• API Key configurada: {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? '✅ Sí' : '❌ No'}</p>
+              <p>• API Key configurada: {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? ' Sí' : ' No'}</p>
               <p>• Endpoint de traducción: /api/translate</p>
               <p>• Método: POST</p>
             </div>

@@ -12,7 +12,7 @@ interface Snowflake {
   char: string;
 }
 
-const SNOW_CHARS = ['❄', '❅', '❆'];
+const SNOW_CHARS = ['*', '+', '.'];
 
 // Distribución deseada:
 // ~45% izquierda (0–20%)

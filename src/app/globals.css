@@ -1,26 +1,28 @@
 @import "tailwindcss";
 @import "flag-icons/css/flag-icons.min.css";
 
-/* Variables de colores personalizadas basadas en la paleta KEHRE-WIEDER */
+/* Variables de colores personalizadas para un look minimalista */
 :root {
-  /* Colores principales de la paleta */
-  --primary-blue: #4FAACC;          /* Azul turquesa principal */
-  --primary-blue-light: #7BC4DB;    /* Azul turquesa claro */
-  --primary-blue-dark: #2E7A96;     /* Azul turquesa oscuro */
-  
-  --primary-green: #5CB85C;         /* Verde de la palmera */
-  --primary-green-light: #7FCC7F;   /* Verde claro */
-  --primary-green-dark: #4A904A;    /* Verde oscuro */
-  
-  --accent-coral: #F85555;          /* Coral/rojo del botón */
-  --accent-coral-light: #FF7676;    /* Coral claro */
-  --accent-coral-dark: #D73A3A;     /* Coral oscuro */
-  
-  --neutral-white: #FFFFFF;         /* Blanco puro */
-  --neutral-light: #F8FFFE;         /* Blanco con tinte azulado */
-  --neutral-gray: #E8F4F8;          /* Gris azulado suave */
-  --neutral-dark: #2C5F71;          /* Azul grisáceo oscuro */
+  /* Colores principales */
+  --primary-blue: #2f6f72;          /* Verde-azulado */
+  --primary-blue-light: #dbe6e6;    /* Niebla suave */
+  --primary-blue-dark: #1f585a;     /* Mar profundo */
+
+  --primary-green: #4f7f67;         /* Verde salvia */
+  --primary-green-light: #d6e5dc;   /* Salvia claro */
+  --primary-green-dark: #3b6250;    /* Salvia oscuro */
+
+  --accent-coral: #c0703a;          /* Terracota */
+  --accent-coral-light: #f0dccb;    /* Terracota claro */
+  --accent-coral-dark: #9f5b2b;     /* Terracota oscuro */
+
+  --neutral-white: #ffffff;         /* Blanco puro */
+  --neutral-light: #f7f5f2;         /* Papel */
+  --neutral-gray: #e5e0d9;          /* Lineas suaves */
+  --neutral-dark: #1f1f1b;          /* Tinta */
+  --neutral-muted: #5b5a55;         /* Tinta suave */
 }
+
 
 /* Clases de utilidad personalizadas con !important para asegurar que se apliquen */
 .bg-primary-blue { background-color: var(--primary-blue) !important; }
@@ -51,6 +53,12 @@
 .text-accent-coral-dark { color: var(--accent-coral-dark) !important; }
 
 .text-neutral-dark { color: var(--neutral-dark) !important; }
+.text-neutral-muted { color: var(--neutral-muted) !important; }
+
+.bg-paper { background-color: var(--neutral-light) !important; }
+.bg-surface { background-color: var(--neutral-white) !important; }
+.bg-accent-soft { background-color: var(--primary-blue-light) !important; }
+.border-line { border-color: var(--neutral-gray) !important; }
 
 .border-primary-blue { border-color: var(--primary-blue) !important; }
 .border-primary-green { border-color: var(--primary-green) !important; }
@@ -64,15 +72,17 @@
 .hover-bg-neutral-gray:hover { background-color: var(--neutral-gray) !important; }
 
 .hover-text-primary-blue:hover { color: var(--primary-blue) !important; }
+.hover-text-primary-blue-dark:hover { color: var(--primary-blue-dark) !important; }
 .hover-text-accent-coral:hover { color: var(--accent-coral) !important; }
+.hover-text-neutral-dark:hover { color: var(--neutral-dark) !important; }
 
 /* Gradientes personalizados */
 .bg-kehre-gradient {
-  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-coral) 100%);
+  background: linear-gradient(135deg, rgba(47, 111, 114, 0.95) 0%, rgba(192, 112, 58, 0.92) 100%);
 }
 
 .bg-kehre-gradient-light {
-  background: linear-gradient(180deg, var(--neutral-light) 0%, var(--neutral-gray) 50%, var(--primary-blue-light) 100%);
+  background: linear-gradient(180deg, #fbfaf8 0%, #f4f1ec 55%, #eef2f0 100%);
 }
 
 /* Utilidades responsive adicionales */
@@ -139,7 +149,22 @@
 body {
   margin: 0;
   padding: 0;
+  color: var(--neutral-dark);
   background-color: var(--neutral-light);
+  background-image:
+    radial-gradient(1200px 600px at 10% -10%, rgba(47, 111, 114, 0.08), transparent 55%),
+    radial-gradient(900px 500px at 90% 10%, rgba(192, 112, 58, 0.08), transparent 50%),
+    linear-gradient(180deg, #fbfaf8 0%, #f7f5f2 100%);
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
 }
 
 /* Estilos personalizados para el banner */

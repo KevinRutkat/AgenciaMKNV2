@@ -1,7 +1,7 @@
-// Importamos el tipo Metadata de Next.js para definir metadatos SEO
+﻿// Importamos el tipo Metadata de Next.js para definir metadatos SEO
 import type { Metadata } from "next";
-// Importamos la fuente Inter de Google Fonts
-import { Inter } from "next/font/google";
+// Importamos tipografías de Google Fonts
+import { Work_Sans } from "next/font/google";
 // Importamos el componente Header personalizado
 import Header from "@/components/Header";
 // Importamos el componente Footer personalizado
@@ -13,14 +13,20 @@ import FloatingLanguageSelector from "@/components/FloatingLanguageSelector";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { GoogleMapsProvider } from "@/contexts/GoogleMapsContext";
-import Snowfall from "@/components/Snowfall";
 // Estilos globales
 import "./globals.css";
 
-// Configuración de la fuente Inter
-const inter = Inter({
+// Configuración de fuentes
+const workSans = Work_Sans({
   subsets: ["latin"],
   display: "swap",
+  variable: "--font-sans",
+});
+
+const workSansDisplay = Work_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-serif",
 });
 
 // JSON-LD para estructura WebSite
@@ -39,7 +45,7 @@ const localBusinessSchema = {
   "@type": "RealEstateAgent",
   name: "Agencia MKN",
   description:
-    "Agencia inmobiliaria y servicios de traduccion en Cabo de Palos, Cartagena y La Manga.",
+    "Agencia inmobiliaria y servicios de traducción en Cabo de Palos, Cartagena y La Manga.",
   priceRange: "$$$",
   image: "https://www.agenciamkn.com/LogoPNG.png",
   url: "https://www.agenciamkn.com",
@@ -182,11 +188,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
       </head>
-      <body className={`${inter.className} antialiased`}>
+      <body className={`${workSans.variable} ${workSansDisplay.variable} antialiased`}>
         <LanguageProvider>
           <AuthProvider>
             <GoogleMapsProvider>
-              <Snowfall/>
               <TranslationLoadingIndicator />
               <Header />
               {children}

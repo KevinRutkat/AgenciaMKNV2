@@ -4,14 +4,14 @@ import React, { createContext, useContext, useState, useCallback, useEffect, use
 
 // Idiomas soportados
 export const SUPPORTED_LANGUAGES = {
-  es: { name: 'Español', flag: '🇪🇸' },
-  en: { name: 'English', flag: '🇬🇧' },
-  fr: { name: 'Français', flag: '🇫🇷' },
-  de: { name: 'Deutsch', flag: '🇩🇪' },
-  it: { name: 'Italiano', flag: '🇮🇹' },
-  pt: { name: 'Português', flag: '🇵🇹' },
-  ca: { name: 'Català', flag: '🏴󠁥󠁳󠁣󠁴󠁿' },
-  zh: { name: '中文', flag: '🇨🇳' },
+  es: { name: 'Español' },
+  en: { name: 'English' },
+  fr: { name: 'Français' },
+  de: { name: 'Deutsch' },
+  it: { name: 'Italiano' },
+  pt: { name: 'Português' },
+  ca: { name: 'Català' },
+  zh: { name: '中文' },
 } as const;
 
 export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES;

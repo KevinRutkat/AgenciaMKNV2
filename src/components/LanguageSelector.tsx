@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useLanguage, SUPPORTED_LANGUAGES, SupportedLanguage } from '@/contexts/LanguageContext';
+import { CheckIcon } from '@heroicons/react/24/outline';
 
 export default function LanguageSelector() {
   const { currentLanguage, setLanguage } = useLanguage();
@@ -108,7 +109,7 @@ export default function LanguageSelector() {
                 </span>
                 {/* Mostrar la bandera también al final cuando está seleccionado */}
                 {currentLanguage === code && (
-                  <span className="text-primary-blue">✓</span>
+                  <CheckIcon className="h-4 w-4 text-primary-blue" />
                 )}
               </button>
             ))}

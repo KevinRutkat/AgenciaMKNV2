@@ -9,6 +9,19 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useGoogleMaps } from '@/contexts/GoogleMapsContext';
 import { supabase } from '@/lib/supabase';
 import { FEATURES, normalizeFeature } from '@/lib/features';
+import {
+  MagnifyingGlassIcon,
+  PhotoIcon,
+  InformationCircleIcon,
+  ExclamationTriangleIcon,
+  TrashIcon,
+  XMarkIcon,
+  ArrowLeftIcon,
+  ArrowUpTrayIcon,
+  ArrowPathIcon,
+  CheckCircleIcon,
+  StarIcon,
+} from '@heroicons/react/24/outline';
 
 interface ViviendaInsert {
   is_rent: boolean;
@@ -62,7 +75,7 @@ export default function AddPropertyPage() {
   });
 
   // Lista de características desde constantes compartidas
-  const caracteristicasDisponibles = FEATURES.map(f => `${f.emoji ?? ''} ${f.label}`.trim());
+  const caracteristicasDisponibles = FEATURES.map((f) => f.label);
 
   // Estado para las imágenes
   const [images, setImages] = useState<File[]>([]);
@@ -77,6 +90,7 @@ export default function AddPropertyPage() {
 
   // Estado para drag & drop
   const [isDragOver, setIsDragOver] = useState(false);
+  const isSubmitError = submitMessage.toLowerCase().includes('error');
 
   // Redirigir si no está autenticado
   if (!loading && !user) {
@@ -160,11 +174,11 @@ export default function AddPropertyPage() {
 
   // Manejar selección de características múltiples
   const handleCaracteristicaChange = (caracteristica: string) => {
-    const label = caracteristica.replace(/^[^\p{L}\p{N}]\s*/u, '').trim();
+    const label = caracteristica.trim();
     setFormData(prev => ({
       ...prev,
-      propiedades: prev.propiedades.includes(label)
-        ? prev.propiedades.filter(p => p !== label)
+      propiedades: prev.propiedades.some(p => normalizeFeature(p) === normalizeFeature(label))
+        ? prev.propiedades.filter(p => normalizeFeature(p) !== normalizeFeature(label))
         : [...prev.propiedades, label]
     }));
   };
@@ -181,7 +195,7 @@ export default function AddPropertyPage() {
       
       // Validar número máximo de imágenes total (20)
       if (totalFiles > 20) {
-        setSubmitMessage(`❌ Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${newFiles.length}`);
+        setSubmitMessage(`Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${newFiles.length}`);
         return;
       }
       
@@ -189,7 +203,7 @@ export default function AddPropertyPage() {
       const maxSize = 5 * 1024 * 1024; // 5MB
       const oversizedFiles = newFiles.filter(file => file.size > maxSize);
       if (oversizedFiles.length > 0) {
-        setSubmitMessage('❌ Error: Algunas imágenes superan los 5MB. Por favor, reduce el tamaño');
+        setSubmitMessage('Error: Algunas imágenes superan los 5MB. Por favor, reduce el tamaño');
         return;
       }
       
@@ -197,7 +211,7 @@ export default function AddPropertyPage() {
       const validFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
       const invalidFiles = newFiles.filter(file => !validFormats.includes(file.type));
       if (invalidFiles.length > 0) {
-        setSubmitMessage('❌ Error: Solo se permiten imágenes en formato JPG, PNG o WebP');
+        setSubmitMessage('Error: Solo se permiten imágenes en formato JPG, PNG o WebP');
         return;
       }
       
@@ -258,7 +272,7 @@ export default function AddPropertyPage() {
     });
     
     if (imageFiles.length === 0) {
-      setSubmitMessage('❌ Error: Solo se permiten imágenes en formato JPG, PNG o WebP');
+      setSubmitMessage('Error: Solo se permiten imágenes en formato JPG, PNG o WebP');
       return;
     }
     
@@ -266,7 +280,7 @@ export default function AddPropertyPage() {
     const totalFiles = images.length + imageFiles.length;
     
     if (totalFiles > 20) {
-      setSubmitMessage(`❌ Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${imageFiles.length}`);
+      setSubmitMessage(`Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${imageFiles.length}`);
       return;
     }
     
@@ -274,7 +288,7 @@ export default function AddPropertyPage() {
     const maxSize = 5 * 1024 * 1024; // 5MB
     const oversizedFiles = imageFiles.filter(file => file.size > maxSize);
     if (oversizedFiles.length > 0) {
-      setSubmitMessage('❌ Error: Algunas imágenes superan los 5MB. Por favor, reduce el tamaño');
+      setSubmitMessage('Error: Algunas imágenes superan los 5MB. Por favor, reduce el tamaño');
       return;
     }
     
@@ -345,7 +359,7 @@ export default function AddPropertyPage() {
         .single();
 
       if (insertError || !vivienda) {
-        setSubmitMessage(`❌ Error al crear la vivienda: ${insertError?.message}`);
+        setSubmitMessage(`Error al crear la vivienda: ${insertError?.message}`);
         setIsSubmitting(false);
         return;
       }
@@ -384,12 +398,12 @@ export default function AddPropertyPage() {
             })
           );
           
-          setSubmitMessage('✅ Propiedad e imágenes creadas exitosamente');
+          setSubmitMessage(' Propiedad e imágenes creadas exitosamente');
         } catch (err) {
-          setSubmitMessage(`⚠️ Propiedad creada, pero error subiendo imágenes: ${(err as Error).message}`);
+          setSubmitMessage(` Propiedad creada, pero error subiendo imágenes: ${(err as Error).message}`);
         }
       } else {
-        setSubmitMessage('✅ Propiedad creada exitosamente');
+        setSubmitMessage('Propiedad creada exitosamente');
       }
 
       // Redirigir después de éxito
@@ -399,7 +413,7 @@ export default function AddPropertyPage() {
 
     } catch (error) {
       console.error('Error en handleSubmit:', error);
-      setSubmitMessage(`❌ Error inesperado: ${(error as Error).message}`);
+      setSubmitMessage(`Error inesperado: ${(error as Error).message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -419,7 +433,7 @@ export default function AddPropertyPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white">
       <Banner 
-        title="➕ Añadir Nueva Propiedad"
+        title="Añadir Nueva Propiedad"
         subtitle="Completa la información para añadir una nueva propiedad al catálogo"
         height="small"
         showCarousel={false}
@@ -432,8 +446,7 @@ export default function AddPropertyPage() {
             {/* Información básica */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                  🏠 Nombre de la propiedad *
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Nombre de la propiedad *
                 </label>
                 <input
                   type="text"
@@ -450,8 +463,7 @@ export default function AddPropertyPage() {
 
             {/* Descripción */}
             <div>
-              <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-2">
-                📝 Descripción *
+              <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-2">Descripción *
               </label>
               <textarea
                 id="descripcion"
@@ -468,8 +480,7 @@ export default function AddPropertyPage() {
             {/* Precios y detalles técnicos */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                  💰 Precio *
+                <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">Precio *
                 </label>
                 <input
                   type="text"
@@ -484,8 +495,7 @@ export default function AddPropertyPage() {
               </div>
 
               <div>
-                <label htmlFor="oldprice" className="block text-sm font-medium text-gray-700 mb-2">
-                  💸 Precio anterior (opcional)
+                <label htmlFor="oldprice" className="block text-sm font-medium text-gray-700 mb-2">Precio anterior (opcional)
                 </label>
                 <input
                   type="text"
@@ -499,8 +509,7 @@ export default function AddPropertyPage() {
               </div>
 
               <div>
-                <label htmlFor="metros" className="block text-sm font-medium text-gray-700 mb-2">
-                  📐 Metros cuadrados *
+                <label htmlFor="metros" className="block text-sm font-medium text-gray-700 mb-2">Metros cuadrados *
                 </label>
                 <input
                   type="text"
@@ -518,8 +527,7 @@ export default function AddPropertyPage() {
             {/* Habitaciones y baños */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label htmlFor="habitaciones" className="block text-sm font-medium text-gray-700 mb-2">
-                  🛏️ Habitaciones *
+                <label htmlFor="habitaciones" className="block text-sm font-medium text-gray-700 mb-2">Habitaciones *
                 </label>
                 <input
                   type="number"
@@ -534,8 +542,7 @@ export default function AddPropertyPage() {
               </div>
 
               <div>
-                <label htmlFor="bathroom" className="block text-sm font-medium text-gray-700 mb-2">
-                  🚿 Baños *
+                <label htmlFor="bathroom" className="block text-sm font-medium text-gray-700 mb-2">Baños *
                 </label>
                 <input
                   type="number"
@@ -550,8 +557,7 @@ export default function AddPropertyPage() {
               </div>
 
               <div>
-                <label htmlFor="plantas" className="block text-sm font-medium text-gray-700 mb-2">
-                  🏗️ Plantas *
+                <label htmlFor="plantas" className="block text-sm font-medium text-gray-700 mb-2">Plantas *
                 </label>
                 <input
                   type="number"
@@ -566,8 +572,7 @@ export default function AddPropertyPage() {
               </div>
 
               <div>
-                <label htmlFor="property_type" className="block text-sm font-medium text-gray-700 mb-2">
-                  🏠 Tipo de vivienda *
+                <label htmlFor="property_type" className="block text-sm font-medium text-gray-700 mb-2">Tipo de vivienda *
                 </label>
                 <select
                   id="property_type"
@@ -592,8 +597,7 @@ export default function AddPropertyPage() {
             {/* Ubicación con Google Maps */}
             <div className="space-y-4">
               <div>
-                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                  📍 Ubicación *
+                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">Ubicación *
                 </label>
                 <Autocomplete
                   onLoad={(autocomplete) => setAutocompleteObj(autocomplete)}
@@ -621,8 +625,7 @@ export default function AddPropertyPage() {
               {coordinates && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      🗺️ Vista previa de la ubicación
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Vista previa de la ubicación
                     </label>
                     <div className="h-64 rounded-lg overflow-hidden border border-gray-300">
                       <GoogleMap
@@ -644,8 +647,7 @@ export default function AddPropertyPage() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="lat" className="block text-sm font-medium text-gray-700 mb-2">
-                        🌐 Latitud
+                      <label htmlFor="lat" className="block text-sm font-medium text-gray-700 mb-2">Latitud
                       </label>
                       <input
                         type="number"
@@ -661,8 +663,7 @@ export default function AddPropertyPage() {
                     </div>
 
                     <div>
-                      <label htmlFor="lng" className="block text-sm font-medium text-gray-700 mb-2">
-                        🌐 Longitud
+                      <label htmlFor="lng" className="block text-sm font-medium text-gray-700 mb-2">Longitud
                       </label>
                       <input
                         type="number"
@@ -686,8 +687,7 @@ export default function AddPropertyPage() {
               {/* Categoría y propiedades destacadas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-                    🏷️ Categoría *
+                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">Categoría *
                   </label>
                   <select
                     id="category"
@@ -706,18 +706,23 @@ export default function AddPropertyPage() {
 
                 <div className="space-y-4">
                   <label className="block text-sm font-medium text-gray-700">
-                    ⭐ Propiedades especiales
+                    <span className="inline-flex items-center gap-2">
+                      <StarIcon className="h-4 w-4 text-gray-500" />
+                      Propiedades especiales
+                    </span>
                   </label>
                   <div className="space-y-3">
-                    <label className="flex items-center">
-                      <input
+                    <label className="flex items-center"><input
                         type="checkbox"
                         name="is_featured"
                         checked={formData.is_featured}
                         onChange={handleInputChange}
                         className="mr-3 h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
                       />
-                      <span className="text-sm text-gray-700">🌟 Propiedad destacada</span>
+                      <span className="inline-flex items-center gap-2 text-sm text-gray-700">
+                        <StarIcon className="h-4 w-4 text-teal-600" />
+                        Propiedad destacada
+                      </span>
                     </label>
                   </div>
                 </div>
@@ -725,8 +730,7 @@ export default function AddPropertyPage() {
 
               {/* Características de la propiedad */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  🏡 Características de la propiedad
+                <label className="block text-sm font-medium text-gray-700 mb-3">Características de la propiedad
                 </label>
                 
                 {/* Buscador de características */}
@@ -736,10 +740,12 @@ export default function AddPropertyPage() {
                       type="text"
                       value={searchCaracteristicas}
                       onChange={(e) => setSearchCaracteristicas(e.target.value)}
-                      placeholder="🔍 Buscar características... (ej: piscina, terraza, garaje)"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm"
+                      placeholder=" Buscar características... (ej: piscina, terraza, garaje)"
+                      className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm"
                     />
-                    <span className="absolute left-3 top-2.5 text-gray-400"></span>
+                    <span className="absolute left-3 top-2.5 text-gray-400">
+                      <MagnifyingGlassIcon className="h-4 w-4" />
+                    </span>
                   </div>
                   {searchCaracteristicas && (
                     <p className="text-xs text-gray-500 mt-1">
@@ -750,8 +756,7 @@ export default function AddPropertyPage() {
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
                   {caracteristicasFiltradas.map((caracteristica, index) => (
-                    <label key={index} className="flex items-center cursor-pointer hover:bg-white p-2 rounded transition-colors">
-                      <input
+                    <label key={index} className="flex items-center cursor-pointer hover:bg-white p-2 rounded transition-colors"><input
                         type="checkbox"
                         checked={formData.propiedades.some(
                           p => normalizeFeature(p) === normalizeFeature(caracteristica)
@@ -788,7 +793,7 @@ export default function AddPropertyPage() {
                             className="ml-1 text-teal-600 hover:text-teal-800"
                             title="Quitar característica"
                           >
-                            ✕
+                            <XMarkIcon className="h-3 w-3" />
                           </button>
                         </span>
                       ))}
@@ -801,15 +806,17 @@ export default function AddPropertyPage() {
             {/* Imágenes */}
             <div>
               <label htmlFor="images" className="block text-sm font-medium text-gray-700 mb-2">
-                📸 Imágenes de la propiedad (máximo 20)
+                <span className="inline-flex items-center gap-2">
+                  <PhotoIcon className="h-4 w-4 text-gray-500" />
+                  Imágenes de la propiedad (máximo 20)
+                </span>
               </label>
               
               <div className="space-y-4">
                 {/* Input principal para seleccionar múltiples imágenes */}
                 <div className="space-y-3">
                   {/* Botón estilizado para seleccionar imágenes con drag & drop */}
-                  <label htmlFor="images" className="cursor-pointer">
-                    <div 
+                  <label htmlFor="images" className="cursor-pointer"><div 
                       className={`w-full p-6 border-2 border-dashed rounded-lg transition-all text-center ${
                         isDragOver 
                           ? 'border-teal-500 bg-teal-100' 
@@ -820,7 +827,7 @@ export default function AddPropertyPage() {
                       onDrop={handleDrop}
                     >
                       <div className="flex flex-col items-center space-y-2">
-                        <div className="text-3xl">📸</div>
+                        <ArrowUpTrayIcon className="h-8 w-8 text-teal-600" />
                         <div className="text-teal-700 font-medium">
                           {isDragOver 
                             ? 'Suelta las imágenes aquí' 
@@ -855,8 +862,9 @@ export default function AddPropertyPage() {
                 </div>
                 
                 <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                  <p className="text-sm text-blue-700 font-medium mb-1">
-                    💡 Funcionalidad mejorada de selección de imágenes
+                  <p className="inline-flex items-center gap-2 text-sm text-blue-700 font-medium mb-1">
+                    <InformationCircleIcon className="h-4 w-4" />
+                    Funcionalidad mejorada de selección de imágenes
                   </p>
                   <p className="text-xs text-blue-600">
                     • Selecciona múltiples imágenes manteniendo <kbd className="px-1 py-0.5 bg-blue-100 rounded text-xs">Ctrl</kbd> (Windows) o <kbd className="px-1 py-0.5 bg-blue-100 rounded text-xs">Cmd</kbd> (Mac)<br/>
@@ -880,7 +888,7 @@ export default function AddPropertyPage() {
                         {images.length} de 20 imágenes seleccionadas
                       </span>
                       {images.length === 20 && (
-                        <span className="text-amber-600 ml-2">⚠️ Límite máximo alcanzado</span>
+                        <span className="text-amber-600 ml-2"> Límite máximo alcanzado</span>
                       )}
                     </div>
                     <button
@@ -895,7 +903,10 @@ export default function AddPropertyPage() {
                       className="text-xs px-3 py-1 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
                       title="Eliminar todas las imágenes"
                     >
-                      🗑️ Limpiar todas
+                      <span className="inline-flex items-center gap-2">
+                        <TrashIcon className="h-4 w-4" />
+                        Limpiar todas
+                      </span>
                     </button>
                   </div>
                 )}
@@ -908,8 +919,9 @@ export default function AddPropertyPage() {
                     <h4 className="text-sm font-medium text-gray-700">
                       Vista previa de imágenes ({images.length}):
                     </h4>
-                    <span className="text-xs text-gray-500">
-                      Haz clic en ✕ para eliminar una imagen individual
+                    <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
+                      <XMarkIcon className="h-3 w-3" />
+                      Haz clic en el icono para eliminar una imagen individual
                     </span>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -928,7 +940,7 @@ export default function AddPropertyPage() {
                           className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                           title="Eliminar imagen"
                         >
-                          ✕
+                          <XMarkIcon className="h-3 w-3" />
                         </button>
                         <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
                           {index + 1}
@@ -942,12 +954,21 @@ export default function AddPropertyPage() {
 
             {/* Mensaje de estado */}
             {submitMessage && (
-              <div className={`p-4 rounded-lg text-center ${
-                submitMessage.includes('Error') || submitMessage.includes('❌')
-                  ? 'bg-red-100 text-red-700 border border-red-200' 
-                  : 'bg-green-100 text-green-700 border border-green-200'
-              }`}>
-                {submitMessage}
+              <div
+                className={`p-4 rounded-lg text-center border ${
+                  isSubmitError
+                    ? 'bg-red-100 text-red-700 border-red-200'
+                    : 'bg-green-100 text-green-700 border-green-200'
+                }`}
+              >
+                <div className="inline-flex items-center gap-2">
+                  {isSubmitError ? (
+                    <ExclamationTriangleIcon className="h-4 w-4" />
+                  ) : (
+                    <CheckCircleIcon className="h-4 w-4" />
+                  )}
+                  <span>{submitMessage}</span>
+                </div>
               </div>
             )}
 
@@ -958,7 +979,10 @@ export default function AddPropertyPage() {
                 onClick={() => router.back()}
                 className="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-600 transition-colors"
               >
-                ⬅️ Cancelar
+                <span className="inline-flex items-center gap-2">
+                  <ArrowLeftIcon className="h-4 w-4" />
+                  Cancelar
+                </span>
               </button>
               
               <button
@@ -966,7 +990,17 @@ export default function AddPropertyPage() {
                 disabled={isSubmitting}
                 className="flex-1 bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 px-6 rounded-lg font-semibold hover:from-teal-700 hover:to-teal-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                {isSubmitting ? '📤 Creando...' : '✅ Crear Propiedad'}
+                {isSubmitting ? (
+                  <span className="inline-flex items-center gap-2">
+                    <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                    Creando...
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-2">
+                    <ArrowUpTrayIcon className="h-4 w-4" />
+                    Crear Propiedad
+                  </span>
+                )}
               </button>
             </div>
           </form>

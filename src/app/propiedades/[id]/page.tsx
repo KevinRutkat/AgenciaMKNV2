@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { supabase, Vivienda, ViviendaImage } from "@/lib/supabase";
 import ViviendaDetailClient from "@/components/ViviendaDetailClient";
+import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 
 const baseUrl = "https://www.agenciamkn.com";
 
@@ -247,8 +248,9 @@ export default async function ViviendaDetailPage({ params }: Props) {
       {/* Banner "Vendido" arriba si aplica */}
       {vivienda.is_sold && (
         <div className="bg-red-600 text-white text-center py-2">
-          <span className="text-sm sm:text-base font-semibold">
-            🔴 Esta propiedad está marcada como <strong>VENDIDA</strong>
+          <span className="text-sm sm:text-base font-semibold inline-flex items-center gap-2">
+            <CheckBadgeIcon className="h-4 w-4" />
+            Esta propiedad está marcada como <strong>VENDIDA</strong>
           </span>
         </div>
       )}

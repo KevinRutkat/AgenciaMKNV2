@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -19,91 +19,88 @@ export default function ServiciosPage() {
 
   const textsToTranslate = [
     // Banner
-    "Nuestros Servicios Profesionales",
-    "Servicios especializados en gestión inmobiliaria y traducción profesional para satisfacer todas tus necesidades en La Manga y alrededores del Mar Menor",
+    "Servicios inmobiliarios y de traducción",
+    "Gestión de viviendas y traducciones profesionales en español, alemán e inglés para todo tipo de trámites.",
 
     // Títulos de secciones
-    "Servicios Inmobiliarios",
-    "Gestión integral para la venta y alquiler de propiedades",
-    "Servicios de Traducción",
-    "Personal multilingüe para todas tus necesidades de traducción",
+    "Servicios inmobiliarios",
+    "Gestión integral para venta, compra y alquiler",
+    "Servicios de traducción",
+    "Traducción e interpretación para particulares y empresas",
 
     // Call to action
-    "¿Necesitas más información sobre nuestros servicios?",
-    "Contacta con nosotros para una consulta personalizada y sin compromiso",
-    "Contactar Ahora",
-    "Llamar Directamente",
+    "¿Necesitas asesoramiento?",
+    "Cuéntanos tu caso y te ayudamos con una propuesta personalizada",
+    "Contactar",
+    "Llamar ahora",
 
     // Servicios inmobiliarios
-    "Análisis del Cliente Objetivo",
-    "Identificamos el perfil ideal de comprador para tu propiedad",
+    "Análisis del cliente objetivo",
+    "Definimos el perfil ideal y el mejor enfoque para tu propiedad",
     "Estudio demográfico del mercado local",
-    "Análisis de preferencias y necesidades del target",
-    "Definición de estrategias de marketing personalizadas",
+    "Preferencias y necesidades del comprador",
+    "Estrategia de marketing personalizada",
     "Segmentación de audiencias potenciales",
     "Optimización del precio según el perfil del cliente",
 
     "Marketing de la vivienda",
-    "Tu propiedad destacará en nuestra plataforma digital",
+    "Tu propiedad destaca con contenido y difusión profesional",
     "Fotografía de alta calidad",
-    "Descripción detallada y atractiva de la propiedad",
-    "Integración con redes sociales y portales inmobiliarios",
-    "Mostrar la vivienda a clientes potenciales que acudan a la oficina",
+    "Descripción atractiva y clara de la vivienda",
+    "Integración con portales y redes",
+    "Atención a clientes en oficina",
 
-    "Gestión de Visitas Presenciales",
-    "Nos encargamos de mostrar tu propiedad a potenciales compradores",
-    "Coordinación de horarios con interesados",
+    "Gestión de visitas presenciales",
+    "Nos encargamos de mostrar la vivienda a interesados",
+    "Coordinación de horarios",
     "Acompañamiento profesional durante las visitas",
-    "Presentación destacada de las mejores características",
-    "Respuesta inmediata a consultas y dudas",
-    "Seguimiento post-visita con feedback detallado",
+    "Presentación de las mejores características",
+    "Respuesta ágil a consultas",
+    "Seguimiento post-visita con feedback",
     "Negociación inicial de condiciones",
 
-    "Asesoramiento en Gestión de Documentos",
-    "Te ayudamos con toda la documentación necesaria para la compraventa",
+    "Asesoramiento en documentos",
+    "Te ayudamos con la documentación de compraventa",
     "Verificación de documentos de la vivienda",
     "Certificado de eficiencia energética",
-    "Verificación de libertad de cargas y deudas",
+    "Comprobación de cargas y deudas",
     "Preparación del contrato de compraventa",
-    "Asesoramiento en aspectos legales y fiscales",
     "Coordinación con notarías y registros",
 
     // Servicios de traducción
-    "Idiomas Principales",
-    "Personal multilingüe especializado en español, inglés y alemán",
-    "Traduccion en ingles, español y alemán",
+    "Idiomas principales",
+    "Traducción profesional en español, alemán e inglés",
+    "Traducción para trámites inmobiliarios",
     "Especialización en terminología técnica",
     "Traductores nativos y experimentados",
-    "Disponibilidad para servicios urgentes",
-    "Garantía de confidencialidad absoluta",
+    "Servicios urgentes disponibles",
+    "Confidencialidad garantizada",
 
-    "Traducción de Documentos",
-    "Traducción oficial y certificada de todo tipo de documentos o consultas",
-    "Documentos legales y contratos",
-    "Documentos funerarios",
-    "Documentos o consultas medicas",
+    "Traducción de documentos",
+    "Documentos legales, médicos, administrativos y financieros",
+    "Contratos y escrituras",
+    "Documentación médica y hospitalaria",
+    "Documentos administrativos",
     "Documentos comerciales y financieros",
-    "Entrega en formato digital y físico",
+    "Entrega en formato digital o físico",
 
-    "Servicios de Traducción Presencial",
+    "Traducción presencial",
     "Acompañamiento profesional en gestiones importantes",
-    "Traducción médica y hospitalaria especializada",
+    "Traducción médica y hospitalaria",
     "Servicios notariales y firma de contratos",
-    "Gestiones bancarias y financieras",
-    "Citas médicas y hospitalarias con traducción simultánea",
-    "Traducción en notarías para escrituras y poderes",
-    "Acompañamiento en bancos para trámites financieros",
-    "Gestiones oficiales en Hacienda y tributarias",
-    "Trámites en ayuntamientos y administraciones públicas",
-
-    "Gestiones Administrativas",
-    "Te acompañamos en trámites oficiales y administrativos",
+    "Gestiones bancarias",
+    "Citas médicas con traducción simultánea",
+    "Notarías para escrituras y poderes",
+    "Acompañamiento en bancos",
     "Trámites en ayuntamientos",
-    "Gestiones con Hacienda y tributarias",
+
+    "Gestiones administrativas",
+    "Te acompañamos en trámites oficiales",
+    "Gestiones con ayuntamientos",
+    "Gestiones con Hacienda",
     "Renovación y obtención de DNI/NIE",
     "Empadronamiento y certificados",
     "Trámites de extranjería",
-    "Solicitudes y permisos oficiales",
     "Gestiones con la Seguridad Social",
   ];
 
@@ -173,7 +170,6 @@ export default function ServiciosPage() {
     traduccionDocDetail3,
     traduccionDocDetail4,
     traduccionDocDetail5,
-    traduccionDocDetail6,
 
     traduccionPresTitle,
     traduccionPresDesc,
@@ -184,7 +180,6 @@ export default function ServiciosPage() {
     traduccionPresDetail5,
     traduccionPresDetail6,
     traduccionPresDetail7,
-    traduccionPresDetail8,
 
     gestionesTitle,
     gestionesDesc,
@@ -194,7 +189,6 @@ export default function ServiciosPage() {
     gestionesDetail4,
     gestionesDetail5,
     gestionesDetail6,
-    gestionesDetail7,
   ] = useMultipleTranslations(textsToTranslate);
 
   const inmobiliaryServices: ServiceItem[] = [
@@ -271,7 +265,6 @@ export default function ServiciosPage() {
         traduccionDocDetail3,
         traduccionDocDetail4,
         traduccionDocDetail5,
-        traduccionDocDetail6,
       ],
     },
     {
@@ -286,7 +279,6 @@ export default function ServiciosPage() {
         traduccionPresDetail5,
         traduccionPresDetail6,
         traduccionPresDetail7,
-        traduccionPresDetail8,
       ],
     },
     {
@@ -300,7 +292,6 @@ export default function ServiciosPage() {
         gestionesDetail4,
         gestionesDetail5,
         gestionesDetail6,
-        gestionesDetail7,
       ],
     },
   ];
@@ -328,58 +319,50 @@ export default function ServiciosPage() {
   }) => (
     <section
       aria-label={title}
-      className="bg-white rounded-lg shadow-lg overflow-hidden"
+      className="bg-white rounded-2xl border border-neutral-gray shadow-sm overflow-hidden"
     >
-      <div className="bg-gradient-to-r from-teal-600 to-teal-700 p-6">
-        <div className="flex items-center space-x-3 text-white">
-          <Icon className="h-8 w-8" />
-          <div>
-            <h2 className="text-2xl font-bold">{title}</h2>
-            <p className="text-teal-100 mt-1">{description}</p>
-          </div>
+      <div className="flex items-center gap-3 p-6 bg-neutral-light border-b border-neutral-gray">
+        <Icon className="h-6 w-6 text-primary-blue" />
+        <div>
+          <h2 className="text-xl font-semibold text-neutral-dark">{title}</h2>
+          <p className="text-neutral-muted mt-1 text-sm">{description}</p>
         </div>
       </div>
 
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y divide-neutral-gray">
         {services.map((service) => (
-          <div
-            key={service.id}
-            className="border-b border-gray-200 last:border-b-0"
-          >
+          <div key={service.id} className="border-b border-neutral-gray last:border-b-0">
             <button
               onClick={() => toggleItem(service.id)}
-              className="w-full px-6 py-4 text-left hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
+              className="w-full px-6 py-4 text-left hover-bg-neutral-gray focus:outline-none focus:bg-white transition-colors"
               aria-expanded={openItems.has(service.id)}
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                  <h3 className="text-base font-semibold text-neutral-dark mb-1">
                     {service.title}
                   </h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-neutral-muted text-sm">
                     {service.description}
                   </p>
                 </div>
                 <div className="ml-4 flex-shrink-0">
                   {openItems.has(service.id) ? (
-                    <ChevronUpIcon className="h-5 w-5 text-gray-500" />
+                    <ChevronUpIcon className="h-5 w-5 text-neutral-muted" />
                   ) : (
-                    <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                    <ChevronDownIcon className="h-5 w-5 text-neutral-muted" />
                   )}
                 </div>
               </div>
             </button>
 
             {openItems.has(service.id) && (
-              <div className="px-6 pb-4 bg-gray-50">
+              <div className="px-6 pb-4 bg-white">
                 <ul className="space-y-2">
                   {service.details.map((detail, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center space-x-3 text-sm"
-                    >
-                      <span className="text-teal-600 flex-shrink-0 w-2 h-2 bg-teal-600 rounded-full" />
-                      <span className="text-gray-700">{detail}</span>
+                    <li key={index} className="flex items-start space-x-3 text-sm">
+                      <span className="text-primary-blue flex-shrink-0 w-2 h-2 bg-primary-blue rounded-full mt-2" />
+                      <span className="text-neutral-muted">{detail}</span>
                     </li>
                   ))}
                 </ul>
@@ -392,7 +375,7 @@ export default function ServiciosPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-amber-50">
+    <div className="min-h-screen bg-kehre-gradient-light">
       <Banner
         title={bannerTitle}
         subtitle={bannerSubtitle}
@@ -418,19 +401,19 @@ export default function ServiciosPage() {
         </div>
 
         {/* CTA */}
-        <section className="mt-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-8 text-center text-white">
-          <h2 className="text-2xl font-bold mb-4">{ctaTitle}</h2>
-          <p className="text-lg mb-6 text-orange-100">{ctaSubtitle}</p>
+        <section className="mt-16 bg-white/80 rounded-2xl p-8 text-center border border-neutral-gray shadow-sm">
+          <h2 className="text-2xl font-semibold mb-4 text-neutral-dark">{ctaTitle}</h2>
+          <p className="text-lg mb-6 text-neutral-muted">{ctaSubtitle}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/contacto"
-              className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+              className="bg-primary-blue text-white px-6 py-3 rounded-full font-semibold hover-bg-primary-blue-dark transition-colors"
             >
               {contactButton}
             </Link>
             <a
               href="tel:+34634737949"
-              className="bg-orange-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-800 transition-colors"
+              className="border border-neutral-gray text-neutral-dark px-6 py-3 rounded-full font-semibold hover-bg-neutral-gray transition-colors"
             >
               {callButton}
             </a>
