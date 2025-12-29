@@ -1,16 +1,17 @@
-'use client'
+﻿'use client'
 
+import { CheckIcon } from '@heroicons/react/24/outline';
 import { useTranslation, useMultipleTranslations } from '@/hooks/useTranslation';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function TranslationExample() {
   const { currentLanguage, isTranslating } = useLanguage();
   
-  // Ejemplo de traducción de un texto individual
+  // Ejemplo de traduccion de un texto individual
   const welcomeText = useTranslation("Bienvenido a nuestra agencia inmobiliaria");
   const descriptionText = useTranslation("Ofrecemos los mejores servicios de venta y alquiler de propiedades");
   
-  // Ejemplo de traducción de múltiples textos
+  // Ejemplo de traduccion de multiples textos
   const navItems = useMultipleTranslations([
     "Inicio",
     "Propiedades", 
@@ -20,8 +21,8 @@ export default function TranslationExample() {
 
   const features = useMultipleTranslations([
     "Asesoramiento personalizado",
-    "Gestión integral de documentos",
-    "Acompañamiento durante todo el proceso",
+    "Gestion integral de documentos",
+    "Acompanamiento durante todo el proceso",
     "Experiencia en el mercado local"
   ]);
 
@@ -29,7 +30,7 @@ export default function TranslationExample() {
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4">
         
-        {/* Indicador de estado de traducción */}
+        {/* Indicador de estado de traduccion */}
         {isTranslating && (
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-center space-x-2">
@@ -39,9 +40,9 @@ export default function TranslationExample() {
           </div>
         )}
 
-        {/* Información del idioma actual */}
+        {/* Informacion del idioma actual */}
         <div className="mb-8 p-4 bg-white rounded-lg shadow-sm border">
-          <h2 className="text-lg font-semibold mb-2">Estado de traducción</h2>
+          <h2 className="text-lg font-semibold mb-2">Estado de traduccion</h2>
           <p className="text-gray-600">
             Idioma actual: <span className="font-medium">{currentLanguage.toUpperCase()}</span>
           </p>
@@ -57,9 +58,9 @@ export default function TranslationExample() {
             {descriptionText}
           </p>
 
-          {/* Navegación traducida */}
+          {/* Navegacion traducida */}
           <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-4">Navegación traducida:</h3>
+            <h3 className="text-xl font-semibold mb-4">Navegacion traducida:</h3>
             <div className="flex flex-wrap gap-4">
               {navItems.map((item, index) => (
                 <span 
@@ -72,7 +73,7 @@ export default function TranslationExample() {
             </div>
           </div>
 
-          {/* Características traducidas */}
+          {/* Caracteristicas traducidas */}
           <div>
             <h3 className="text-xl font-semibold mb-4">Nuestros servicios:</h3>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -89,14 +90,14 @@ export default function TranslationExample() {
           </div>
         </div>
 
-        {/* Código de ejemplo */}
+        {/* Codigo de ejemplo */}
         <div className="mt-8 bg-gray-900 rounded-lg p-6 text-white">
-          <h3 className="text-lg font-semibold mb-4">Ejemplo de código:</h3>
+          <h3 className="text-lg font-semibold mb-4">Ejemplo de codigo:</h3>
           <pre className="text-sm overflow-x-auto">
-            <code>{`// Traducción de un texto individual
+            <code>{`// Traduccion de un texto individual
 const welcomeText = useTranslation("Bienvenido a nuestra agencia");
 
-// Traducción de múltiples textos
+// Traduccion de multiples textos
 const navItems = useMultipleTranslations([
   "Inicio",
   "Propiedades", 
