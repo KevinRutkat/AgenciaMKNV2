@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: "Vivienda no encontrada | Agencia MKN",
       description:
-        "La propiedad solicitada no existe o ya no está disponible en Agencia MKN.",
+        "La propiedad solicitada no existe o ya no está disponible en Agencia MKN",
     };
   }
 
