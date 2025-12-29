@@ -10,7 +10,6 @@ import { useGoogleMaps } from '@/contexts/GoogleMapsContext';
 import { supabase } from '@/lib/supabase';
 import { FEATURES, normalizeFeature } from '@/lib/features';
 import {
-  MagnifyingGlassIcon,
   PhotoIcon,
   InformationCircleIcon,
   ExclamationTriangleIcon,
@@ -20,7 +19,6 @@ import {
   ArrowUpTrayIcon,
   ArrowPathIcon,
   CheckCircleIcon,
-  StarIcon,
 } from '@heroicons/react/24/outline';
 
 export default function EditPropertyPage() {
@@ -61,9 +59,7 @@ export default function EditPropertyPage() {
   });
 
   // Lista de características desde constantes compartidas
-  const caracteristicasDisponibles = FEATURES.map((f) =>
-    `${f.emoji ?? ''} ${f.label}`.trim(),
-  );
+  const caracteristicasDisponibles = FEATURES.map((f) => f.label);
 
   // Estado para las imágenes
   const [images, setImages] = useState<File[]>([]);

@@ -2,13 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import {
-  BeakerIcon,
-  ArrowPathIcon,
-  PaperAirplaneIcon,
-  CheckCircleIcon,
-  XCircleIcon,
-} from '@heroicons/react/24/outline';
 
 export default function TestTranslationPage() {
   const [result, setResult] = useState('');
@@ -18,7 +11,6 @@ export default function TestTranslationPage() {
   const testTranslation = async () => {
     setLoading(true);
     setError('');
-    setResult(`Traduccion exitosa: "${data.translatedText}"`);
 
     try {
       const response = await fetch('/api/translate', {
