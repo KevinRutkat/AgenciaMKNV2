@@ -22,6 +22,7 @@ import { useMultipleTranslations, useTranslation } from "@/hooks/useTranslation"
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 import ContactPopup from "@/components/ContactPopup";
 import { FEATURES, normalizeFeature } from "@/lib/features";
+import { formatMonthlyPrice, isRentListing } from "@/lib/viviendaUtils";
 
 type Props = {
   vivienda: Vivienda;
@@ -176,11 +177,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     return property;
   };
 
-  const formatPrice = (value: string | null | undefined) => {
-    if (!value) return "";
-    const cleaned = value.replace(/\s+/g, "").replace(/ /g, "");
-    return /€$/.test(cleaned) ? cleaned : `${cleaned}€`;
-  };
+  const isRent = isRentListing(vivienda);
 
   return (
     <div className="min-h-screen bg-kehre-gradient-light">
@@ -340,18 +337,18 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
             <div className="bg-white rounded-2xl p-6 border border-neutral-gray shadow-sm">
               <div className="mb-6">
                 <div className="text-3xl font-semibold text-neutral-dark mb-2">
-                  {formatPrice(vivienda.price)}
+                  {formatMonthlyPrice(vivienda.price, isRent)}
                   {vivienda.oldprice && (
                     <span className="text-lg text-accent-coral line-through ml-3">
-                      {formatPrice(vivienda.oldprice)}
+                      {formatMonthlyPrice(vivienda.oldprice, isRent)}
                     </span>
                   )}
                 </div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-neutral-light text-neutral-muted rounded-full text-sm font-medium border border-neutral-gray">
-                  {!vivienda.is_rent && (
+                  {!isRent && (
                     <TagIcon className="h-4 w-4 text-neutral-muted" />
                   )}
-                  <span>{vivienda.is_rent ? alquilerText : ventaText}</span>
+                  <span>{isRent ? alquilerText : ventaText}</span>
                   {vivienda.property_type && (
                     <>
                       <span className="text-neutral-muted">&middot;</span>

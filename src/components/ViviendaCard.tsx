@@ -7,6 +7,11 @@ import { Vivienda, ViviendaImage, supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
 import {
+  formatMonthlyPrice,
+  isRentListing,
+  normalizeCategory,
+} from "@/lib/viviendaUtils";
+import {
   PencilSquareIcon,
   TrashIcon,
   PhotoIcon,
@@ -138,33 +143,22 @@ export default function ViviendaCard({
     }
   };
 
+  const normalizedCategory = normalizeCategory(vivienda.category);
+  const isRent = isRentListing(vivienda);
+
   const getCategoryBadge = () => {
-    if (vivienda.category === "Usada")
+    if (normalizedCategory === "usada")
       return { label: used, color: "bg-primary-blue" };
-    if (vivienda.category === "Sin estrenar")
+    if (normalizedCategory === "sin-estrenar")
       return { label: brandNew, color: "bg-primary-green" };
-    if (vivienda.category === "Otro")
+    if (normalizedCategory === "otro")
       return { label: other, color: "bg-accent-coral" };
 
-    if (
-      vivienda.is_rent ||
-      (vivienda.category &&
-        vivienda.category.toLowerCase().includes("alquiler")) ||
-      (vivienda.property_type &&
-        vivienda.property_type.toLowerCase().includes("alquiler")) ||
-      (vivienda.name && vivienda.name.toLowerCase().includes("alquiler"))
-    ) {
+    if (isRent) {
       return { label: rental, color: "bg-accent-coral" };
     }
 
     return { label: property, color: "bg-primary-blue" };
-  };
-
-  const displayPrice = (raw: string | null | undefined) => {
-    if (!raw) return "";
-    const cleaned = raw.replace(/\s+/g, "").replace(/\u00A0/g, "");
-    if (/€$/.test(cleaned)) return cleaned;
-    return `${cleaned}€`;
   };
 
   const categoryBadge = getCategoryBadge();
@@ -219,11 +213,11 @@ export default function ViviendaCard({
         <div className="absolute bottom-2 left-2 z-10 flex flex-col gap-1 pointer-events-none md:hidden">
           <div className="bg-white/85 backdrop-blur-sm px-3 py-2 rounded-xl border border-neutral-gray">
             <span className="block text-neutral-dark font-semibold text-2xl leading-none whitespace-nowrap">
-              {displayPrice(vivienda.price)}
+              {formatMonthlyPrice(vivienda.price, isRent)}
             </span>
             {vivienda.oldprice && (
               <span className="block text-[10px] text-accent-coral line-through leading-tight mt-1 font-medium whitespace-nowrap">
-                {displayPrice(vivienda.oldprice)}
+                {formatMonthlyPrice(vivienda.oldprice, isRent)}
               </span>
             )}
           </div>
@@ -322,11 +316,11 @@ export default function ViviendaCard({
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-lg font-semibold text-neutral-dark leading-none">
-                {displayPrice(vivienda.price)}
+                {formatMonthlyPrice(vivienda.price, isRent)}
               </span>
               {vivienda.oldprice && (
                 <span className="text-sm text-accent-coral line-through leading-tight mt-1">
-                  {displayPrice(vivienda.oldprice)}
+                  {formatMonthlyPrice(vivienda.oldprice, isRent)}
                 </span>
               )}
             </div>

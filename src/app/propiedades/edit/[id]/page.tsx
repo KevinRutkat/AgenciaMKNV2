@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useGoogleMaps } from '@/contexts/GoogleMapsContext';
 import { supabase } from '@/lib/supabase';
 import { FEATURES, normalizeFeature } from '@/lib/features';
+import { normalizeCategory } from '@/lib/viviendaUtils';
 import {
   PhotoIcon,
   InformationCircleIcon,
@@ -72,6 +73,8 @@ export default function EditPropertyPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
   const isSubmitError = submitMessage.toLowerCase().includes('error');
+  const normalizedCategory = normalizeCategory(formData.category);
+  const isRentPrice = formData.is_rent || normalizedCategory.includes('alquiler');
   const [isLoading, setIsLoading] = useState(true);
 
   // Estado para buscador de características
@@ -135,6 +138,8 @@ export default function EditPropertyPage() {
 
         const isSoldFromDb = !!vivienda.is_sold;
         const isFeaturedFromDb = !!vivienda.is_featured;
+        const normalizedCategoryValue = normalizeCategory(vivienda.category);
+        const isRentCategory = normalizedCategoryValue.includes('alquiler');
 
         setFormData({
           name: vivienda.name || '',
@@ -149,13 +154,11 @@ export default function EditPropertyPage() {
           lng: vivienda.lng || 0,
           property_type: vivienda.property_type || 'apartamento',
           propiedades: propiedadesCanonicas,
-          is_rent: vivienda.is_rent || false,
+          is_rent: isRentCategory || vivienda.is_rent || false,
           plantas: vivienda.plantas || 1,
           // 👇 Si está vendida, forzamos destacado a false
           is_featured: isSoldFromDb ? false : isFeaturedFromDb,
-          category: vivienda.category
-            ? String(vivienda.category).toLowerCase()
-            : 'usada',
+          category: normalizedCategoryValue || 'usada',
           is_sold: isSoldFromDb,
         });
 
@@ -247,10 +250,12 @@ export default function EditPropertyPage() {
 
     // Cambiar categoría → sincronizar is_rent
     if (name === 'category') {
+      const normalizedValue = normalizeCategory(value);
+      const isRentCategory = normalizedValue.includes('alquiler');
       setFormData((prev) => ({
         ...prev,
-        category: value,
-        is_rent: value === 'alquiler',
+        category: normalizedValue || value,
+        is_rent: isRentCategory,
       }));
       return;
     }
@@ -460,6 +465,9 @@ export default function EditPropertyPage() {
         return;
       }
 
+      const normalizedCategoryValue = normalizeCategory(formData.category);
+      const isRentCategory = normalizedCategoryValue.includes('alquiler');
+
       const response = await fetch('/api/propiedades', {
         method: 'PUT',
         headers: {
@@ -469,6 +477,8 @@ export default function EditPropertyPage() {
         body: JSON.stringify({
           id: propertyId,
           ...formData,
+          category: normalizedCategoryValue || formData.category,
+          is_rent: isRentCategory,
           propiedades: formData.propiedades,
         }),
       });
@@ -614,7 +624,7 @@ export default function EditPropertyPage() {
                   htmlFor="price"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                   Precio *
+                   Precio{isRentPrice ? ' / mes' : ''} *
                 </label>
                 <input
                   type="text"
@@ -624,7 +634,8 @@ export default function EditPropertyPage() {
                   onChange={handleInputChange}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                  placeholder="Ej: €450,000"
+                  placeholder={isRentPrice ? "Ej: 750€ /mes" : "Ej: 450,000€"}
+                  title={isRentPrice ? "Precio mensual" : "Precio de venta"}
                 />
               </div>
 
@@ -633,7 +644,7 @@ export default function EditPropertyPage() {
                   htmlFor="oldprice"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                   Precio anterior (opcional)
+                   Precio anterior{isRentPrice ? ' / mes' : ''} (opcional)
                 </label>
                 <input
                   type="text"
@@ -642,7 +653,8 @@ export default function EditPropertyPage() {
                   value={formData.oldprice}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                  placeholder="Ej: €500,000"
+                  placeholder={isRentPrice ? "Ej: 900€ /mes" : "Ej: 500,000€"}
+                  title={isRentPrice ? "Precio mensual anterior" : "Precio de venta anterior"}
                 />
               </div>
 
