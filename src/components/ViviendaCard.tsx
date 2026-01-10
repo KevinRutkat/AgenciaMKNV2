@@ -254,9 +254,9 @@ export default function ViviendaCard({
           {vivienda.name}
         </h3>
 
-        <p className="text-neutral-muted text-sm mb-1 flex items-center gap-2">
-          <MapPinIcon className="h-4 w-4 text-neutral-muted" />
-          <span>{vivienda.location}</span>
+        <p className="text-neutral-muted text-sm mb-1 flex items-center gap-2 min-w-0">
+          <MapPinIcon className="h-4 w-4 text-neutral-muted shrink-0" />
+          <span className="truncate min-w-0 flex-1">{vivienda.location}</span>
         </p>
 
         {vivienda.property_type && (
