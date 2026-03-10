@@ -34,6 +34,17 @@ interface OrderedImageItem {
   imageId?: number;
 }
 
+function summarizeOrderedImagesForDebug(images: OrderedImageItem[]) {
+  return images.map((image, index) => ({
+    index,
+    clientId: image.clientId,
+    kind: image.kind,
+    imageId: image.imageId ?? null,
+    fileName: image.file?.name ?? null,
+    urlTail: image.url.split('/').slice(-2).join('/'),
+  }));
+}
+
 const MAX_IMAGES = 20;
 const VALID_IMAGE_FORMATS = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
@@ -217,6 +228,18 @@ export default function EditPropertyPage() {
       }
 
       if (!imagesError && images) {
+        console.info('[edit/[id]] loaded ordered images from supabase', {
+          viviendaId: propertyId,
+          orderedImages: images.map((image) => ({
+            id: image.id,
+            sort_order: image.sort_order ?? null,
+            inserted_at: image.inserted_at ?? null,
+            urlTail: String(image.url || '')
+              .split('/')
+              .slice(-2)
+              .join('/'),
+          })),
+        });
         setOrderedImages(
           images.map((image) => {
             const imageId = Number(image.id);
@@ -426,6 +449,14 @@ export default function EditPropertyPage() {
       const nextImages = [...prev];
       const [movedImage] = nextImages.splice(sourceIndex, 1);
       nextImages.splice(targetIndex, 0, movedImage);
+      console.info('[edit/[id]] image moved in UI', {
+        viviendaId: propertyId,
+        sourceId,
+        targetId,
+        sourceIndex,
+        targetIndex,
+        nextOrder: summarizeOrderedImagesForDebug(nextImages),
+      });
       return nextImages;
     });
 
@@ -543,6 +574,23 @@ export default function EditPropertyPage() {
         sortOrder: index,
       }));
 
+      const existingImageOrderPayload = imageOrder
+        .filter(
+          (image) =>
+            image.kind === 'existing' &&
+            Number.isInteger(Number(image.imageId)),
+        )
+        .map((image) => ({
+          imageId: Number(image.imageId),
+          sortOrder: image.sortOrder,
+        }));
+
+      console.info('[edit/[id]] submitting property update with image order', {
+        viviendaId: propertyId,
+        orderedImages: summarizeOrderedImagesForDebug(imageOrder),
+        existingImageOrderPayload,
+      });
+
       const response = await fetch('/api/propiedades', {
         method: 'PUT',
         headers: {
@@ -556,24 +604,26 @@ export default function EditPropertyPage() {
           is_rent: isRentCategory,
           eficiencia_energetica: eficienciaEnergetica,
           propiedades: formData.propiedades,
-          image_order: imageOrder
-            .filter(
-              (image) =>
-                image.kind === 'existing' &&
-                Number.isInteger(Number(image.imageId)),
-            )
-            .map((image) => ({
-              imageId: Number(image.imageId),
-              sortOrder: image.sortOrder,
-            })),
+          image_order: existingImageOrderPayload,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('[edit/[id]] property update failed', {
+          viviendaId: propertyId,
+          status: response.status,
+          errorData,
+          existingImageOrderPayload,
+        });
         setSubmitMessage(`Error: ${errorData.error}`);
         return;
       }
+
+      console.info('[edit/[id]] property update accepted', {
+        viviendaId: propertyId,
+        existingImageOrderPayload,
+      });
 
       const newImagesToUpload = imageOrder.filter(
         (image) => image.kind === 'new' && image.file,
@@ -621,6 +671,13 @@ export default function EditPropertyPage() {
                 `Error guardando "${image.file.name}" con sort_order ${image.sortOrder}: ${imgError.message}`,
               );
             }
+
+            console.info('[edit/[id]] new image uploaded and inserted', {
+              viviendaId,
+              fileName: image.file.name,
+              sortOrder: image.sortOrder,
+              publicUrlTail: data.publicUrl.split('/').slice(-2).join('/'),
+            });
           }
         } catch (err) {
           console.error('Error subiendo im?genes nuevas', err);

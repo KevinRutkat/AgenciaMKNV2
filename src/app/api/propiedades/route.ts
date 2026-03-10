@@ -17,6 +17,14 @@ type SupabaseErrorLike = {
   message?: string;
 };
 
+type ReorderDebugRow = {
+  id: number;
+  vivienda_id: number;
+  sort_order: number | null;
+  inserted_at?: string | null;
+  url?: string | null;
+};
+
 function formatErrorMessage(prefix: string, error: unknown) {
   if (error instanceof Error) {
     return `${prefix}: ${error.message}`;
@@ -46,6 +54,16 @@ function formatErrorMessage(prefix: string, error: unknown) {
   }
 
   return prefix;
+}
+
+function summarizeImageRows(rows: ReorderDebugRow[] | null | undefined) {
+  return (rows || []).map((row) => ({
+    id: row.id,
+    vivienda_id: row.vivienda_id,
+    sort_order: row.sort_order,
+    inserted_at: row.inserted_at ?? null,
+    url_tail: row.url ? row.url.split('/').slice(-2).join('/') : null,
+  }));
 }
 
 async function normalizeImageSortOrder(
@@ -115,7 +133,7 @@ async function isAuthenticated(request: NextRequest) {
     const token = authHeader.substring(7); // Remover "Bearer "
 
     // Verificar el token con Supabase
-    const supabase = createSupabaseServerClient(token);
+    const supabase = createSupabaseServerClient(token, { useUserToken: true });
     const {
       data: { user },
       error,
@@ -135,11 +153,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    const authHeader = request.headers.get('authorization') || '';
-    const token = authHeader.startsWith('Bearer ')
-      ? authHeader.substring(7)
-      : undefined;
-    const supabase = createSupabaseServerClient(token);
+    const supabase = createSupabaseServerClient();
 
     const formData = await request.formData();
 
@@ -454,11 +468,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    const authHeader = request.headers.get('authorization') || '';
-    const token = authHeader.startsWith('Bearer ')
-      ? authHeader.substring(7)
-      : undefined;
-    const supabase = createSupabaseServerClient(token);
+    const supabase = createSupabaseServerClient();
 
     const body = await request.json();
     const { id, propiedades, eficiencia_energetica, image_order, ...rest } = body;
@@ -508,10 +518,21 @@ export async function PUT(request: NextRequest) {
     }
 
     if (Array.isArray(image_order) && image_order.length > 0) {
+      const reorderTraceId = `reorder-vivienda-${id}-${Date.now()}`;
       const normalizedImageOrder = image_order
         .map((image) => parseImageOrderItem(image))
         .filter((image): image is ImageOrderItem => image !== null)
         .sort((a, b) => a.sortOrder - b.sortOrder);
+
+      console.info('[PUT /api/propiedades] image reorder payload received', {
+        reorderTraceId,
+        viviendaId: id,
+        totalItemsReceived: image_order.length,
+        normalizedImageOrder,
+        usingServiceRoleByDefault: Boolean(
+          process.env.SUPABASE_SERVICE_ROLE_KEY,
+        ),
+      });
 
       if (normalizedImageOrder.length !== image_order.length) {
         return NextResponse.json(
@@ -560,7 +581,7 @@ export async function PUT(request: NextRequest) {
 
       const { data: existingImages, error: existingImagesError } = await supabase
         .from('vivienda_images')
-        .select('id')
+        .select('id, vivienda_id, sort_order, inserted_at, url')
         .eq('vivienda_id', id);
 
       if (existingImagesError) {
@@ -578,6 +599,14 @@ export async function PUT(request: NextRequest) {
           { status: 500 },
         );
       }
+
+      console.info('[PUT /api/propiedades] image reorder current db state', {
+        reorderTraceId,
+        viviendaId: id,
+        existingImages: summarizeImageRows(
+          (existingImages as ReorderDebugRow[] | null | undefined) || [],
+        ),
+      });
 
       const existingImageIds = new Set(
         (existingImages || []).map((image) => image.id),
@@ -614,11 +643,12 @@ export async function PUT(request: NextRequest) {
       }
 
       for (const [index, image] of normalizedImageOrder.entries()) {
-        const { error: prepError } = await supabase
+        const { data: prepRows, error: prepError } = await supabase
           .from('vivienda_images')
           .update({ sort_order: TEMP_SORT_ORDER_OFFSET + index })
           .eq('id', image.imageId)
-          .eq('vivienda_id', id);
+          .eq('vivienda_id', id)
+          .select('id, vivienda_id, sort_order');
 
         if (prepError) {
           console.error('Error preparing image reorder:', prepError);
@@ -633,14 +663,39 @@ export async function PUT(request: NextRequest) {
             { status: 500 },
           );
         }
+
+        if (!prepRows || prepRows.length !== 1) {
+          console.error(
+            '[PUT /api/propiedades] image reorder prep updated an unexpected number of rows',
+            {
+              reorderTraceId,
+              viviendaId: id,
+              imageId: image.imageId,
+              expectedRows: 1,
+              actualRows: prepRows?.length ?? 0,
+              requestedTempSortOrder: TEMP_SORT_ORDER_OFFSET + index,
+              hint: 'Esto suele indicar RLS/politicas, filtros que no casan o IDs incorrectos.',
+            },
+          );
+          await normalizeImageSortOrder(supabase, id);
+          return NextResponse.json(
+            {
+              error:
+                'El reordenado de imagenes no modifico ninguna fila en la fase temporal. Revisa la consola del servidor para el trace ID.',
+              reorderTraceId,
+            },
+            { status: 500 },
+          );
+        }
       }
 
       for (const image of normalizedImageOrder) {
-        const { error: reorderError } = await supabase
+        const { data: reorderRows, error: reorderError } = await supabase
           .from('vivienda_images')
           .update({ sort_order: image.sortOrder })
           .eq('id', image.imageId)
-          .eq('vivienda_id', id);
+          .eq('vivienda_id', id)
+          .select('id, vivienda_id, sort_order');
 
         if (reorderError) {
           console.error('Error saving image order:', reorderError);
@@ -655,6 +710,56 @@ export async function PUT(request: NextRequest) {
             { status: 500 },
           );
         }
+
+        if (!reorderRows || reorderRows.length !== 1) {
+          console.error(
+            '[PUT /api/propiedades] image reorder final update changed an unexpected number of rows',
+            {
+              reorderTraceId,
+              viviendaId: id,
+              imageId: image.imageId,
+              expectedRows: 1,
+              actualRows: reorderRows?.length ?? 0,
+              requestedSortOrder: image.sortOrder,
+              hint: 'Esto suele indicar RLS/politicas, filtros que no casan o IDs incorrectos.',
+            },
+          );
+          await normalizeImageSortOrder(supabase, id);
+          return NextResponse.json(
+            {
+              error:
+                'El reordenado de imagenes no modifico ninguna fila en la fase final. Revisa la consola del servidor para el trace ID.',
+              reorderTraceId,
+            },
+            { status: 500 },
+          );
+        }
+      }
+
+      const { data: updatedImages, error: updatedImagesError } = await supabase
+        .from('vivienda_images')
+        .select('id, vivienda_id, sort_order, inserted_at, url')
+        .eq('vivienda_id', id)
+        .order('sort_order', { ascending: true })
+        .order('inserted_at', { ascending: true });
+
+      if (updatedImagesError) {
+        console.error(
+          '[PUT /api/propiedades] image reorder could not load post-update state',
+          {
+            reorderTraceId,
+            viviendaId: id,
+            error: updatedImagesError,
+          },
+        );
+      } else {
+        console.info('[PUT /api/propiedades] image reorder db state after save', {
+          reorderTraceId,
+          viviendaId: id,
+          updatedImages: summarizeImageRows(
+            (updatedImages as ReorderDebugRow[] | null | undefined) || [],
+          ),
+        });
       }
     }
 
@@ -679,11 +784,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    const authHeader = request.headers.get('authorization') || '';
-    const token = authHeader.startsWith('Bearer ')
-      ? authHeader.substring(7)
-      : undefined;
-    const supabase = createSupabaseServerClient(token);
+    const supabase = createSupabaseServerClient();
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
