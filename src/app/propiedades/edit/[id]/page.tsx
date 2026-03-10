@@ -1,26 +1,41 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { DragEvent, useEffect, useRef, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Autocomplete, GoogleMap, Marker } from '@react-google-maps/api';
 import Banner from '@/components/Banner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGoogleMaps } from '@/contexts/GoogleMapsContext';
+import {
+  ENERGY_EFFICIENCY_OPTIONS,
+  normalizeEnergyEfficiency,
+} from '@/lib/energyEfficiency';
 import { supabase } from '@/lib/supabase';
 import { FEATURES, normalizeFeature } from '@/lib/features';
 import { normalizeCategory } from '@/lib/viviendaUtils';
 import {
+  Bars3Icon,
   PhotoIcon,
   InformationCircleIcon,
   ExclamationTriangleIcon,
-  TrashIcon,
   XMarkIcon,
   ArrowLeftIcon,
   ArrowUpTrayIcon,
   ArrowPathIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
+
+interface OrderedImageItem {
+  clientId: string;
+  kind: 'existing' | 'new';
+  url: string;
+  file?: File;
+  imageId?: number;
+}
+
+const MAX_IMAGES = 20;
+const VALID_IMAGE_FORMATS = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 export default function EditPropertyPage() {
   const router = useRouter();
@@ -56,6 +71,7 @@ export default function EditPropertyPage() {
     plantas: 1,
     is_featured: false,
     category: 'usada',
+    eficiencia_energetica: '',
     is_sold: false, // NUEVO CAMPO
   });
 
@@ -63,11 +79,11 @@ export default function EditPropertyPage() {
   const caracteristicasDisponibles = FEATURES.map((f) => f.label);
 
   // Estado para las imágenes
-  const [images, setImages] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-  const [existingImages, setExistingImages] = useState<
-    Array<{ id: number; url: string }>
-  >([]);
+  const [orderedImages, setOrderedImages] = useState<OrderedImageItem[]>([]);
+  const [draggedImageId, setDraggedImageId] = useState<string | null>(null);
+  const [dragOverImageId, setDragOverImageId] = useState<string | null>(null);
+  const [recentlyMovedImageId, setRecentlyMovedImageId] = useState<string | null>(null);
+  const orderedImagesRef = useRef<OrderedImageItem[]>([]);
 
   // Estado para el envío
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -82,6 +98,20 @@ export default function EditPropertyPage() {
 
   // Estado para drag & drop
   const [isDragOver, setIsDragOver] = useState(false);
+
+  useEffect(() => {
+    orderedImagesRef.current = orderedImages;
+  }, [orderedImages]);
+
+  useEffect(() => {
+    return () => {
+      orderedImagesRef.current.forEach((image) => {
+        if (image.kind === 'new') {
+          URL.revokeObjectURL(image.url);
+        }
+      });
+    };
+  }, []);
 
   // Filtrar características según búsqueda
   const caracteristicasFiltradas = caracteristicasDisponibles.filter(
@@ -159,6 +189,8 @@ export default function EditPropertyPage() {
           // 👇 Si está vendida, forzamos destacado a false
           is_featured: isSoldFromDb ? false : isFeaturedFromDb,
           category: normalizedCategoryValue || 'usada',
+          eficiencia_energetica:
+            normalizeEnergyEfficiency(vivienda.eficiencia_energetica) || '',
           is_sold: isSoldFromDb,
         });
 
@@ -167,13 +199,36 @@ export default function EditPropertyPage() {
         }
       }
 
-      const { data: images, error: imagesError } = await supabase
+      let { data: images, error: imagesError } = await supabase
         .from('vivienda_images')
         .select('*')
-        .eq('vivienda_id', propertyId);
+        .eq('vivienda_id', propertyId)
+        .order('sort_order', { ascending: true })
+        .order('inserted_at', { ascending: true });
+
+      if (imagesError) {
+        const fallbackImagesResponse = await supabase
+          .from('vivienda_images')
+          .select('*')
+          .eq('vivienda_id', propertyId)
+          .order('inserted_at', { ascending: true });
+        images = fallbackImagesResponse.data;
+        imagesError = fallbackImagesResponse.error;
+      }
 
       if (!imagesError && images) {
-        setExistingImages(images);
+        setOrderedImages(
+          images.map((image) => {
+            const imageId = Number(image.id);
+
+            return {
+              clientId: `existing-${image.id}`,
+              kind: 'existing',
+              url: image.url,
+              imageId: Number.isInteger(imageId) ? imageId : undefined,
+            };
+          }),
+        );
       }
     } catch (error) {
       console.error('Error loading property data:', error);
@@ -299,154 +354,166 @@ export default function EditPropertyPage() {
     }
   };
 
+  const createNewImageItems = (files: File[]) =>
+    files.map((file, index) => ({
+      clientId: `new-${Date.now()}-${index}-${file.name}`,
+      kind: 'new' as const,
+      url: URL.createObjectURL(file),
+      file,
+    }));
+
+  const validateImageFiles = (files: File[]) => {
+    const totalFiles = orderedImages.length + files.length;
+
+    if (totalFiles > MAX_IMAGES) {
+      return ` Error: Solo se pueden tener m?ximo ${MAX_IMAGES} im?genes en total. Ya tienes ${orderedImages.length}, intentas agregar ${files.length}`;
+    }
+
+    const oversizedFiles = files.filter((file) => file.size > 5 * 1024 * 1024);
+    if (oversizedFiles.length > 0) {
+      return ' Error: Algunas im?genes superan los 5MB. Por favor, reduce el tama?o';
+    }
+
+    const invalidFiles = files.filter((file) => !VALID_IMAGE_FORMATS.includes(file.type));
+    if (invalidFiles.length > 0) {
+      return ' Error: Solo se permiten im?genes en formato JPG, PNG o WebP';
+    }
+
+    return null;
+  };
+
+  const appendImages = (files: File[]) => {
+    if (files.length === 0) return;
+
+    const validationError = validateImageFiles(files);
+    if (validationError) {
+      setSubmitMessage(validationError);
+      return;
+    }
+
+    setOrderedImages((prev) => [...prev, ...createNewImageItems(files)]);
+    setSubmitMessage('');
+  };
+
+  const normalizeImageSortOrder = async () => {
+    const viviendaId = Number(propertyId);
+
+    if (!Number.isInteger(viviendaId)) {
+      return false;
+    }
+
+    const { error } = await supabase.rpc('normalize_vivienda_images_sort_order', {
+      p_vivienda_id: viviendaId,
+    });
+
+    if (error) {
+      console.error('Error normalizing image sort order:', error);
+      return false;
+    }
+
+    return true;
+  };
+
+  const moveOrderedImage = (sourceId: string, targetId: string) => {
+    if (sourceId === targetId) return;
+
+    setOrderedImages((prev) => {
+      const sourceIndex = prev.findIndex((image) => image.clientId === sourceId);
+      const targetIndex = prev.findIndex((image) => image.clientId === targetId);
+
+      if (sourceIndex === -1 || targetIndex === -1) return prev;
+
+      const nextImages = [...prev];
+      const [movedImage] = nextImages.splice(sourceIndex, 1);
+      nextImages.splice(targetIndex, 0, movedImage);
+      return nextImages;
+    });
+
+    setRecentlyMovedImageId(sourceId);
+    setTimeout(() => {
+      setRecentlyMovedImageId((current) =>
+        current === sourceId ? null : current,
+      );
+    }, 350);
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      const totalFiles = images.length + newFiles.length;
-
-      if (totalFiles > 20) {
-        setSubmitMessage(
-          ` Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${newFiles.length}`,
-        );
-        return;
-      }
-
-      const maxSize = 5 * 1024 * 1024;
-      const oversizedFiles = newFiles.filter((file) => file.size > maxSize);
-      if (oversizedFiles.length > 0) {
-        setSubmitMessage(
-          ' Error: Algunas imágenes superan los 5MB. Por favor, reduce el tamaño',
-        );
-        return;
-      }
-
-      const validFormats = [
-        'image/jpeg',
-        'image/jpg',
-        'image/png',
-        'image/webp',
-      ];
-      const invalidFiles = newFiles.filter(
-        (file) => !validFormats.includes(file.type),
-      );
-      if (invalidFiles.length > 0) {
-        setSubmitMessage(
-          ' Error: Solo se permiten imágenes en formato JPG, PNG o WebP',
-        );
-        return;
-      }
-
-      const allImages =
-        images.length === 0 ? newFiles : [...images, ...newFiles];
-      setImages(allImages);
-      setSubmitMessage('');
-
-      if (images.length === 0) {
-        const urls = newFiles.map((file) => URL.createObjectURL(file));
-        setPreviewUrls(urls);
-      } else {
-        const newUrls = newFiles.map((file) => URL.createObjectURL(file));
-        setPreviewUrls([...previewUrls, ...newUrls]);
-      }
+      appendImages(Array.from(e.target.files));
     }
 
     e.target.value = '';
   };
 
-  const removeImage = (index: number) => {
-    const newImages = images.filter((_, i) => i !== index);
-    const newUrls = previewUrls.filter((_, i) => i !== index);
-    URL.revokeObjectURL(previewUrls[index]);
-    setImages(newImages);
-    setPreviewUrls(newUrls);
-  };
-
-  const removeExistingImage = async (imageId: number) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar esta imagen?')) {
+  const removeImageItem = async (clientId: string) => {
+    const imageToRemove = orderedImages.find((image) => image.clientId === clientId);
+    if (!imageToRemove) {
       return;
     }
 
-    try {
-      const { error } = await supabase
-        .from('vivienda_images')
-        .delete()
-        .eq('id', imageId);
-
-      if (error) {
-        alert('Error al eliminar la imagen');
+    if (imageToRemove.kind === 'existing') {
+      if (!confirm('?Est?s seguro de que quieres eliminar esta imagen?')) {
         return;
       }
 
-      setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
-    } catch {
-      alert('Error al eliminar la imagen');
+      try {
+        const { error } = await supabase
+          .from('vivienda_images')
+          .delete()
+          .eq('id', imageToRemove.imageId);
+
+        if (error) {
+          alert('Error al eliminar la imagen');
+          return;
+        }
+
+        const normalized = await normalizeImageSortOrder();
+        if (!normalized) {
+          alert(
+            'La imagen se elimino, pero no se pudo renumerar el orden en la base de datos.',
+          );
+        }
+      } catch {
+        alert('Error al eliminar la imagen');
+        return;
+      }
+    } else {
+      URL.revokeObjectURL(imageToRemove.url);
     }
+
+    setOrderedImages((prev) => prev.filter((image) => image.clientId !== clientId));
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
     setIsDragOver(true);
   };
 
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleDragLeave = (e: DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
+    appendImages(Array.from(e.dataTransfer.files));
+  };
 
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length === 0) return;
+  const handlePreviewDragStart = (clientId: string) => {
+    setDraggedImageId(clientId);
+  };
 
-    const imageFiles = files.filter((file) => {
-      const validFormats = [
-        'image/jpeg',
-        'image/jpg',
-        'image/png',
-        'image/webp',
-      ];
-      return validFormats.includes(file.type);
-    });
+  const handlePreviewDrop = (targetId: string) => {
+    if (!draggedImageId) return;
+    moveOrderedImage(draggedImageId, targetId);
+    setDraggedImageId(null);
+    setDragOverImageId(null);
+  };
 
-    if (imageFiles.length === 0) {
-      setSubmitMessage(
-        ' Error: Solo se permiten imágenes en formato JPG, PNG o WebP',
-      );
-      return;
-    }
-
-    const totalFiles = images.length + imageFiles.length;
-
-    if (totalFiles > 20) {
-      setSubmitMessage(
-        ` Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${imageFiles.length}`,
-      );
-      return;
-    }
-
-    const maxSize = 5 * 1024 * 1024;
-    const oversizedFiles = imageFiles.filter((file) => file.size > maxSize);
-    if (oversizedFiles.length > 0) {
-      setSubmitMessage(
-        ' Error: Algunas imágenes superan los 5MB. Por favor, reduce el tamaño',
-      );
-      return;
-    }
-
-    if (images.length === 0) {
-      setImages(imageFiles);
-      setSubmitMessage('');
-      const urls = imageFiles.map((file) => URL.createObjectURL(file));
-      setPreviewUrls(urls);
-    } else {
-      const allImages = [...images, ...imageFiles];
-      setImages(allImages);
-      setSubmitMessage('');
-      const newUrls = imageFiles.map((file) => URL.createObjectURL(file));
-      setPreviewUrls([...previewUrls, ...newUrls]);
-    }
+  const handlePreviewDragEnd = () => {
+    setDraggedImageId(null);
+    setDragOverImageId(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -467,6 +534,14 @@ export default function EditPropertyPage() {
 
       const normalizedCategoryValue = normalizeCategory(formData.category);
       const isRentCategory = normalizedCategoryValue.includes('alquiler');
+      const eficienciaEnergetica = normalizeEnergyEfficiency(
+        formData.eficiencia_energetica,
+      );
+
+      const imageOrder = orderedImages.map((image, index) => ({
+        ...image,
+        sortOrder: index,
+      }));
 
       const response = await fetch('/api/propiedades', {
         method: 'PUT',
@@ -479,7 +554,18 @@ export default function EditPropertyPage() {
           ...formData,
           category: normalizedCategoryValue || formData.category,
           is_rent: isRentCategory,
+          eficiencia_energetica: eficienciaEnergetica,
           propiedades: formData.propiedades,
+          image_order: imageOrder
+            .filter(
+              (image) =>
+                image.kind === 'existing' &&
+                Number.isInteger(Number(image.imageId)),
+            )
+            .map((image) => ({
+              imageId: Number(image.imageId),
+              sortOrder: image.sortOrder,
+            })),
         }),
       });
 
@@ -489,52 +575,64 @@ export default function EditPropertyPage() {
         return;
       }
 
-      if (images.length > 0) {
+      const newImagesToUpload = imageOrder.filter(
+        (image) => image.kind === 'new' && image.file,
+      );
+
+      if (newImagesToUpload.length > 0) {
         try {
           const viviendaId = Number(propertyId);
 
-          await Promise.all(
-            images.map(async (file) => {
-              const path = `viviendas/${viviendaId}/${Date.now()}-${file.name}`;
+          for (const image of newImagesToUpload) {
+            if (!image.file) continue;
 
-              const { error: uploadError } = await supabase.storage
-                .from('propiedades-images')
-                .upload(path, file);
+            const safeFileName = image.file.name.replace(/\s+/g, '-');
+            const path = `viviendas/${viviendaId}/${String(image.sortOrder + 1).padStart(2, '0')}-${Date.now()}-${safeFileName}`;
 
-              if (uploadError) throw uploadError;
+            const { error: uploadError } = await supabase.storage
+              .from('propiedades-images')
+              .upload(path, image.file);
 
-              const { data } = supabase.storage
-                .from('propiedades-images')
-                .getPublicUrl(path);
+            if (uploadError) {
+              throw new Error(
+                `Error subiendo "${image.file.name}" al storage: ${uploadError.message}`,
+              );
+            }
 
-              if (!data?.publicUrl) {
-                throw new Error('No se pudo obtener la URL pública');
-              }
+            const { data } = supabase.storage
+              .from('propiedades-images')
+              .getPublicUrl(path);
 
-              const { error: imgError } = await supabase
-                .from('vivienda_images')
-                .insert({
-                  vivienda_id: viviendaId,
-                  url: data.publicUrl,
-                  inserted_at: new Date().toISOString(),
-                });
+            if (!data?.publicUrl) {
+              throw new Error('No se pudo obtener la URL p?blica');
+            }
 
-              if (imgError) throw imgError;
-            }),
-          );
+            const { error: imgError } = await supabase
+              .from('vivienda_images')
+              .insert({
+                vivienda_id: viviendaId,
+                url: data.publicUrl,
+                inserted_at: new Date().toISOString(),
+                sort_order: image.sortOrder,
+              });
 
-          setExistingImages((prev) => [
-            ...prev,
-            ...images.map((file, index) => ({
-              id: Date.now() + index,
-              url: URL.createObjectURL(file),
-            })),
-          ]);
+            if (imgError) {
+              throw new Error(
+                `Error guardando "${image.file.name}" con sort_order ${image.sortOrder}: ${imgError.message}`,
+              );
+            }
+          }
         } catch (err) {
-          console.error('Error subiendo imágenes nuevas', err);
+          console.error('Error subiendo im?genes nuevas', err);
+          await normalizeImageSortOrder();
           setSubmitMessage(
-            ' Propiedad actualizada, pero hubo un error subiendo las nuevas imágenes',
+            `Error: ${
+              err instanceof Error
+                ? err.message
+                : 'Propiedad actualizada, pero hubo un error subiendo o reordenando las imagenes'
+            }`,
           );
+          return;
         }
       }
 
@@ -679,7 +777,7 @@ export default function EditPropertyPage() {
             </div>
 
             {/* Habitaciones y baños */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
               <div>
                 <label
                   htmlFor="habitaciones"
@@ -760,6 +858,28 @@ export default function EditPropertyPage() {
                   <option value="garaje">Garaje</option>
                   <option value="local">Local</option>
                   <option value="otro">Otro</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="eficiencia_energetica"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                   Eficiencia energetica
+                </label>
+                <select
+                  id="eficiencia_energetica"
+                  name="eficiencia_energetica"
+                  value={formData.eficiencia_energetica}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                >
+                  {ENERGY_EFFICIENCY_OPTIONS.map((option) => (
+                    <option key={option.value || 'empty'} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -1016,46 +1136,14 @@ export default function EditPropertyPage() {
               </div>
             </div>
 
-            {/* Imágenes */}
+            {/* Imagenes */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <span className="inline-flex items-center gap-2">
                   <PhotoIcon className="h-4 w-4 text-gray-500" />
-                  Gestión de imágenes
+                  Gestion de imagenes
                 </span>
               </label>
-
-              {existingImages.length > 0 && (
-                <div className="mb-6">
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">
-                    Imágenes actuales ({existingImages.length}):
-                  </h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {existingImages.map((image) => (
-                      <div key={image.id} className="relative group">
-                        <Image
-                          src={image.url}
-                          alt="Imagen de la propiedad"
-                          width={200}
-                          height={128}
-                          className="w-full h-32 object-cover rounded-lg border border-gray-200"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeExistingImage(image.id)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                          title="Eliminar imagen"
-                        >
-                          <XMarkIcon className="h-3 w-3" />
-                        </button>
-                        <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
-                          Actual
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               <div className="space-y-4">
                 <div className="space-y-3">
@@ -1074,22 +1162,18 @@ export default function EditPropertyPage() {
                         <ArrowUpTrayIcon className="h-8 w-8 text-teal-600" />
                         <div className="text-teal-700 font-medium">
                           {isDragOver
-                            ? 'Suelta las imágenes aquí'
-                            : images.length === 0
-                            ? 'Añadir nuevas imágenes'
-                            : `Agregar más imágenes (${images.length}/20)`}
+                            ? 'Suelta las imagenes aqui'
+                            : orderedImages.length === 0
+                              ? 'Anadir imagenes'
+                              : `Agregar mas imagenes (${orderedImages.length}/${MAX_IMAGES})`}
                         </div>
                         <div className="text-sm text-teal-600">
                           {isDragOver
-                            ? 'Puedes soltar múltiples imágenes a la vez'
-                            : images.length === 0
-                            ? 'Haz clic aquí para seleccionar múltiples imágenes a la vez'
-                            : 'Selecciona más imágenes para agregar a las nuevas'}
+                            ? 'Puedes soltar multiples imagenes a la vez'
+                            : 'Selecciona o arrastra imagenes para mantener el orden visual'}
                         </div>
                         <div className="text-xs text-teal-500">
-                          {isDragOver
-                            ? ''
-                            : 'o arrastra y suelta las imágenes aquí'}
+                          {isDragOver ? '' : 'La primera imagen sera la portada'}
                         </div>
                       </div>
                     </div>
@@ -1108,107 +1192,84 @@ export default function EditPropertyPage() {
                 <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                   <p className="inline-flex items-center gap-2 text-sm text-blue-700 font-medium mb-1">
                     <InformationCircleIcon className="h-4 w-4" />
-                    Funcionalidad mejorada de selección de imágenes
+                    Orden manual de imagenes
                   </p>
                   <p className="text-xs text-blue-600">
-                    • Selecciona múltiples imágenes manteniendo{' '}
-                    <kbd className="px-1 py-0.5 bg-blue-100 rounded text-xs">
-                      Ctrl
-                    </kbd>{' '}
-                    (Windows) o{' '}
-                    <kbd className="px-1 py-0.5 bg-blue-100 rounded text-xs">
-                      Cmd
-                    </kbd>{' '}
-                    (Mac)
-                    <br />
-                    • Arrastra y suelta varias imágenes a la vez
-                    <br />
-                    • Puedes volver a seleccionar más imágenes cuando
-                    quieras agregar adicionales
-                    <br />
-                    • Las imágenes existentes se mantienen, solo agregas
-                    nuevas
+                    Las imagenes actuales mantienen su orden al cargar. Si arrastras, guardas el nuevo orden.
                   </p>
                 </div>
 
                 <div className="text-xs text-gray-500">
-                  <p>• Formatos aceptados: JPG, PNG, WebP</p>
-                  <p>• Tamaño máximo por imagen: 5MB</p>
-                  <p>• Máximo 20 imágenes por propiedad (incluyendo existentes)</p>
-                  <p>
-                    • <strong>Siempre puedes agregar más imágenes usando el área de selección</strong>
-                  </p>
+                  <p>? Formatos aceptados: JPG, PNG, WebP</p>
+                  <p>? Tamano maximo por imagen: 5MB</p>
+                  <p>? Maximo 20 imagenes por propiedad</p>
                 </div>
-
-                {images.length > 0 && (
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-600">
-                      <span
-                        className={`font-medium ${
-                          images.length === 20
-                            ? 'text-amber-600'
-                            : 'text-teal-600'
-                        }`}
-                      >
-                        {images.length} nuevas imágenes seleccionadas
-                      </span>
-                      {existingImages.length + images.length === 20 && (
-                        <span className="text-amber-600 ml-2">
-                           Límite máximo alcanzado
-                        </span>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        previewUrls.forEach((url) => URL.revokeObjectURL(url));
-                        setImages([]);
-                        setPreviewUrls([]);
-                        setSubmitMessage('');
-                      }}
-                      className="text-xs px-3 py-1 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
-                      title="Eliminar todas las imágenes nuevas"
-                    >
-                      <span className="inline-flex items-center gap-2">
-                        <TrashIcon className="h-4 w-4" />
-                        Limpiar nuevas
-                      </span>
-                    </button>
-                  </div>
-                )}
               </div>
 
-              {previewUrls.length > 0 && (
+              {orderedImages.length > 0 && (
                 <div className="mt-4">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="text-sm font-medium text-gray-700">
-                      Vista previa de nuevas imágenes ({images.length}):
+                      Orden de visualizacion ({orderedImages.length}):
                     </h4>
                     <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
-                      <XMarkIcon className="h-3 w-3" />
-                      Haz clic en el icono para eliminar una imagen individual
+                      <Bars3Icon className="h-3 w-3" />
+                      Arrastra para reordenar
                     </span>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {previewUrls.map((url, index) => (
-                      <div key={index} className="relative group">
+                    {orderedImages.map((image, index) => (
+                      <div
+                        key={image.clientId}
+                        draggable
+                        onDragStart={() => handlePreviewDragStart(image.clientId)}
+                        onDragOver={(event) => event.preventDefault()}
+                        onDragEnter={() => setDragOverImageId(image.clientId)}
+                        onDrop={() => handlePreviewDrop(image.clientId)}
+                        onDragEnd={handlePreviewDragEnd}
+                        className={`relative group cursor-grab active:cursor-grabbing rounded-xl border bg-white p-2 shadow-sm transition-all duration-200 ${
+                          draggedImageId === image.clientId
+                            ? 'border-teal-500 opacity-70 scale-[0.98] rotate-1 shadow-xl'
+                            : dragOverImageId === image.clientId
+                              ? 'border-teal-400 -translate-y-1 scale-[1.03] shadow-lg ring-2 ring-teal-200'
+                              : recentlyMovedImageId === image.clientId
+                                ? 'border-teal-300 shadow-md ring-2 ring-teal-100'
+                                : 'border-gray-200 hover:border-teal-300 hover:-translate-y-0.5'
+                        }`}
+                      >
+                        <div className="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-1 text-[11px] font-semibold text-white">
+                          <Bars3Icon className="h-3 w-3" />
+                          {index + 1}
+                        </div>
+                        {index === 0 && (
+                          <div className="absolute right-3 top-3 z-10 rounded-full bg-teal-600 px-2 py-1 text-[11px] font-semibold text-white">
+                            Portada
+                          </div>
+                        )}
+                        {image.kind === 'new' && (
+                          <div className="absolute bottom-3 left-3 z-10 rounded-full bg-blue-600 px-2 py-1 text-[11px] font-semibold text-white">
+                            Nueva
+                          </div>
+                        )}
                         <Image
-                          src={url}
-                          alt={`Nueva imagen ${index + 1}`}
+                          src={image.url}
+                          alt="Imagen de la propiedad"
                           width={200}
                           height={128}
                           className="w-full h-32 object-cover rounded-lg border border-gray-200"
                         />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                          title="Eliminar imagen"
-                        >
-                          <XMarkIcon className="h-3 w-3" />
-                        </button>
-                        <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
-                          Nueva {index + 1}
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                          <p className="truncate text-xs text-gray-600" title={image.kind === 'new' && image.file ? image.file.name : 'Imagen actual'}>
+                            {image.kind === 'new' && image.file ? image.file.name : 'Imagen actual'}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => removeImageItem(image.clientId)}
+                            className="rounded-full bg-red-50 p-1.5 text-red-600 transition-colors hover:bg-red-100"
+                            title="Eliminar imagen"
+                          >
+                            <XMarkIcon className="h-3.5 w-3.5" />
+                          </button>
                         </div>
                       </div>
                     ))}

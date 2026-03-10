@@ -1,6 +1,107 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { imagesBucketName, imagesBucketPrefix } from '@/lib/config';
+import { normalizeEnergyEfficiency } from '@/lib/energyEfficiency';
+
+const TEMP_SORT_ORDER_OFFSET = 1000;
+
+type ImageOrderItem = {
+  imageId: number;
+  sortOrder: number;
+};
+
+type SupabaseErrorLike = {
+  code?: string;
+  details?: string | null;
+  hint?: string | null;
+  message?: string;
+};
+
+function formatErrorMessage(prefix: string, error: unknown) {
+  if (error instanceof Error) {
+    return `${prefix}: ${error.message}`;
+  }
+
+  if (error && typeof error === 'object') {
+    const candidate = error as SupabaseErrorLike;
+    const parts = [prefix];
+
+    if (candidate.message) {
+      parts.push(candidate.message);
+    }
+
+    if (candidate.details) {
+      parts.push(`Detalles: ${candidate.details}`);
+    }
+
+    if (candidate.hint) {
+      parts.push(`Sugerencia: ${candidate.hint}`);
+    }
+
+    if (candidate.code) {
+      parts.push(`Codigo: ${candidate.code}`);
+    }
+
+    return parts.join('. ');
+  }
+
+  return prefix;
+}
+
+async function normalizeImageSortOrder(
+  supabase: ReturnType<typeof createSupabaseServerClient>,
+  viviendaId: number | string,
+) {
+  const parsedViviendaId =
+    typeof viviendaId === 'number' ? viviendaId : Number(viviendaId);
+
+  if (!Number.isInteger(parsedViviendaId)) {
+    return;
+  }
+
+  const { error } = await supabase.rpc('normalize_vivienda_images_sort_order', {
+    p_vivienda_id: parsedViviendaId,
+  });
+
+  if (error) {
+    console.error(
+      `Error normalizing image sort order for vivienda ${parsedViviendaId}:`,
+      error,
+    );
+  }
+}
+
+function parseImageOrderItem(image: unknown): ImageOrderItem | null {
+  if (!image || typeof image !== 'object') {
+    return null;
+  }
+
+  const candidate = image as {
+    imageId?: number | string;
+    sortOrder?: number | string;
+  };
+  const parsedImageId =
+    typeof candidate.imageId === 'number'
+      ? candidate.imageId
+      : Number(candidate.imageId);
+  const parsedSortOrder =
+    typeof candidate.sortOrder === 'number'
+      ? candidate.sortOrder
+      : Number(candidate.sortOrder);
+
+  if (
+    !Number.isInteger(parsedImageId) ||
+    !Number.isInteger(parsedSortOrder) ||
+    parsedSortOrder < 0
+  ) {
+    return null;
+  }
+
+  return {
+    imageId: parsedImageId,
+    sortOrder: parsedSortOrder,
+  };
+}
 
 // Función para verificar autenticación
 async function isAuthenticated(request: NextRequest) {
@@ -75,6 +176,9 @@ export async function POST(request: NextRequest) {
       plantas: parseInt(formData.get('plantas') as string),
       is_featured: formData.get('is_featured') === 'true',
       category: formData.get('category') as string,
+      eficiencia_energetica: normalizeEnergyEfficiency(
+        formData.get('eficiencia_energetica') as string | null,
+      ),
       // 👇 Nuevo campo: por defecto false salvo que se envíe explícitamente
       is_sold: formData.get('is_sold') === 'true',
       inserted_at: new Date().toISOString(),
@@ -248,6 +352,7 @@ export async function POST(request: NextRequest) {
                 vivienda_id: vivienda.id,
                 url: publicUrl,
                 inserted_at: new Date().toISOString(),
+                sort_order: index,
               },
             ]);
 
@@ -270,7 +375,33 @@ export async function POST(request: NextRequest) {
       });
 
       try {
-        const uploadedUrls = await Promise.all(imagePromises);
+        const uploadResults = await Promise.allSettled(imagePromises);
+        const uploadedUrls = uploadResults
+          .filter(
+            (result): result is PromiseFulfilledResult<string> =>
+              result.status === 'fulfilled',
+          )
+          .map((result) => result.value);
+        const failedUploads = uploadResults.filter(
+          (result) => result.status === 'rejected',
+        );
+
+        if (failedUploads.length > 0) {
+          console.error('Error uploading images:', failedUploads);
+          await normalizeImageSortOrder(supabase, vivienda.id);
+
+          return NextResponse.json(
+            {
+              message:
+                'Propiedad creada pero hubo un error al subir algunas imágenes',
+              vivienda,
+              warning: 'Algunas imágenes no se pudieron subir',
+              uploadedImages: uploadedUrls.length,
+              failedImages: failedUploads.length,
+            },
+            { status: 201 },
+          );
+        }
         console.log(
           `${
             uploadedUrls.filter((url) => url).length
@@ -278,6 +409,7 @@ export async function POST(request: NextRequest) {
         );
       } catch (error) {
         console.error('Error uploading images:', error);
+        await normalizeImageSortOrder(supabase, vivienda.id);
         // En caso de error, podrías decidir si eliminar la propiedad creada o continuar sin imágenes
         return NextResponse.json(
           {
@@ -329,7 +461,7 @@ export async function PUT(request: NextRequest) {
     const supabase = createSupabaseServerClient(token);
 
     const body = await request.json();
-    const { id, propiedades, ...rest } = body;
+    const { id, propiedades, eficiencia_energetica, image_order, ...rest } = body;
 
     // Normalizar propiedades (puede venir como string CSV, arreglo, null, etc.)
     let propiedadesArray: string[] = [];
@@ -349,6 +481,7 @@ export async function PUT(request: NextRequest) {
     const updateData = {
       ...rest, // incluye is_sold si viene del cliente
       propiedades: propiedadesArray,
+      eficiencia_energetica: normalizeEnergyEfficiency(eficiencia_energetica),
     };
 
     if (!id) {
@@ -372,6 +505,157 @@ export async function PUT(request: NextRequest) {
         { error: 'Error al actualizar la propiedad' },
         { status: 500 },
       );
+    }
+
+    if (Array.isArray(image_order) && image_order.length > 0) {
+      const normalizedImageOrder = image_order
+        .map((image) => parseImageOrderItem(image))
+        .filter((image): image is ImageOrderItem => image !== null)
+        .sort((a, b) => a.sortOrder - b.sortOrder);
+
+      if (normalizedImageOrder.length !== image_order.length) {
+        return NextResponse.json(
+          {
+            error:
+              'image_order contiene elementos invalidos. Cada imagen debe incluir imageId entero y sortOrder entero mayor o igual a 0.',
+          },
+          { status: 400 },
+        );
+      }
+
+      const duplicatedImageIds = normalizedImageOrder.filter(
+        (image, index, images) =>
+          images.findIndex((candidate) => candidate.imageId === image.imageId) !==
+          index,
+      );
+
+      if (duplicatedImageIds.length > 0) {
+        return NextResponse.json(
+          {
+            error: `image_order contiene imageId duplicados: ${[
+              ...new Set(duplicatedImageIds.map((image) => image.imageId)),
+            ].join(', ')}`,
+          },
+          { status: 400 },
+        );
+      }
+
+      const duplicatedSortOrders = normalizedImageOrder.filter(
+        (image, index, images) =>
+          images.findIndex(
+            (candidate) => candidate.sortOrder === image.sortOrder,
+          ) !== index,
+      );
+
+      if (duplicatedSortOrders.length > 0) {
+        return NextResponse.json(
+          {
+            error: `image_order contiene posiciones repetidas: ${[
+              ...new Set(duplicatedSortOrders.map((image) => image.sortOrder)),
+            ].join(', ')}`,
+          },
+          { status: 400 },
+        );
+      }
+
+      const { data: existingImages, error: existingImagesError } = await supabase
+        .from('vivienda_images')
+        .select('id')
+        .eq('vivienda_id', id);
+
+      if (existingImagesError) {
+        console.error(
+          'Error loading existing images before reorder:',
+          existingImagesError,
+        );
+        return NextResponse.json(
+          {
+            error: formatErrorMessage(
+              'Error al cargar las imagenes actuales antes de reordenar',
+              existingImagesError,
+            ),
+          },
+          { status: 500 },
+        );
+      }
+
+      const existingImageIds = new Set(
+        (existingImages || []).map((image) => image.id),
+      );
+      const requestedImageIds = new Set(
+        normalizedImageOrder.map((image) => image.imageId),
+      );
+      const missingImageIds = (existingImages || [])
+        .map((image) => image.id)
+        .filter((imageId) => !requestedImageIds.has(imageId));
+      const foreignImageIds = normalizedImageOrder
+        .map((image) => image.imageId)
+        .filter((imageId) => !existingImageIds.has(imageId));
+
+      if (missingImageIds.length > 0 || foreignImageIds.length > 0) {
+        const details: string[] = [];
+
+        if (missingImageIds.length > 0) {
+          details.push(`faltan imageId actuales: ${missingImageIds.join(', ')}`);
+        }
+
+        if (foreignImageIds.length > 0) {
+          details.push(
+            `hay imageId que no pertenecen a la vivienda ${id}: ${foreignImageIds.join(', ')}`,
+          );
+        }
+
+        return NextResponse.json(
+          {
+            error: `image_order no coincide con las imagenes reales de la vivienda; ${details.join('; ')}`,
+          },
+          { status: 400 },
+        );
+      }
+
+      for (const [index, image] of normalizedImageOrder.entries()) {
+        const { error: prepError } = await supabase
+          .from('vivienda_images')
+          .update({ sort_order: TEMP_SORT_ORDER_OFFSET + index })
+          .eq('id', image.imageId)
+          .eq('vivienda_id', id);
+
+        if (prepError) {
+          console.error('Error preparing image reorder:', prepError);
+          await normalizeImageSortOrder(supabase, id);
+          return NextResponse.json(
+            {
+              error: formatErrorMessage(
+                'Error al preparar el reordenado de imagenes',
+                prepError,
+              ),
+            },
+            { status: 500 },
+          );
+        }
+      }
+
+      for (const image of normalizedImageOrder) {
+        const { error: reorderError } = await supabase
+          .from('vivienda_images')
+          .update({ sort_order: image.sortOrder })
+          .eq('id', image.imageId)
+          .eq('vivienda_id', id);
+
+        if (reorderError) {
+          console.error('Error saving image order:', reorderError);
+          await normalizeImageSortOrder(supabase, id);
+          return NextResponse.json(
+            {
+              error: formatErrorMessage(
+                `Error al guardar el nuevo orden de imagenes para imageId ${image.imageId} en sort_order ${image.sortOrder}`,
+                reorderError,
+              ),
+            },
+            { status: 500 },
+          );
+        }
+      }
     }
 
     return NextResponse.json({

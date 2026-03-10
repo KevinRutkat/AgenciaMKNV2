@@ -2,6 +2,29 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { imagesBucketName, imagesBucketPrefix } from '@/lib/config';
 
+async function normalizeImageSortOrder(
+  supabase: ReturnType<typeof createSupabaseServerClient>,
+  viviendaId: number | string,
+) {
+  const parsedViviendaId =
+    typeof viviendaId === 'number' ? viviendaId : Number(viviendaId);
+
+  if (!Number.isInteger(parsedViviendaId)) {
+    return;
+  }
+
+  const { error } = await supabase.rpc('normalize_vivienda_images_sort_order', {
+    p_vivienda_id: parsedViviendaId,
+  });
+
+  if (error) {
+    console.error(
+      `Error normalizing image sort order for vivienda ${parsedViviendaId}:`,
+      error,
+    );
+  }
+}
+
 // Función para verificar autenticación
 async function isAuthenticated(request: NextRequest) {
   try {
@@ -45,7 +68,7 @@ export async function POST(request: NextRequest) {
     // Verificar cuántas imágenes ya tiene la propiedad
   const { data: existingImages, error: countError } = await supabase
       .from('vivienda_images')
-      .select('id')
+      .select('id, sort_order')
       .eq('vivienda_id', viviendaId);
 
     if (countError) {
@@ -54,6 +77,14 @@ export async function POST(request: NextRequest) {
     }
 
     const currentImageCount = existingImages?.length || 0;
+    const nextSortOrder =
+      (existingImages || []).reduce((maxSortOrder, image) => {
+        if (typeof image.sort_order !== 'number') {
+          return maxSortOrder;
+        }
+
+        return Math.max(maxSortOrder, image.sort_order);
+      }, -1) + 1;
 
     // Procesar imágenes
     const imageFiles: File[] = [];
@@ -152,7 +183,8 @@ export async function POST(request: NextRequest) {
         .insert([{
           vivienda_id: parseInt(viviendaId),
           url: publicUrl,
-          inserted_at: new Date().toISOString()
+          inserted_at: new Date().toISOString(),
+          sort_order: nextSortOrder + index,
         }]);
 
       if (imageError) {
@@ -163,12 +195,33 @@ export async function POST(request: NextRequest) {
       return publicUrl;
     });
 
-    const uploadedUrls = await Promise.all(uploadPromises);
+    const uploadResults = await Promise.allSettled(uploadPromises);
+    const uploadedUrls = uploadResults
+      .filter(
+        (result): result is PromiseFulfilledResult<string> =>
+          result.status === 'fulfilled',
+      )
+      .map((result) => result.value);
+    const failedUploads = uploadResults.filter(
+      (result) => result.status === 'rejected',
+    );
+
+    await normalizeImageSortOrder(supabase, viviendaId);
+
+    if (failedUploads.length > 0) {
+      return NextResponse.json({
+        message:
+          'La subida termino con errores parciales, pero el orden se ha normalizado',
+        urls: uploadedUrls,
+        totalImages: currentImageCount + uploadedUrls.length,
+        failedImages: failedUploads.length,
+      }, { status: 207 });
+    }
 
     return NextResponse.json({ 
       message: `${imageFiles.length} imagen${imageFiles.length === 1 ? '' : 'es'} subida${imageFiles.length === 1 ? '' : 's'} exitosamente`,
       urls: uploadedUrls,
-      totalImages: currentImageCount + imageFiles.length
+      totalImages: currentImageCount + uploadedUrls.length
     });
 
   } catch (error) {
@@ -198,6 +251,7 @@ export async function GET(request: NextRequest) {
       .from('vivienda_images')
       .select('*')
       .eq('vivienda_id', viviendaId)
+      .order('sort_order', { ascending: true })
       .order('inserted_at', { ascending: true });
 
     if (error) {
