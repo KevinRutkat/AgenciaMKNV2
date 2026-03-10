@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import MapSection from "@/components/MapSection";
 import Banner from "@/components/Banner";
+import ViviendasCostaSection from "@/components/ViviendasCostaSection";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
 import {
   HomeModernIcon,
@@ -205,6 +206,8 @@ export default function HomePageClient() {
               </div>
             </div>
           </section>
+
+          <ViviendasCostaSection />
 
           {/* Sección: Nuestros servicios */}
           <section className="mb-16">

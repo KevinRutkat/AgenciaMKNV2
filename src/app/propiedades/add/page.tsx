@@ -1,17 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { DragEvent, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import NextImage from 'next/image';
 import { Autocomplete, GoogleMap, Marker } from '@react-google-maps/api';
 import Banner from '@/components/Banner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGoogleMaps } from '@/contexts/GoogleMapsContext';
+import {
+  ENERGY_EFFICIENCY_OPTIONS,
+  normalizeEnergyEfficiency,
+} from '@/lib/energyEfficiency';
 import { supabase } from '@/lib/supabase';
 import { FEATURES, normalizeFeature } from '@/lib/features';
 import { normalizeCategory } from '@/lib/viviendaUtils';
 import {
   MagnifyingGlassIcon,
+  Bars3Icon,
   PhotoIcon,
   InformationCircleIcon,
   ExclamationTriangleIcon,
@@ -43,7 +48,17 @@ interface ViviendaInsert {
   is_featured: boolean;
   inserted_at: string;
   oldprice?: string;
+  eficiencia_energetica?: string | null;
 }
+
+interface PendingImage {
+  clientId: string;
+  file: File;
+  previewUrl: string;
+}
+
+const MAX_IMAGES = 20;
+const VALID_IMAGE_FORMATS = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 export default function AddPropertyPage() {
   const router = useRouter();
@@ -72,15 +87,19 @@ export default function AddPropertyPage() {
     is_rent: false,
     plantas: 1,
     is_featured: false,
-    category: 'usada'
+    category: 'usada',
+    eficiencia_energetica: ''
   });
 
   // Lista de características desde constantes compartidas
   const caracteristicasDisponibles = FEATURES.map((f) => f.label);
 
   // Estado para las imágenes
-  const [images, setImages] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
+  const [draggedImageId, setDraggedImageId] = useState<string | null>(null);
+  const [dragOverImageId, setDragOverImageId] = useState<string | null>(null);
+  const [recentlyMovedImageId, setRecentlyMovedImageId] = useState<string | null>(null);
+  const pendingImagesRef = useRef<PendingImage[]>([]);
   
   // Estado para el envío
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -94,6 +113,18 @@ export default function AddPropertyPage() {
   // Estado para drag & drop
   const [isDragOver, setIsDragOver] = useState(false);
   const isSubmitError = submitMessage.toLowerCase().includes('error');
+
+  useEffect(() => {
+    pendingImagesRef.current = pendingImages;
+  }, [pendingImages]);
+
+  useEffect(() => {
+    return () => {
+      pendingImagesRef.current.forEach((image) => {
+        URL.revokeObjectURL(image.previewUrl);
+      });
+    };
+  }, []);
 
   // Redirigir si no está autenticado
   if (!loading && !user) {
@@ -193,128 +224,118 @@ export default function AddPropertyPage() {
     normalizeFeature(caracteristica).includes(normalizeFeature(searchCaracteristicas))
   );
 
+  const createPendingImages = (files: File[]) =>
+    files.map((file, index) => ({
+      clientId: `new-${Date.now()}-${index}-${file.name}`,
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
+
+  const validateImageFiles = (files: File[]) => {
+    const totalFiles = pendingImages.length + files.length;
+
+    if (totalFiles > MAX_IMAGES) {
+      return `Error: Solo se pueden tener m?ximo ${MAX_IMAGES} im?genes en total. Ya tienes ${pendingImages.length}, intentas agregar ${files.length}`;
+    }
+
+    const oversizedFiles = files.filter((file) => file.size > 5 * 1024 * 1024);
+    if (oversizedFiles.length > 0) {
+      return 'Error: Algunas im?genes superan los 5MB. Por favor, reduce el tama?o';
+    }
+
+    const invalidFiles = files.filter((file) => !VALID_IMAGE_FORMATS.includes(file.type));
+    if (invalidFiles.length > 0) {
+      return 'Error: Solo se permiten im?genes en formato JPG, PNG o WebP';
+    }
+
+    return null;
+  };
+
+  const appendImages = (files: File[]) => {
+    if (files.length === 0) return;
+
+    const validationError = validateImageFiles(files);
+    if (validationError) {
+      setSubmitMessage(validationError);
+      return;
+    }
+
+    setPendingImages((prev) => [...prev, ...createPendingImages(files)]);
+    setSubmitMessage('');
+  };
+
+  const movePendingImage = (sourceId: string, targetId: string) => {
+    if (sourceId === targetId) return;
+
+    setPendingImages((prev) => {
+      const sourceIndex = prev.findIndex((image) => image.clientId === sourceId);
+      const targetIndex = prev.findIndex((image) => image.clientId === targetId);
+
+      if (sourceIndex === -1 || targetIndex === -1) return prev;
+
+      const nextImages = [...prev];
+      const [movedImage] = nextImages.splice(sourceIndex, 1);
+      nextImages.splice(targetIndex, 0, movedImage);
+      return nextImages;
+    });
+
+    setRecentlyMovedImageId(sourceId);
+    setTimeout(() => {
+      setRecentlyMovedImageId((current) =>
+        current === sourceId ? null : current,
+      );
+    }, 350);
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      const totalFiles = images.length + newFiles.length;
-      
-      // Validar número máximo de imágenes total (20)
-      if (totalFiles > 20) {
-        setSubmitMessage(`Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${newFiles.length}`);
-        return;
-      }
-      
-      // Validar tamaño de archivos (máximo 5MB por imagen)
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      const oversizedFiles = newFiles.filter(file => file.size > maxSize);
-      if (oversizedFiles.length > 0) {
-        setSubmitMessage('Error: Algunas imágenes superan los 5MB. Por favor, reduce el tamaño');
-        return;
-      }
-      
-      // Validar formato de imágenes
-      const validFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-      const invalidFiles = newFiles.filter(file => !validFormats.includes(file.type));
-      if (invalidFiles.length > 0) {
-        setSubmitMessage('Error: Solo se permiten imágenes en formato JPG, PNG o WebP');
-        return;
-      }
-      
-      // Si no hay imágenes previas, usar las nuevas. Si ya hay, combinarlas
-      const allImages = images.length === 0 ? newFiles : [...images, ...newFiles];
-      setImages(allImages);
-      setSubmitMessage(''); // Limpiar mensaje de error anterior
-      
-      // Crear URLs de preview
-      if (images.length === 0) {
-        // Si no hay imágenes previas, crear todas las URLs
-        const urls = newFiles.map(file => URL.createObjectURL(file));
-        setPreviewUrls(urls);
-      } else {
-        // Si ya hay imágenes, agregar las nuevas URLs
-        const newUrls = newFiles.map(file => URL.createObjectURL(file));
-        setPreviewUrls([...previewUrls, ...newUrls]);
-      }
+      appendImages(Array.from(e.target.files));
     }
-    
-    // Limpiar el input para permitir seleccionar los mismos archivos otra vez
+
     e.target.value = '';
   };
 
-  const removeImage = (index: number) => {
-    const newImages = images.filter((_, i) => i !== index);
-    const newUrls = previewUrls.filter((_, i) => i !== index);
-    
-    // Liberar la URL del objeto
-    URL.revokeObjectURL(previewUrls[index]);
-    
-    setImages(newImages);
-    setPreviewUrls(newUrls);
+  const removeImage = (clientId: string) => {
+    setPendingImages((prev) => {
+      const imageToRemove = prev.find((image) => image.clientId == clientId);
+      if (imageToRemove) {
+        URL.revokeObjectURL(imageToRemove.previewUrl);
+      }
+
+      return prev.filter((image) => image.clientId !== clientId);
+    });
   };
 
-  // Funciones para drag & drop
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
     setIsDragOver(true);
   };
 
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleDragLeave = (e: DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-    
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length === 0) return;
-    
-    // Filtrar solo archivos de imagen
-    const imageFiles = files.filter(file => {
-      const validFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-      return validFormats.includes(file.type);
-    });
-    
-    if (imageFiles.length === 0) {
-      setSubmitMessage('Error: Solo se permiten imágenes en formato JPG, PNG o WebP');
-      return;
-    }
-    
-    // Usar la misma lógica que handleImageChange
-    const totalFiles = images.length + imageFiles.length;
-    
-    if (totalFiles > 20) {
-      setSubmitMessage(`Error: Solo se pueden tener máximo 20 imágenes en total. Ya tienes ${images.length}, intentas agregar ${imageFiles.length}`);
-      return;
-    }
-    
-    // Validar tamaño de archivos
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    const oversizedFiles = imageFiles.filter(file => file.size > maxSize);
-    if (oversizedFiles.length > 0) {
-      setSubmitMessage('Error: Algunas imágenes superan los 5MB. Por favor, reduce el tamaño');
-      return;
-    }
-    
-    // Si no hay imágenes previas, reemplazar todas
-    if (images.length === 0) {
-      setImages(imageFiles);
-      setSubmitMessage('');
-      
-      // Crear URLs de preview
-      const urls = imageFiles.map(file => URL.createObjectURL(file));
-      setPreviewUrls(urls);
-    } else {
-      // Si ya hay imágenes, agregarlas
-      const allImages = [...images, ...imageFiles];
-      setImages(allImages);
-      setSubmitMessage('');
-      
-      // Crear nuevas URLs de preview
-      const newUrls = imageFiles.map(file => URL.createObjectURL(file));
-      setPreviewUrls([...previewUrls, ...newUrls]);
-    }
+    appendImages(Array.from(e.dataTransfer.files));
+  };
+
+  const handlePreviewDragStart = (clientId: string) => {
+    setDraggedImageId(clientId);
+  };
+
+  const handlePreviewDrop = (targetId: string) => {
+    if (!draggedImageId) return;
+    movePendingImage(draggedImageId, targetId);
+    setDraggedImageId(null);
+    setDragOverImageId(null);
+  };
+
+  const handlePreviewDragEnd = () => {
+    setDraggedImageId(null);
+    setDragOverImageId(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -333,6 +354,9 @@ export default function AddPropertyPage() {
       // Preparar datos para insertar
       const normalizedCategoryValue = normalizeCategory(formData.category);
       const isRentCategory = normalizedCategoryValue.includes('alquiler');
+      const eficienciaEnergetica = normalizeEnergyEfficiency(
+        formData.eficiencia_energetica,
+      );
 
       const toInsert: ViviendaInsert = {
         is_rent: isRentCategory,
@@ -351,7 +375,8 @@ export default function AddPropertyPage() {
         lat: coordinates?.lat || formData.lat,
         lng: coordinates?.lng || formData.lng,
         is_featured: formData.is_featured,
-        inserted_at: new Date().toISOString()
+        inserted_at: new Date().toISOString(),
+        eficiencia_energetica: eficienciaEnergetica
       };
 
       // Añadir precio anterior si existe  
@@ -373,38 +398,35 @@ export default function AddPropertyPage() {
       }
 
       // Subir imágenes si existen
-      if (images.length > 0) {
+      if (pendingImages.length > 0) {
         try {
-          await Promise.all(
-            images.map(async (file) => {
-              const path = `viviendas/${vivienda.id}/${file.name}`;
-              
-              // Subir archivo a Supabase Storage
-              const { error: uploadError } = await supabase.storage
-                .from('propiedades-images')
-                .upload(path, file);
-              
-              if (uploadError) throw uploadError;
-              
-              // Obtener URL pública
-              const { data } = supabase.storage
-                .from('propiedades-images')
-                .getPublicUrl(path);
-              
-              if (!data) throw new Error('No se pudo obtener la URL pública');
-              
-              // Insertar referencia en la tabla de imágenes
-              const { error: imgError } = await supabase
-                .from('vivienda_images')
-                .insert({
-                  vivienda_id: vivienda.id,
-                  url: data.publicUrl,
-                  inserted_at: new Date().toISOString()
-                });
-              
-              if (imgError) throw imgError;
-            })
-          );
+          for (const [index, image] of pendingImages.entries()) {
+            const safeFileName = image.file.name.replace(/\s+/g, '-');
+            const path = `viviendas/${vivienda.id}/${String(index + 1).padStart(2, '0')}-${safeFileName}`;
+            
+            const { error: uploadError } = await supabase.storage
+              .from('propiedades-images')
+              .upload(path, image.file);
+            
+            if (uploadError) throw uploadError;
+            
+            const { data } = supabase.storage
+              .from('propiedades-images')
+              .getPublicUrl(path);
+            
+            if (!data) throw new Error('No se pudo obtener la URL p?blica');
+            
+            const { error: imgError } = await supabase
+              .from('vivienda_images')
+              .insert({
+                vivienda_id: vivienda.id,
+                url: data.publicUrl,
+                inserted_at: new Date().toISOString(),
+                sort_order: index,
+              });
+            
+            if (imgError) throw imgError;
+          }
           
           setSubmitMessage(' Propiedad e imágenes creadas exitosamente');
         } catch (err) {
@@ -535,7 +557,7 @@ export default function AddPropertyPage() {
             </div>
 
             {/* Habitaciones y baños */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
               <div>
                 <label htmlFor="habitaciones" className="block text-sm font-medium text-gray-700 mb-2">Habitaciones *
                 </label>
@@ -600,6 +622,24 @@ export default function AddPropertyPage() {
                   <option value="garaje">Garaje</option>
                   <option value="local">Local</option>
                   <option value="otro">Otro</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="eficiencia_energetica" className="block text-sm font-medium text-gray-700 mb-2">Eficiencia energetica
+                </label>
+                <select
+                  id="eficiencia_energetica"
+                  name="eficiencia_energetica"
+                  value={formData.eficiencia_energetica}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                >
+                  {ENERGY_EFFICIENCY_OPTIONS.map((option) => (
+                    <option key={option.value || 'empty'} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -813,19 +853,17 @@ export default function AddPropertyPage() {
               </div>
             </div>
 
-            {/* Imágenes */}
+            {/* Imagenes */}
             <div>
               <label htmlFor="images" className="block text-sm font-medium text-gray-700 mb-2">
                 <span className="inline-flex items-center gap-2">
                   <PhotoIcon className="h-4 w-4 text-gray-500" />
-                  Imágenes de la propiedad (máximo 20)
+                  Imagenes de la propiedad (maximo 20)
                 </span>
               </label>
-              
+
               <div className="space-y-4">
-                {/* Input principal para seleccionar múltiples imágenes */}
                 <div className="space-y-3">
-                  {/* Botón estilizado para seleccionar imágenes con drag & drop */}
                   <label htmlFor="images" className="cursor-pointer"><div 
                       className={`w-full p-6 border-2 border-dashed rounded-lg transition-all text-center ${
                         isDragOver 
@@ -840,22 +878,22 @@ export default function AddPropertyPage() {
                         <ArrowUpTrayIcon className="h-8 w-8 text-teal-600" />
                         <div className="text-teal-700 font-medium">
                           {isDragOver 
-                            ? 'Suelta las imágenes aquí' 
-                            : images.length === 0 
-                              ? 'Seleccionar imágenes' 
-                              : `Agregar más imágenes (${images.length}/20)`
+                            ? 'Suelta las imagenes aqui' 
+                            : pendingImages.length === 0 
+                              ? 'Seleccionar imagenes' 
+                              : `Agregar mas imagenes (${pendingImages.length}/${MAX_IMAGES})`
                           }
                         </div>
                         <div className="text-sm text-teal-600">
                           {isDragOver 
-                            ? 'Puedes soltar múltiples imágenes a la vez' 
-                            : images.length === 0
-                              ? 'Haz clic aquí para seleccionar múltiples imágenes a la vez'
-                              : 'Selecciona más imágenes para agregar a las existentes'
+                            ? 'Puedes soltar multiples imagenes a la vez' 
+                            : pendingImages.length === 0
+                              ? 'Haz clic aqui para seleccionar multiples imagenes a la vez'
+                              : 'Selecciona mas imagenes para agregarlas al orden actual'
                           }
                         </div>
                         <div className="text-xs text-teal-500">
-                          {isDragOver ? '' : 'o arrastra y suelta las imágenes aquí'}
+                          {isDragOver ? '' : 'o arrastra y suelta las imagenes aqui'}
                         </div>
                       </div>
                     </div>
@@ -874,44 +912,35 @@ export default function AddPropertyPage() {
                 <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                   <p className="inline-flex items-center gap-2 text-sm text-blue-700 font-medium mb-1">
                     <InformationCircleIcon className="h-4 w-4" />
-                    Funcionalidad mejorada de selección de imágenes
+                    Orden manual de imagenes
                   </p>
                   <p className="text-xs text-blue-600">
-                    • Selecciona múltiples imágenes manteniendo <kbd className="px-1 py-0.5 bg-blue-100 rounded text-xs">Ctrl</kbd> (Windows) o <kbd className="px-1 py-0.5 bg-blue-100 rounded text-xs">Cmd</kbd> (Mac)<br/>
-                    • Arrastra y suelta varias imágenes a la vez<br/>
-                    • Puedes volver a seleccionar más imágenes cuando quieras agregar adicionales
+                    Arrastra las miniaturas para fijar portada y orden final.
                   </p>
                 </div>
                 
                 <div className="text-xs text-gray-500">
-                  <p>• Formatos aceptados: JPG, PNG, WebP</p>
-                  <p>• Tamaño máximo por imagen: 5MB</p>
-                  <p>• Máximo 20 imágenes por propiedad</p>
-                  <p>• <strong>Siempre puedes agregar más imágenes usando el área de selección</strong></p>
+                  <p>? Formatos aceptados: JPG, PNG, WebP</p>
+                  <p>? Tamano maximo por imagen: 5MB</p>
+                  <p>? Maximo 20 imagenes por propiedad</p>
                 </div>
                 
-                {/* Contador de imágenes y botón de limpiar */}
-                {images.length > 0 && (
+                {pendingImages.length > 0 && (
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-600">
-                      <span className={`font-medium ${images.length === 20 ? 'text-amber-600' : 'text-teal-600'}`}>
-                        {images.length} de 20 imágenes seleccionadas
+                      <span className={`font-medium ${pendingImages.length === MAX_IMAGES ? 'text-amber-600' : 'text-teal-600'}`}>
+                        {pendingImages.length} de {MAX_IMAGES} imagenes seleccionadas
                       </span>
-                      {images.length === 20 && (
-                        <span className="text-amber-600 ml-2"> Límite máximo alcanzado</span>
-                      )}
                     </div>
                     <button
                       type="button"
                       onClick={() => {
-                        // Liberar todas las URLs
-                        previewUrls.forEach(url => URL.revokeObjectURL(url));
-                        setImages([]);
-                        setPreviewUrls([]);
+                        pendingImages.forEach((image) => URL.revokeObjectURL(image.previewUrl));
+                        setPendingImages([]);
                         setSubmitMessage('');
                       }}
                       className="text-xs px-3 py-1 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
-                      title="Eliminar todas las imágenes"
+                      title="Eliminar todas las imagenes"
                     >
                       <span className="inline-flex items-center gap-2">
                         <TrashIcon className="h-4 w-4" />
@@ -922,38 +951,65 @@ export default function AddPropertyPage() {
                 )}
               </div>
               
-              {/* Preview de imágenes */}
-              {previewUrls.length > 0 && (
+              {pendingImages.length > 0 && (
                 <div className="mt-4">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="text-sm font-medium text-gray-700">
-                      Vista previa de imágenes ({images.length}):
+                      Orden de visualizacion ({pendingImages.length}):
                     </h4>
                     <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
-                      <XMarkIcon className="h-3 w-3" />
-                      Haz clic en el icono para eliminar una imagen individual
+                      <Bars3Icon className="h-3 w-3" />
+                      Arrastra para reordenar
                     </span>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {previewUrls.map((url, index) => (
-                      <div key={index} className="relative group">
+                    {pendingImages.map((image, index) => (
+                      <div
+                        key={image.clientId}
+                        draggable
+                        onDragStart={() => handlePreviewDragStart(image.clientId)}
+                        onDragOver={(event) => event.preventDefault()}
+                        onDragEnter={() => setDragOverImageId(image.clientId)}
+                        onDrop={() => handlePreviewDrop(image.clientId)}
+                        onDragEnd={handlePreviewDragEnd}
+                        className={`relative group cursor-grab active:cursor-grabbing rounded-xl border bg-white p-2 shadow-sm transition-all duration-200 ${
+                          draggedImageId === image.clientId
+                            ? 'border-teal-500 opacity-70 scale-[0.98] rotate-1 shadow-xl'
+                            : dragOverImageId === image.clientId
+                              ? 'border-teal-400 -translate-y-1 scale-[1.03] shadow-lg ring-2 ring-teal-200'
+                              : recentlyMovedImageId === image.clientId
+                                ? 'border-teal-300 shadow-md ring-2 ring-teal-100'
+                                : 'border-gray-200 hover:border-teal-300 hover:-translate-y-0.5'
+                        }`}
+                      >
+                        <div className="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-1 text-[11px] font-semibold text-white">
+                          <Bars3Icon className="h-3 w-3" />
+                          {index + 1}
+                        </div>
+                        {index === 0 && (
+                          <div className="absolute right-3 top-3 z-10 rounded-full bg-teal-600 px-2 py-1 text-[11px] font-semibold text-white">
+                            Portada
+                          </div>
+                        )}
                         <NextImage
-                          src={url}
+                          src={image.previewUrl}
                           alt={`Preview ${index + 1}`}
                           width={200}
                           height={128}
                           className="w-full h-32 object-cover rounded-lg border border-gray-200"
                         />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                          title="Eliminar imagen"
-                        >
-                          <XMarkIcon className="h-3 w-3" />
-                        </button>
-                        <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
-                          {index + 1}
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                          <p className="truncate text-xs text-gray-600" title={image.file.name}>
+                            {image.file.name}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => removeImage(image.clientId)}
+                            className="rounded-full bg-red-50 p-1.5 text-red-600 transition-colors hover:bg-red-100"
+                            title="Eliminar imagen"
+                          >
+                            <XMarkIcon className="h-3.5 w-3.5" />
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -962,7 +1018,6 @@ export default function AddPropertyPage() {
               )}
             </div>
 
-            {/* Mensaje de estado */}
             {submitMessage && (
               <div
                 className={`p-4 rounded-lg text-center border ${

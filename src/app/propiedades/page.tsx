@@ -102,9 +102,20 @@ export default function PropiedadesPage() {
 
   const fetchImages = async () => {
     try {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from("vivienda_images")
-        .select("*");
+        .select("*")
+        .order("sort_order", { ascending: true })
+        .order("inserted_at", { ascending: true });
+
+      if (error) {
+        const fallbackResponse = await supabase
+          .from("vivienda_images")
+          .select("*")
+          .order("inserted_at", { ascending: true });
+        data = fallbackResponse.data;
+        error = fallbackResponse.error;
+      }
 
       if (error) {
         console.error("Error fetching images:", error);

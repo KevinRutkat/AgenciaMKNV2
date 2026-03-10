@@ -54,12 +54,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .eq("id", id)
     .single<Vivienda>();
 
-  const { data: imageData } = await supabase
+  let { data: imageData } = await supabase
     .from("vivienda_images")
     .select("url")
     .eq("vivienda_id", id)
+    .order("sort_order", { ascending: true })
     .order("inserted_at", { ascending: true })
     .limit(1);
+
+  if (!imageData) {
+    const fallbackImageResponse = await supabase
+      .from("vivienda_images")
+      .select("url")
+      .eq("vivienda_id", id)
+      .order("inserted_at", { ascending: true })
+      .limit(1);
+    imageData = fallbackImageResponse.data;
+  }
 
   if (!data) {
     return {
@@ -131,11 +142,21 @@ export default async function ViviendaDetailPage({ params }: Props) {
     notFound();
   }
 
-  const { data: imagesRaw } = await supabase
+  let { data: imagesRaw } = await supabase
     .from("vivienda_images")
     .select("*")
     .eq("vivienda_id", id)
+    .order("sort_order", { ascending: true })
     .order("inserted_at", { ascending: true });
+
+  if (!imagesRaw) {
+    const fallbackImagesResponse = await supabase
+      .from("vivienda_images")
+      .select("*")
+      .eq("vivienda_id", id)
+      .order("inserted_at", { ascending: true });
+    imagesRaw = fallbackImagesResponse.data;
+  }
 
   const images: ViviendaImage[] = imagesRaw || [];
   const imageUrls = images

@@ -36,6 +36,7 @@ export interface Vivienda {
   plantas: number
   is_featured: boolean
   is_sold: boolean | null
+  eficiencia_energetica?: string | null
 }
 
 export interface ViviendaImage {
@@ -43,4 +44,5 @@ export interface ViviendaImage {
   vivienda_id: number
   url: string
   inserted_at: string
+  sort_order?: number | null
 }

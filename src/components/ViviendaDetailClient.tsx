@@ -8,6 +8,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ArrowLeftIcon,
+  BoltIcon,
   Squares2X2Icon,
   ArrowsPointingOutIcon,
   BuildingOffice2Icon,
@@ -21,6 +22,10 @@ import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useMultipleTranslations, useTranslation } from "@/hooks/useTranslation";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 import ContactPopup from "@/components/ContactPopup";
+import {
+  formatEnergyEfficiencyLabel,
+  getEnergyEfficiencyBadgeClass,
+} from "@/lib/energyEfficiency";
 import { FEATURES, normalizeFeature } from "@/lib/features";
 import { formatMonthlyPrice, isRentListing } from "@/lib/viviendaUtils";
 
@@ -55,6 +60,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     "Coordenadas:",
     "Dirección:",
     "Vendido",
+    "Eficiencia energetica",
   ];
 
   const [
@@ -76,6 +82,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     coordenadasLabel,
     direccionLabel,
     soldText,
+    energyLabel,
   ] = useMultipleTranslations(textsToTranslate);
 
   const translatedDescription = useTranslation(vivienda.descripcion || "");
@@ -178,6 +185,48 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
   };
 
   const isRent = isRentListing(vivienda);
+  const energyEfficiencyValue = formatEnergyEfficiencyLabel(
+    vivienda.eficiencia_energetica,
+  );
+  const energyEfficiencyBadgeClass = getEnergyEfficiencyBadgeClass(
+    vivienda.eficiencia_energetica,
+  );
+  const energyScale = ["A", "B", "C", "D", "E", "F", "G"] as const;
+  const hasEnergyScale =
+    energyEfficiencyValue !== null && energyScale.includes(energyEfficiencyValue as (typeof energyScale)[number]);
+
+  const getEnergyScaleChipClass = (grade: (typeof energyScale)[number]) => {
+    const baseClass =
+      "rounded-xl border px-0 py-2 text-center text-xs font-semibold transition-colors";
+
+    if (!hasEnergyScale) {
+      return `${baseClass} border-neutral-gray bg-white text-neutral-muted`;
+    }
+
+    const isActive = energyEfficiencyValue === grade;
+    const inactiveClass = "border-neutral-gray bg-white text-neutral-muted";
+
+    if (!isActive) {
+      return `${baseClass} ${inactiveClass}`;
+    }
+
+    switch (grade) {
+      case "A":
+      case "B":
+        return `${baseClass} border-emerald-200 bg-emerald-50 text-emerald-700`;
+      case "C":
+        return `${baseClass} border-lime-200 bg-lime-50 text-lime-700`;
+      case "D":
+        return `${baseClass} border-amber-200 bg-amber-50 text-amber-700`;
+      case "E":
+        return `${baseClass} border-orange-200 bg-orange-50 text-orange-700`;
+      case "F":
+      case "G":
+        return `${baseClass} border-rose-200 bg-rose-50 text-rose-700`;
+      default:
+        return `${baseClass} ${inactiveClass}`;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-kehre-gradient-light">
@@ -221,7 +270,8 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                     alt={`${vivienda.name} - Imagen ${currentImageIndex + 1}`}
                     fill
                     priority={true}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 50vw"
+                    quality={90}
+                    sizes="(max-width: 1023px) 100vw, 50vw"
                     className={`object-cover ${vivienda.is_sold ? "opacity-70" : ""}`}
                   />
 
@@ -398,6 +448,44 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                   </div>
                 </div>
               </div>
+
+              {energyEfficiencyValue && (
+                <div className="mb-6 overflow-hidden rounded-2xl border border-neutral-gray bg-gradient-to-br from-white to-neutral-light shadow-sm">
+                  <div className="flex items-start justify-between gap-4 px-4 py-4">
+                    <div className="min-w-0">
+                      <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-muted">
+                        <BoltIcon className="h-4 w-4" />
+                        {energyLabel}
+                      </p>
+                      <p className="mt-2 text-sm text-neutral-muted">
+                        {hasEnergyScale
+                          ? "Calificacion certificada de la vivienda"
+                          : "Estado del certificado energetico"}
+                      </p>
+                    </div>
+                    <span
+                      className={`shrink-0 rounded-full border px-3 py-1 text-sm font-semibold ${energyEfficiencyBadgeClass}`}
+                    >
+                      {energyEfficiencyValue}
+                    </span>
+                  </div>
+
+                  {hasEnergyScale && (
+                    <div className="border-t border-neutral-gray bg-white/70 px-4 py-3">
+                      <div className="grid grid-cols-7 gap-2">
+                        {energyScale.map((grade) => (
+                          <span
+                            key={grade}
+                            className={getEnergyScaleChipClass(grade)}
+                          >
+                            {grade}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <button
                 onClick={() => setShowContact(true)}
