@@ -3,7 +3,7 @@ import HomePageClient from "@/components/HomePageClient";
 
 const title = "Agencia MKN - Inmobiliaria y traduccion";
 const description =
-  "Compra, venta y gestion de alquileres de temporada de viviendas, garajes y terrenos en Cabo de Palos, La Manga y Cartagena. Servicios de traduccion y asesoria en contratos.";
+  "Compra, venta y gestion de alquileres de viviendas, garajes y terrenos en Cabo de Palos, La Manga y Cartagena. Servicios de traduccion y asesoria en contratos.";
 
 export const metadata: Metadata = {
   title,

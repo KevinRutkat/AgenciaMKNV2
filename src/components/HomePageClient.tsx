@@ -42,16 +42,16 @@ export default function HomePageClient() {
     "Teléfono:",
     "Email:",
 
-    // Sección: Alquileres de temporada
-    "Gestionamos alquileres de temporada",
-    "Contamos con muchos clientes interesados en alquilar viviendas tanto en verano como en invierno, por lo que ayudamos a propietarios a encontrar inquilinos con un seguimiento cercano y profesional.",
-    "Si tienes una casa o apartamento y quieres alquilarlo por temporadas, nos encargamos de la promoción, las consultas y la coordinación de todo el proceso.",
+    // Sección: Alquileres
+    "Gestionamos alquileres",
+    "Contamos con muchos clientes interesados en alquilar viviendas, por lo que ayudamos a propietarios a encontrar inquilinos con un seguimiento cercano y profesional.",
+    "Si tienes una casa o apartamento y quieres alquilarlo, nos encargamos de la promoción, las consultas y la coordinación de todo el proceso.",
     "Quiero alquilar mi vivienda",
 
     // Sección: Nuestros servicios
     "Nuestros servicios",
     "Gestión inmobiliaria",
-    "Venta, alquiler tradicional y alquiler de temporada con seguimiento completo y personalizado.",
+    "Venta, alquiler y asesoramiento con seguimiento completo y personalizado.",
     "Traducción e interpretación",
     "Traducciones de todo tipo en español, alemán e inglés: inmobiliarias, médicas, administrativas y legales.",
     "¿Necesitas más información sobre nuestros servicios?",
@@ -88,7 +88,7 @@ export default function HomePageClient() {
     phoneLabel,
     emailLabel,
 
-    // Alquileres de temporada
+    // Alquileres
     seasonalRentalsTitle,
     seasonalRentalsP1,
     seasonalRentalsP2,
