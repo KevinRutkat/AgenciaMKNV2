@@ -27,7 +27,7 @@ export default function HomePageClient() {
     // Sección: Sobre Agencia MKN
     "Sobre Agencia MKN",
     "Somos una agencia especializada en gestión de viviendas y terrenos en Cabo de Palos, Cartagena y Alicante.",
-    "Nos ocupamos de todo el proceso inmobiliario: valoración, promoción, visitas, documentación y acompañamiento hasta la firma.",
+    "Nos ocupamos de todo el proceso inmobiliario: valoración, promoción, visitas, documentación, gestión de alquileres y acompañamiento hasta la firma.",
     "También ofrecemos traducción profesional en español, alemán e inglés para trámites inmobiliarios, administrativos y médicos, tanto presenciales como documentales.",
     "Foto de Agencia MKN - Oficina en Cabo de Palos",
 
@@ -42,10 +42,16 @@ export default function HomePageClient() {
     "Teléfono:",
     "Email:",
 
+    // Sección: Alquileres de temporada
+    "Gestionamos alquileres de temporada",
+    "Contamos con muchos clientes interesados en alquilar viviendas tanto en verano como en invierno, por lo que ayudamos a propietarios a encontrar inquilinos con un seguimiento cercano y profesional.",
+    "Si tienes una casa o apartamento y quieres alquilarlo por temporadas, nos encargamos de la promoción, las consultas y la coordinación de todo el proceso.",
+    "Quiero alquilar mi vivienda",
+
     // Sección: Nuestros servicios
     "Nuestros servicios",
     "Gestión inmobiliaria",
-    "Venta, alquiler y asesoramiento legal con seguimiento completo y personalizado.",
+    "Venta, alquiler tradicional y alquiler de temporada con seguimiento completo y personalizado.",
     "Traducción e interpretación",
     "Traducciones de todo tipo en español, alemán e inglés: inmobiliarias, médicas, administrativas y legales.",
     "¿Necesitas más información sobre nuestros servicios?",
@@ -81,6 +87,12 @@ export default function HomePageClient() {
     addressLabel,
     phoneLabel,
     emailLabel,
+
+    // Alquileres de temporada
+    seasonalRentalsTitle,
+    seasonalRentalsP1,
+    seasonalRentalsP2,
+    seasonalRentalsButtonText,
 
     // Nuestros servicios
     servicesSectionTitle,
@@ -203,6 +215,31 @@ export default function HomePageClient() {
 
                 {/* Mapa (cargado solo en cliente) */}
                 <MapSection />
+              </div>
+            </div>
+          </section>
+
+          <section className="mb-16 sm:mb-20">
+            <div className="rounded-2xl border border-primary-blue/20 bg-primary-blue px-6 py-8 text-white shadow-sm sm:px-8">
+              <div className="max-w-4xl">
+                <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-white/75">
+                  Alquileres
+                </p>
+                <h2 className="mb-4 text-2xl font-semibold font-display sm:text-3xl">
+                  {seasonalRentalsTitle}
+                </h2>
+                <p className="mb-3 text-base leading-relaxed text-white/90 sm:text-lg">
+                  {seasonalRentalsP1}
+                </p>
+                <p className="mb-6 text-base leading-relaxed text-white/90 sm:text-lg">
+                  {seasonalRentalsP2}
+                </p>
+                <Link
+                  href="/contacto"
+                  className="inline-flex items-center rounded-full bg-white px-6 py-3 font-semibold text-primary-blue transition-all duration-300 hover-bg-neutral-gray"
+                >
+                  {seasonalRentalsButtonText}
+                </Link>
               </div>
             </div>
           </section>

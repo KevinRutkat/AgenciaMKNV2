@@ -188,15 +188,8 @@ h4,
 }
 
 @keyframes map-marker-pop {
-  0% { transform: scale(0.3); opacity: 0; }
-  60% { transform: scale(1.15); opacity: 1; }
-  80% { transform: scale(0.95); }
-  100% { transform: scale(1); }
-}
-
-@keyframes map-marker-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 /* Estilos para la página de detalle de vivienda */
@@ -271,11 +264,21 @@ button, .cursor-pointer, [role="button"] {
   animation: floating 3s ease-in-out infinite;
 }
 
-.map-marker-anchor {
+.map-marker-overlay {
   position: relative;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.map-marker-anchor {
+  position: absolute;
+  left: 0;
+  top: 0;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
+  transform: translate(-50%, -100%);
   pointer-events: auto;
 }
 
@@ -288,14 +291,7 @@ button, .cursor-pointer, [role="button"] {
   border: 0;
   padding: 0;
   cursor: pointer;
-  transform-origin: center bottom;
-  animation:
-    map-marker-pop 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.2) both,
-    map-marker-float 3.4s ease-in-out 0.9s infinite;
-}
-
-.map-marker-trigger--steady {
-  animation: map-marker-float 3.4s ease-in-out 0.9s infinite;
+  animation: map-marker-pop 0.25s ease-out both;
 }
 
 .map-marker-icon {

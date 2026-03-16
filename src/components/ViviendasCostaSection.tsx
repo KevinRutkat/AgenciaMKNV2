@@ -35,7 +35,6 @@ export default function ViviendasCostaSection() {
   const [viviendas, setViviendas] = useState<Vivienda[]>([]);
   const [images, setImages] = useState<ViviendaImage[]>([]);
   const [loading, setLoading] = useState(true);
-  const [hasInteracted, setHasInteracted] = useState(false);
   const isMapInteractingRef = useRef(false);
   const interactionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
@@ -212,14 +211,12 @@ export default function ViviendasCostaSection() {
                 options={mapOptions}
                 onDragStart={() => {
                   isMapInteractingRef.current = true;
-                  setHasInteracted(true);
                   if (interactionTimeoutRef.current) {
                     clearTimeout(interactionTimeoutRef.current);
                   }
                 }}
                 onDragEnd={() => lockMapInteraction(250)}
                 onZoomChanged={() => {
-                  setHasInteracted(true);
                   lockMapInteraction(250);
                 }}
               >
@@ -249,98 +246,94 @@ export default function ViviendasCostaSection() {
                       key={vivienda.id}
                       position={{ lat: vivienda.lat, lng: vivienda.lng }}
                       mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-                      getPixelPositionOffset={(width, height) => ({
-                        x: Math.round(-width / 2),
-                        y: Math.round(-height),
+                      getPixelPositionOffset={() => ({
+                        x: 0,
+                        y: 0,
                       })}
                     >
-                      <div className="map-marker-anchor group">
-                        <button
-                          type="button"
-                          className={`map-marker-trigger focus-visible:outline-none ${
-                            hasInteracted ? "map-marker-trigger--steady" : ""
-                          }`}
-                          style={
-                            hasInteracted
-                              ? undefined
-                              : { animationDelay: `${index * 0.12}s` }
-                          }
-                          aria-label={`${vivienda.name} - ${markerLabel}`}
-                          onClick={() => handleNavigate(vivienda.id)}
-                        >
-                          <span
-                            className="px-2 py-1 bg-white/95 border border-neutral-gray text-xs font-semibold rounded-full shadow-md text-neutral-dark whitespace-nowrap"
-                          >
-                            {markerLabel}
-                          </span>
-                          <MapPinSolidIcon
-                            className={`map-marker-icon h-7 w-7 ${
-                              isRent ? "text-primary-blue" : "text-accent-coral"
-                            }`}
-                          />
-                        </button>
-
-                        <div className="map-marker-card absolute left-1/2 bottom-12 w-64 -translate-x-1/2 opacity-0 pointer-events-none translate-y-2 transition-all duration-200 group-hover:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0">
+                      <div className="map-marker-overlay">
+                        <div className="map-marker-anchor group">
                           <button
                             type="button"
+                            className="map-marker-trigger focus-visible:outline-none"
+                            style={{ animationDelay: `${index * 0.08}s` }}
+                            aria-label={`${vivienda.name} - ${markerLabel}`}
                             onClick={() => handleNavigate(vivienda.id)}
-                            className="w-full text-left bg-white rounded-2xl border border-neutral-gray shadow-lg overflow-hidden hover-bg-neutral-gray transition-colors"
                           >
-                            <div className="relative h-28 bg-neutral-light">
-                              {primaryImage ? (
-                                <Image
-                                  src={primaryImage.url}
-                                  alt={`${vivienda.name} en ${vivienda.location}`}
-                                  fill
-                                  sizes="260px"
-                                  className="object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-neutral-muted text-xs">
-                                  {noImageLabel}
-                                </div>
-                              )}
-                            </div>
-                            <div className="p-3">
-                              <div className="flex items-center gap-2 mb-2">
-                                <span
-                                  className={`text-[10px] px-2 py-1 rounded-full font-semibold ${
-                                    isRent
-                                      ? "bg-primary-blue-light text-primary-blue"
-                                      : "bg-accent-coral-light text-accent-coral"
-                                  }`}
-                                >
-                                  {isRent ? rentLabel : saleLabel}
-                                </span>
+                            <span
+                              className="px-2 py-1 bg-white/95 border border-neutral-gray text-xs font-semibold rounded-full shadow-md text-neutral-dark whitespace-nowrap"
+                            >
+                              {markerLabel}
+                            </span>
+                            <MapPinSolidIcon
+                              className={`map-marker-icon h-7 w-7 ${
+                                isRent ? "text-primary-blue" : "text-accent-coral"
+                              }`}
+                            />
+                          </button>
+
+                          <div className="map-marker-card absolute left-1/2 bottom-12 w-64 -translate-x-1/2 opacity-0 pointer-events-none translate-y-2 transition-all duration-200 group-hover:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0">
+                            <button
+                              type="button"
+                              onClick={() => handleNavigate(vivienda.id)}
+                              className="w-full text-left bg-white rounded-2xl border border-neutral-gray shadow-lg overflow-hidden hover-bg-neutral-gray transition-colors"
+                            >
+                              <div className="relative h-28 bg-neutral-light">
+                                {primaryImage ? (
+                                  <Image
+                                    src={primaryImage.url}
+                                    alt={`${vivienda.name} en ${vivienda.location}`}
+                                    fill
+                                    sizes="260px"
+                                    className="object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-neutral-muted text-xs">
+                                    {noImageLabel}
+                                  </div>
+                                )}
                               </div>
-                              <h3 className="text-sm font-semibold text-neutral-dark line-clamp-1">
-                                {vivienda.name}
-                              </h3>
-                              <p className="text-xs text-neutral-muted mt-1 flex items-center gap-1.5 min-w-0">
-                                <MapPinOutlineIcon className="h-3.5 w-3.5 text-neutral-muted shrink-0" />
-                                <span className="truncate min-w-0">
-                                  {vivienda.location}
-                                </span>
-                              </p>
-                              {vivienda.property_type && (
-                                <p className="text-xs text-neutral-muted mt-1 capitalize truncate">
-                                  {vivienda.property_type}
-                                </p>
-                              )}
-                              {energyEfficiencyLabel && (
-                                <div className="mt-2">
+                              <div className="p-3">
+                                <div className="flex items-center gap-2 mb-2">
                                   <span
-                                    className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold ${energyEfficiencyBadgeClass}`}
+                                    className={`text-[10px] px-2 py-1 rounded-full font-semibold ${
+                                      isRent
+                                        ? "bg-primary-blue-light text-primary-blue"
+                                        : "bg-accent-coral-light text-accent-coral"
+                                    }`}
                                   >
-                                    Eficiencia: {energyEfficiencyLabel}
+                                    {isRent ? rentLabel : saleLabel}
                                   </span>
                                 </div>
-                              )}
-                              <p className="text-sm font-semibold text-neutral-dark mt-2">
-                                {priceLabel}
-                              </p>
-                            </div>
-                          </button>
+                                <h3 className="text-sm font-semibold text-neutral-dark line-clamp-1">
+                                  {vivienda.name}
+                                </h3>
+                                <p className="text-xs text-neutral-muted mt-1 flex items-center gap-1.5 min-w-0">
+                                  <MapPinOutlineIcon className="h-3.5 w-3.5 text-neutral-muted shrink-0" />
+                                  <span className="truncate min-w-0">
+                                    {vivienda.location}
+                                  </span>
+                                </p>
+                                {vivienda.property_type && (
+                                  <p className="text-xs text-neutral-muted mt-1 capitalize truncate">
+                                    {vivienda.property_type}
+                                  </p>
+                                )}
+                                {energyEfficiencyLabel && (
+                                  <div className="mt-2">
+                                    <span
+                                      className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold ${energyEfficiencyBadgeClass}`}
+                                    >
+                                      Eficiencia: {energyEfficiencyLabel}
+                                    </span>
+                                  </div>
+                                )}
+                                <p className="text-sm font-semibold text-neutral-dark mt-2">
+                                  {priceLabel}
+                                </p>
+                              </div>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </OverlayView>
