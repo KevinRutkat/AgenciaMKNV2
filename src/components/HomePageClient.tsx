@@ -271,6 +271,18 @@ export default function HomePageClient() {
               </div>
             </div>
 
+            <div className="mx-auto mb-8 max-w-2xl overflow-hidden rounded-2xl border border-neutral-gray bg-white p-3 shadow-sm sm:p-4">
+              <div className="relative aspect-[1005/599] w-full">
+                <Image
+                  src="/imgrecuadro.PNG"
+                  alt="Informacion destacada de Agencia MKN"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, 896px"
+                />
+              </div>
+            </div>
+
             {/* Call to action Servicios */}
             <div className="bg-white/80 rounded-2xl p-6 text-center border border-neutral-gray shadow-sm">
               <p className="text-neutral-muted mb-4 text-lg">
