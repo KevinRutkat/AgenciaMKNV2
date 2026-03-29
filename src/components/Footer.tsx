@@ -133,7 +133,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="border-t border-neutral-gray mt-6 sm:mt-8 pt-6 sm:pt-8 text-center text-neutral-muted">
           <p className="text-xs sm:text-sm">
-            &copy; 2025 Agencia Inmobiliaria MKN. Todos los derechos reservados.
+            &copy; 2025 Agencia Inmobiliaria MKN. Todos los derechos reservados. Desarrollado por HKode.es
           </p>
         </div>
       </div>
