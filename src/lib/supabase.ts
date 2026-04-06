@@ -22,6 +22,7 @@ export interface Vivienda {
   descripcion: string
   price: string
   oldprice?: string
+  rent_price_period?: "month" | "day" | null
   metros: string
   habitaciones: number
   bathroom: number

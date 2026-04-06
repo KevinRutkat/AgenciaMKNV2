@@ -27,7 +27,11 @@ import {
   getEnergyEfficiencyBadgeClass,
 } from "@/lib/energyEfficiency";
 import { FEATURES, normalizeFeature } from "@/lib/features";
-import { formatMonthlyPrice, isRentListing } from "@/lib/viviendaUtils";
+import {
+  formatListingPrice,
+  getRentPricePeriod,
+  isRentListing,
+} from "@/lib/viviendaUtils";
 
 type Props = {
   vivienda: Vivienda;
@@ -185,6 +189,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
   };
 
   const isRent = isRentListing(vivienda);
+  const rentPricePeriod = getRentPricePeriod(vivienda);
   const energyEfficiencyValue = formatEnergyEfficiencyLabel(
     vivienda.eficiencia_energetica,
   );
@@ -387,10 +392,10 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
             <div className="bg-white rounded-2xl p-6 border border-neutral-gray shadow-sm">
               <div className="mb-6">
                 <div className="text-3xl font-semibold text-neutral-dark mb-2">
-                  {formatMonthlyPrice(vivienda.price, isRent)}
+                  {formatListingPrice(vivienda.price, isRent, rentPricePeriod)}
                   {vivienda.oldprice && (
                     <span className="text-lg text-accent-coral line-through ml-3">
-                      {formatMonthlyPrice(vivienda.oldprice, isRent)}
+                      {formatListingPrice(vivienda.oldprice, isRent, rentPricePeriod)}
                     </span>
                   )}
                 </div>

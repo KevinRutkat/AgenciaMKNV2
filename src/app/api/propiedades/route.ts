@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { imagesBucketName, imagesBucketPrefix } from '@/lib/config';
 import { normalizeEnergyEfficiency } from '@/lib/energyEfficiency';
+import {
+  normalizeRentPricePeriod,
+  stripRentPriceSuffix,
+} from '@/lib/viviendaUtils';
 
 const TEMP_SORT_ORDER_OFFSET = 1000;
 
@@ -173,11 +177,23 @@ export async function POST(request: NextRequest) {
     console.log('Propiedades recibidas:', propiedadesString);
     console.log('Propiedades procesadas:', propiedadesArray);
 
+    const isRentRequest = formData.get('is_rent') === 'true';
+
     const propertyData = {
       name: formData.get('name') as string,
       descripcion: formData.get('descripcion') as string,
-      price: formData.get('price') as string,
-      oldprice: ((formData.get('oldprice') as string) || '').trim() || null,
+      price: isRentRequest
+        ? stripRentPriceSuffix(formData.get('price') as string)
+        : ((formData.get('price') as string) || '').trim(),
+      oldprice: ((formData.get('oldprice') as string) || '').trim()
+        ? isRentRequest
+          ? stripRentPriceSuffix(formData.get('oldprice') as string)
+          : ((formData.get('oldprice') as string) || '').trim()
+        : null,
+      rent_price_period:
+        isRentRequest
+          ? normalizeRentPricePeriod(formData.get('rent_price_period') as string | null)
+          : null,
       metros: formData.get('metros') as string,
       habitaciones: parseInt(formData.get('habitaciones') as string),
       bathroom: parseInt(formData.get('bathroom') as string),
@@ -186,7 +202,7 @@ export async function POST(request: NextRequest) {
       lng: parseFloat(formData.get('lng') as string) || 0,
       property_type: formData.get('property_type') as string,
       propiedades: propiedadesArray,
-      is_rent: formData.get('is_rent') === 'true',
+      is_rent: isRentRequest,
       plantas: parseInt(formData.get('plantas') as string),
       is_featured: formData.get('is_featured') === 'true',
       category: formData.get('category') as string,
@@ -471,7 +487,14 @@ export async function PUT(request: NextRequest) {
     const supabase = createSupabaseServerClient();
 
     const body = await request.json();
-    const { id, propiedades, eficiencia_energetica, image_order, ...rest } = body;
+    const {
+      id,
+      propiedades,
+      eficiencia_energetica,
+      image_order,
+      rent_price_period,
+      ...rest
+    } = body;
 
     // Normalizar propiedades (puede venir como string CSV, arreglo, null, etc.)
     let propiedadesArray: string[] = [];
@@ -490,8 +513,24 @@ export async function PUT(request: NextRequest) {
 
     const updateData = {
       ...rest, // incluye is_sold si viene del cliente
+      price:
+        rest.is_rent === true
+          ? stripRentPriceSuffix(rest.price)
+          : typeof rest.price === 'string'
+            ? rest.price.trim()
+            : rest.price,
+      oldprice:
+        typeof rest.oldprice === 'string' && rest.oldprice.trim()
+          ? rest.is_rent === true
+            ? stripRentPriceSuffix(rest.oldprice)
+            : rest.oldprice.trim()
+          : null,
       propiedades: propiedadesArray,
       eficiencia_energetica: normalizeEnergyEfficiency(eficiencia_energetica),
+      rent_price_period:
+        rest.is_rent === true
+          ? normalizeRentPricePeriod(rent_price_period)
+          : null,
     };
 
     if (!id) {

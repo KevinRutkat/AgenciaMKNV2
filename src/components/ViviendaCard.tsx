@@ -7,7 +7,8 @@ import { Vivienda, ViviendaImage, supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
 import {
-  formatMonthlyPrice,
+  formatListingPrice,
+  getRentPricePeriod,
   isRentListing,
   normalizeCategory,
 } from "@/lib/viviendaUtils";
@@ -145,6 +146,7 @@ export default function ViviendaCard({
 
   const normalizedCategory = normalizeCategory(vivienda.category);
   const isRent = isRentListing(vivienda);
+  const rentPricePeriod = getRentPricePeriod(vivienda);
 
   const getCategoryBadge = () => {
     if (normalizedCategory === "usada")
@@ -213,11 +215,11 @@ export default function ViviendaCard({
         <div className="absolute bottom-2 left-2 z-10 flex flex-col gap-1 pointer-events-none md:hidden">
           <div className="bg-white/85 backdrop-blur-sm px-3 py-2 rounded-xl border border-neutral-gray">
             <span className="block text-neutral-dark font-semibold text-2xl leading-none whitespace-nowrap">
-              {formatMonthlyPrice(vivienda.price, isRent)}
+              {formatListingPrice(vivienda.price, isRent, rentPricePeriod)}
             </span>
             {vivienda.oldprice && (
               <span className="block text-[10px] text-accent-coral line-through leading-tight mt-1 font-medium whitespace-nowrap">
-                {formatMonthlyPrice(vivienda.oldprice, isRent)}
+                {formatListingPrice(vivienda.oldprice, isRent, rentPricePeriod)}
               </span>
             )}
           </div>
@@ -316,11 +318,11 @@ export default function ViviendaCard({
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-lg font-semibold text-neutral-dark leading-none">
-                {formatMonthlyPrice(vivienda.price, isRent)}
+                {formatListingPrice(vivienda.price, isRent, rentPricePeriod)}
               </span>
               {vivienda.oldprice && (
                 <span className="text-sm text-accent-coral line-through leading-tight mt-1">
-                  {formatMonthlyPrice(vivienda.oldprice, isRent)}
+                  {formatListingPrice(vivienda.oldprice, isRent, rentPricePeriod)}
                 </span>
               )}
             </div>

@@ -11,7 +11,11 @@ import {
   formatEnergyEfficiencyLabel,
   getEnergyEfficiencyBadgeClass,
 } from "@/lib/energyEfficiency";
-import { formatMonthlyPrice, isRentListing } from "@/lib/viviendaUtils";
+import {
+  formatListingPrice,
+  getRentPricePeriod,
+  isRentListing,
+} from "@/lib/viviendaUtils";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
 import { useRouter } from "next/navigation";
 
@@ -222,9 +226,11 @@ export default function ViviendasCostaSection() {
               >
                 {viviendasWithCoords.map((vivienda, index) => {
                   const isRent = isRentListing(vivienda);
-                  const formattedPrice = formatMonthlyPrice(
+                  const rentPricePeriod = getRentPricePeriod(vivienda);
+                  const formattedPrice = formatListingPrice(
                     vivienda.price,
                     isRent,
+                    rentPricePeriod,
                   );
                   const priceLabel = formattedPrice || priceFallback;
                   const markerLabel = formattedPrice

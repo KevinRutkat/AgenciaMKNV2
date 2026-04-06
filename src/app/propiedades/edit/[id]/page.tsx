@@ -13,7 +13,13 @@ import {
 } from '@/lib/energyEfficiency';
 import { supabase } from '@/lib/supabase';
 import { FEATURES, normalizeFeature } from '@/lib/features';
-import { normalizeCategory } from '@/lib/viviendaUtils';
+import {
+  getRentPriceSuffix,
+  normalizeCategory,
+  normalizeRentPricePeriod,
+  stripRentPriceSuffix,
+  type RentPricePeriod,
+} from '@/lib/viviendaUtils';
 import {
   Bars3Icon,
   PhotoIcon,
@@ -79,6 +85,7 @@ export default function EditPropertyPage() {
     property_type: 'apartamento',
     propiedades: [] as string[],
     is_rent: false,
+    rent_price_period: 'month' as RentPricePeriod,
     plantas: 1,
     is_featured: false,
     category: 'usada',
@@ -102,6 +109,9 @@ export default function EditPropertyPage() {
   const isSubmitError = submitMessage.toLowerCase().includes('error');
   const normalizedCategory = normalizeCategory(formData.category);
   const isRentPrice = formData.is_rent || normalizedCategory.includes('alquiler');
+  const rentPricePeriod = normalizeRentPricePeriod(formData.rent_price_period);
+  const rentPriceSuffix = getRentPriceSuffix(rentPricePeriod);
+  const rentPriceLabel = rentPricePeriod === 'day' ? 'diario' : 'mensual';
   const [isLoading, setIsLoading] = useState(true);
 
   // Estado para buscador de características
@@ -185,8 +195,8 @@ export default function EditPropertyPage() {
         setFormData({
           name: vivienda.name || '',
           descripcion: vivienda.descripcion || '',
-          price: vivienda.price || '',
-          oldprice: vivienda.oldprice || '',
+          price: stripRentPriceSuffix(vivienda.price) || '',
+          oldprice: stripRentPriceSuffix(vivienda.oldprice) || '',
           metros: vivienda.metros || '',
           habitaciones: vivienda.habitaciones || 1,
           bathroom: vivienda.bathroom || 1,
@@ -196,6 +206,7 @@ export default function EditPropertyPage() {
           property_type: vivienda.property_type || 'apartamento',
           propiedades: propiedadesCanonicas,
           is_rent: isRentCategory || vivienda.is_rent || false,
+          rent_price_period: normalizeRentPricePeriod(vivienda.rent_price_period),
           plantas: vivienda.plantas || 1,
           // 👇 Si está vendida, forzamos destacado a false
           is_featured: isSoldFromDb ? false : isFeaturedFromDb,
@@ -602,6 +613,17 @@ export default function EditPropertyPage() {
           ...formData,
           category: normalizedCategoryValue || formData.category,
           is_rent: isRentCategory,
+          rent_price_period: isRentCategory
+            ? normalizeRentPricePeriod(formData.rent_price_period)
+            : null,
+          price: isRentCategory
+            ? stripRentPriceSuffix(formData.price)
+            : formData.price.trim(),
+          oldprice: formData.oldprice.trim()
+            ? isRentCategory
+              ? stripRentPriceSuffix(formData.oldprice)
+              : formData.oldprice.trim()
+            : null,
           eficiencia_energetica: eficienciaEnergetica,
           propiedades: formData.propiedades,
           image_order: existingImageOrderPayload,
@@ -773,13 +795,34 @@ export default function EditPropertyPage() {
             </div>
 
             {/* Precios y detalles técnicos */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+              {isRentPrice && (
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="rent_price_period"
+                    className="flex min-h-[2.75rem] items-end text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Periodicidad del alquiler *
+                  </label>
+                  <select
+                    id="rent_price_period"
+                    name="rent_price_period"
+                    value={formData.rent_price_period}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  >
+                    <option value="month">Por mes</option>
+                    <option value="day">Por día</option>
+                  </select>
+                </div>
+              )}
+
+              <div className="flex flex-col">
                 <label
                   htmlFor="price"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="flex min-h-[2.75rem] items-end text-sm font-medium text-gray-700 mb-2"
                 >
-                   Precio{isRentPrice ? ' / mes' : ''} *
+                   Precio{isRentPrice ? ` ${rentPriceSuffix}` : ''} *
                 </label>
                 <input
                   type="text"
@@ -789,17 +832,17 @@ export default function EditPropertyPage() {
                   onChange={handleInputChange}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                  placeholder={isRentPrice ? "Ej: 750€ /mes" : "Ej: 450,000€"}
-                  title={isRentPrice ? "Precio mensual" : "Precio de venta"}
+                  placeholder={isRentPrice ? `Ej: ${rentPricePeriod === 'day' ? '120' : '750'}€ ${rentPriceSuffix}` : "Ej: 450,000€"}
+                  title={isRentPrice ? `Precio ${rentPriceLabel}` : "Precio de venta"}
                 />
               </div>
 
-              <div>
+              <div className="flex flex-col">
                 <label
                   htmlFor="oldprice"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="flex min-h-[2.75rem] items-end text-sm font-medium text-gray-700 mb-2"
                 >
-                   Precio anterior{isRentPrice ? ' / mes' : ''} (opcional)
+                   Precio anterior{isRentPrice ? ` ${rentPriceSuffix}` : ''} (opcional)
                 </label>
                 <input
                   type="text"
@@ -808,15 +851,15 @@ export default function EditPropertyPage() {
                   value={formData.oldprice}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                  placeholder={isRentPrice ? "Ej: 900€ /mes" : "Ej: 500,000€"}
-                  title={isRentPrice ? "Precio mensual anterior" : "Precio de venta anterior"}
+                  placeholder={isRentPrice ? `Ej: ${rentPricePeriod === 'day' ? '150' : '900'}€ ${rentPriceSuffix}` : "Ej: 500,000€"}
+                  title={isRentPrice ? `Precio ${rentPriceLabel} anterior` : "Precio de venta anterior"}
                 />
               </div>
 
-              <div>
+              <div className="flex flex-col">
                 <label
                   htmlFor="metros"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="flex min-h-[2.75rem] items-end text-sm font-medium text-gray-700 mb-2"
                 >
                    Metros cuadrados *
                 </label>
