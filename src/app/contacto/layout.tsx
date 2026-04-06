@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 const title = "Contacto Agencia MKN";
 const description =
-  "Contacta con Agencia MKN para comprar, vender o alquilar vivienda en Cabo de Palos, La Manga y Cartagena.";
+  "Contacta con Agencia MKN para vender vivienda, gestionar un alquiler o recibir traducción e interpretación cercana en Cabo de Palos, La Manga y Cartagena.";
 
 const contactSchema = {
   "@context": "https://schema.org",

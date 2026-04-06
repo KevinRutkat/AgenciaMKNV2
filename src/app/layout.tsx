@@ -34,7 +34,7 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "Agencia MKN",
-  alternateName: "Agencia MKN Inmobiliaria y Traductora",
+  alternateName: "Agencia MKN Inmobiliaria y Acompañamiento Lingüístico",
   url: "https://www.agenciamkn.com",
   inLanguage: "es-ES",
 };
@@ -45,7 +45,7 @@ const localBusinessSchema = {
   "@type": "RealEstateAgent",
   name: "Agencia MKN",
   description:
-    "Agencia inmobiliaria y servicios de traducción en Cabo de Palos, Cartagena y La Manga.",
+    "Venta de viviendas, gestión de alquileres para propietarios y traducción e interpretación cercana en Cabo de Palos, Cartagena y La Manga.",
   priceRange: "$$$",
   image: "https://www.agenciamkn.com/LogoPNG.png",
   url: "https://www.agenciamkn.com",
@@ -106,18 +106,19 @@ const localBusinessSchema = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.agenciamkn.com"),
   title: {
-    default: "Agencia MKN - Inmobiliaria y Traductora",
+    default: "Agencia MKN - Inmobiliaria y Acompañamiento",
     template: "%s | Agencia MKN",
   },
   description:
-    "Especialistas en inmuebles, gestión de propiedades y traducción profesional. Agencia MKN: tu inmobiliaria y traductora de confianza en Cabo de Palos, Cartagena y La Manga.",
+    "Venta de viviendas, gestión de alquileres para propietarios y traducción e interpretación cercana en Cabo de Palos, Cartagena y La Manga. Español y alemán principalmente, también inglés.",
   keywords: [
     "agencia inmobiliaria",
     "inmobiliaria cabo de palos",
     "la manga",
     "cartagena",
-    "servicios de traducción",
-    "gestión de propiedades",
+    "traducción e interpretación",
+    "gestión de alquileres",
+    "interpretación español alemán",
     "agencia mkn",
   ],
   authors: [{ name: "Agencia MKN" }],
@@ -136,9 +137,9 @@ export const metadata: Metadata = {
 
   // Open Graph
   openGraph: {
-    title: "Agencia MKN - Inmobiliaria y Traductora",
+    title: "Agencia MKN - Inmobiliaria y Acompañamiento",
     description:
-      "Gestión de inmuebles, compraventa, alquiler y traducción profesional en Cabo de Palos, Cartagena y La Manga.",
+      "Venta de viviendas, gestión de alquileres para propietarios y traducción e interpretación cercana en Cabo de Palos, Cartagena y La Manga.",
     url: "https://www.agenciamkn.com",
     siteName: "Agencia MKN",
     images: [

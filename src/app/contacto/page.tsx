@@ -48,7 +48,7 @@ export default function ContactoPage() {
   const textsToTranslate = [
     // Banner
     "Contáctanos",
-    "Estamos aquí para ayudarte con viviendas, terrenos o traducciones profesionales.",
+    "Estamos aquí para ayudarte en la venta de una vivienda, en la gestión de un alquiler o en una traducción e interpretación cercana para trámites importantes.",
 
     // Formulario
     "Envíanos un mensaje",
@@ -60,7 +60,7 @@ export default function ContactoPage() {
     "Teléfono *",
     "+34 123 456 789",
     "Motivo del contacto *",
-    "Cuéntanos tu consulta (compra, venta, alquiler, traducción, etc.)",
+    "Cuéntanos tu consulta (venta, gestión de alquiler, médico, hospital, notaría, banco, traducción, etc.)",
     "Enviando…",
     "Enviar mensaje",
 
@@ -377,7 +377,7 @@ export default function ContactoPage() {
                   >
                     <Marker
                       position={agencyLocation}
-                      title="Agencia MKN - Inmobiliaria y Servicios de Traducción"
+                      title="Agencia MKN - Venta de viviendas y gestion de alquileres"
                     />
                   </GoogleMap>
                 ) : (

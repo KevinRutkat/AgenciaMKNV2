@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import HomePageClient from "@/components/HomePageClient";
 
-const title = "Agencia MKN - Inmobiliaria y traduccion";
+const title = "Agencia MKN - Venta de viviendas y acompañamiento";
 const description =
-  "Compra, venta y gestion de alquileres de viviendas, garajes y terrenos en Cabo de Palos, La Manga y Cartagena. Servicios de traduccion y asesoria en contratos.";
+  "Venta de viviendas, gestión de alquileres para propietarios y traducción e interpretación cercana en Cabo de Palos, La Manga y Cartagena. Español y alemán principalmente, también inglés.";
 
 export const metadata: Metadata = {
   title,

@@ -10,8 +10,8 @@ export default function Footer() {
 
   const textsToTranslate = [
     "Agencia MKN",
-    "Gestión integral de viviendas, terrenos y alquileres en Cabo de Palos, Cartagena y La Manga.",
-    "Traducciones profesionales en español, alemán e inglés para trámites inmobiliarios, administrativos y médicos.",
+    "Venta de viviendas y Gestion de alquileres.",
+    "Traducción e interpretación cercana en español, alemán e inglés para documentos, citas y gestiones en médicos, hospitales, notarías, bancos y organismos oficiales.",
     "Enlaces rápidos",
     "Inicio",
     "Propiedades",

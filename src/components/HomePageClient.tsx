@@ -19,47 +19,47 @@ import {
 export default function HomePageClient() {
   const textsToTranslate = [
     // Banner
-    "Gestión de viviendas y traducciones profesionales en Cabo de Palos",
-    "Inmobiliaria y agencia de traducción en español, alemán e inglés. Te acompañamos en compra, venta, alquiler y trámites de todo tipo.",
+    "Venta de viviendas y gestión de alquileres a lo largo del Mar Menor",
+    "Gestionamos la venta de viviendas, la gestión de alquileres y ofrecemos servicios de traducción e interpretación en Español, Alemán y Ingles.",
     "Ver propiedades",
     "Ver servicios",
 
     // Sección: Sobre Agencia MKN
     "Sobre Agencia MKN",
-    "Somos una agencia especializada en gestión de viviendas y terrenos en Cabo de Palos, Cartagena y Alicante.",
-    "Nos ocupamos de todo el proceso inmobiliario: valoración, promoción, visitas, documentación, gestión de alquileres y acompañamiento hasta la firma.",
-    "También ofrecemos traducción profesional en español, alemán e inglés para trámites inmobiliarios, administrativos y médicos, tanto presenciales como documentales.",
+    "Somos una empresa cercana, centrada principalmente en la venta de viviendas y en la gestión de alquileres para propietarios en Cabo de Palos, Cartagena y la costa cercana.",
+    "No alquilamos por cuenta propia: acompañamos personalmente a propietarios y compradores en valoración, promoción, visitas, documentación, negociación y firma, con un seguimiento completo de cada paso.",
+    "No solo traducimos, acompañamos de verdad. Ayudamos en situaciones donde el idioma son clave: médicos, hospitales, notarias, bancos o aeropuestos.",
     "Foto de Agencia MKN - Oficina en Cabo de Palos",
 
     // Sección: Nuestra ubicación
     "Nuestra ubicación",
     "Cabo de Palos, Cartagena",
-    "Ubicados en un enclave privilegiado frente al mar, conectamos propiedades y personas en La Manga, Cartagena y la costa de Alicante.",
-    "La confianza es nuestro valor central: ofrecemos un trato cercano, transparente y profesional en cada gestión.",
-    "Trabajamos con viviendas en Cabo de Palos, La Manga del Mar Menor, Cartagena y la Costa Calida.",
-    "Atendemos clientes nacionales e internacionales en la Region de Murcia y Alicante.",
+    "Nos encontramos en Cabo de Palos, uno de los corazones del turismo de la costa mediterranea desde donde ofrecemos nuestros servicios tanto de gestión como de traducción.",
+    "Destacamos en llevar a cabo un servicio cercano de principio a fin, con atención directa y seguimiento real en cada proceso, para que cada cliente se sienta acompañado y seguro en cada paso de su compra, venta, alquiler o gestión de documentos y citas.",
+    "Nos movemos por toda la Región de Murcia incluso llegando a zonas como Alicante o Almería dando por seguro que vamos a estar ahi donde se nos necesite.",
+    "Atendemos a clientes nacionales e internacionales que buscan un servicio profesional, cercano y humano, especialmente en español y alemán.",
     "Dirección:",
     "Teléfono:",
     "Email:",
 
     // Sección: Alquileres
-    "Gestionamos alquileres",
-    "Contamos con muchos clientes interesados en alquilar viviendas, por lo que ayudamos a propietarios a encontrar inquilinos con un seguimiento cercano y profesional.",
-    "Si tienes una casa o apartamento y quieres alquilarlo, nos encargamos de la promoción, las consultas y la coordinación de todo el proceso.",
+    "Gestionamos alquileres para propietarios",
+    "Ayudamos a propietarios que quieren alquilar su vivienda pero que no quieren estresarse con todos los trámites burocraticos y de papeleo.",
+    "No alquilamos por nuestra cuenta: gestionamos el alquiler de tu vivienda, la traducción, documentación y la coordinación completa para que usted no tenga que preocuparse.",
     "Quiero alquilar mi vivienda",
 
     // Sección: Nuestros servicios
     "Nuestros servicios",
-    "Gestión inmobiliaria",
-    "Venta, alquiler y asesoramiento con seguimiento completo y personalizado.",
-    "Traducción e interpretación",
-    "Traducciones de todo tipo en español, alemán e inglés: inmobiliarias, médicas, administrativas y legales.",
-    "¿Necesitas más información sobre nuestros servicios?",
+    "Venta de viviendas y gestión de alquileres",
+    "Acompañamiento personal en compraventa y gestión de alquileres para propietarios, con seguimiento completo hasta el final.",
+    "Traducción e interpretación cercana",
+    "Español y alemán principalmente, también inglés, para documentos, citas y gestiones donde necesitas a alguien a tu lado.",
+    "¿Quieres que estudiemos tu caso?",
     "Ver servicios",
 
     // CTA final
-    "¿Hablamos?",
-    "Estamos aquí para ayudarte con viviendas, terrenos o traducciones profesionales.",
+    "Cuando algo importante ocurre, no deberías estar solo.",
+    "No solo traducimos y gestionamos viviendas: acompañamos personalmente en compras, ventas, alquileres, documentos y citas para que cada proceso se viva con claridad y confianza.",
     "Contactar",
   ];
 
@@ -271,7 +271,7 @@ export default function HomePageClient() {
               </div>
             </div>
 
-            <div className="mx-auto mb-8 max-w-2xl overflow-hidden rounded-2xl border border-neutral-gray bg-white p-3 shadow-sm sm:p-4">
+            <div className="mx-auto mb-8 max-w-xl overflow-hidden rounded-2xl border border-neutral-gray bg-white p-3 shadow-sm sm:p-4">
               <div className="relative aspect-[1005/599] w-full">
                 <Image
                   src="/imgrecuadro.PNG"
@@ -303,7 +303,7 @@ export default function HomePageClient() {
               <h2 className="text-3xl font-semibold mb-4 font-display">
                 {finalCtaTitle}
               </h2>
-              <p className="text-lg mb-6 opacity-90">
+              <p className="mx-auto mb-6 max-w-5xl px-4 text-lg opacity-90 sm:px-8">
                 {finalCtaText}
               </p>
               <Link

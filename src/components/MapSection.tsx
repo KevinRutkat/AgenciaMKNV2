@@ -31,7 +31,7 @@ export default function MapSection() {
           >
             <Marker
               position={agencyLocation}
-              title="Agencia MKN - Inmobiliaria y Servicios de Traducción"
+              title="Agencia MKN - Venta de viviendas y acompañamiento"
             />
           </GoogleMap>
         ) : (

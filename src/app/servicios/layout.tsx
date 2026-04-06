@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
-const title = "Servicios inmobiliarios y traduccion profesional";
+const title = "Servicios inmobiliarios y acompañamiento lingüístico";
 const description =
-  "Servicios de gestion inmobiliaria, compraventa, alquiler y traduccion profesional en Cabo de Palos, La Manga y Cartagena.";
+  "Servicios de venta de viviendas, gestión de alquileres para propietarios y traducción e interpretación cercana en Cabo de Palos, La Manga y Cartagena.";
 
 const servicesSchema = {
   "@context": "https://schema.org",
   "@type": "Service",
   name: "Servicios de Agencia MKN",
-  serviceType: "Inmobiliaria y traduccion",
+  serviceType: "Inmobiliaria y acompañamiento lingüístico",
   provider: {
     "@type": "RealEstateAgent",
     name: "Agencia MKN",
@@ -35,21 +35,21 @@ const servicesSchema = {
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: "Alquiler de propiedades residenciales",
+          name: "Gestión de alquileres para propietarios",
         },
       },
       {
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: "Asesoria y gestion de contratos",
+          name: "Acompañamiento documental en compraventas y alquileres",
         },
       },
       {
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: "Traduccion e interpretacion profesional",
+          name: "Traducción e interpretación en español, alemán e inglés",
         },
       },
     ],
