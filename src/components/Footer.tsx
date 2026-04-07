@@ -10,7 +10,7 @@ export default function Footer() {
 
   const textsToTranslate = [
     "Agencia MKN",
-    "Venta de viviendas y Gestion de alquileres.",
+    "Venta de viviendas y gestión de alquileres.",
     "Traducción e interpretación cercana en español, alemán e inglés para documentos, citas y gestiones en médicos, hospitales, notarías, bancos y organismos oficiales.",
     "Enlaces rápidos",
     "Inicio",

@@ -20,7 +20,7 @@ export default function HomePageClient() {
   const textsToTranslate = [
     // Banner
     "Venta de viviendas y gestión de alquileres a lo largo del Mar Menor",
-    "Gestionamos la venta de viviendas, la gestión de alquileres y ofrecemos servicios de traducción e interpretación en Español, Alemán y Ingles.",
+    "Gestionamos la venta de viviendas, la gestión de alquileres y ofrecemos servicios de traducción e interpretación en español, alemán e inglés.",
     "Ver propiedades",
     "Ver servicios",
 
@@ -28,15 +28,15 @@ export default function HomePageClient() {
     "Sobre Agencia MKN",
     "Somos una empresa cercana, centrada principalmente en la venta de viviendas y en la gestión de alquileres para propietarios en Cabo de Palos, Cartagena y la costa cercana.",
     "No alquilamos por cuenta propia: acompañamos personalmente a propietarios y compradores en valoración, promoción, visitas, documentación, negociación y firma, con un seguimiento completo de cada paso.",
-    "No solo traducimos, acompañamos de verdad. Ayudamos en situaciones donde el idioma son clave: médicos, hospitales, notarias, bancos o aeropuestos.",
+    "No solo traducimos, acompañamos de verdad. Ayudamos en situaciones donde el idioma es clave: médicos, hospitales, notarías, bancos o aeropuertos.",
     "Foto de Agencia MKN - Oficina en Cabo de Palos",
 
     // Sección: Nuestra ubicación
     "Nuestra ubicación",
     "Cabo de Palos, Cartagena",
-    "Nos encontramos en Cabo de Palos, uno de los corazones del turismo de la costa mediterranea desde donde ofrecemos nuestros servicios tanto de gestión como de traducción.",
+    "Nos encontramos en Cabo de Palos, uno de los corazones del turismo de la costa mediterránea, desde donde ofrecemos nuestros servicios tanto de gestión como de traducción.",
     "Destacamos en llevar a cabo un servicio cercano de principio a fin, con atención directa y seguimiento real en cada proceso, para que cada cliente se sienta acompañado y seguro en cada paso de su compra, venta, alquiler o gestión de documentos y citas.",
-    "Nos movemos por toda la Región de Murcia incluso llegando a zonas como Alicante o Almería dando por seguro que vamos a estar ahi donde se nos necesite.",
+    "Nos movemos por toda la Región de Murcia, llegando también a zonas como Alicante o Almería, con la seguridad de que estaremos ahí donde se nos necesite.",
     "Atendemos a clientes nacionales e internacionales que buscan un servicio profesional, cercano y humano, especialmente en español y alemán.",
     "Dirección:",
     "Teléfono:",
@@ -44,8 +44,8 @@ export default function HomePageClient() {
 
     // Sección: Alquileres
     "Gestionamos alquileres para propietarios",
-    "Ayudamos a propietarios que quieren alquilar su vivienda pero que no quieren estresarse con todos los trámites burocraticos y de papeleo.",
-    "No alquilamos por nuestra cuenta: gestionamos el alquiler de tu vivienda, la traducción, documentación y la coordinación completa para que usted no tenga que preocuparse.",
+    "Ayudamos a propietarios que quieren alquilar su vivienda, pero que no quieren estresarse con todos los trámites burocráticos y el papeleo.",
+    "No alquilamos por nuestra cuenta: gestionamos el alquiler de su vivienda, la traducción, la documentación y la coordinación completa para que no tenga que preocuparse.",
     "Quiero alquilar mi vivienda",
 
     // Sección: Nuestros servicios
@@ -53,12 +53,12 @@ export default function HomePageClient() {
     "Venta de viviendas y gestión de alquileres",
     "Acompañamiento personal en compraventa y gestión de alquileres para propietarios, con seguimiento completo hasta el final.",
     "Traducción e interpretación cercana",
-    "Español y alemán principalmente, también inglés, para documentos, citas y gestiones donde necesitas a alguien a tu lado.",
-    "¿Quieres que estudiemos tu caso?",
+    "Español y alemán principalmente, también inglés, para documentos, citas y gestiones donde necesita a alguien a su lado.",
+    "¿Desea que estudiemos su caso?",
     "Ver servicios",
 
     // CTA final
-    "Cuando algo importante ocurre, no deberías estar solo.",
+    "Cuando algo importante ocurre, no debería estar solo.",
     "No solo traducimos y gestionamos viviendas: acompañamos personalmente en compras, ventas, alquileres, documentos y citas para que cada proceso se viva con claridad y confianza.",
     "Contactar",
   ];
@@ -275,7 +275,7 @@ export default function HomePageClient() {
               <div className="relative aspect-[1005/599] w-full">
                 <Image
                   src="/imgrecuadro.PNG"
-                  alt="Informacion destacada de Agencia MKN"
+                  alt="Información destacada de Agencia MKN"
                   fill
                   className="object-contain"
                   sizes="(max-width: 768px) 100vw, 896px"

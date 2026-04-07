@@ -494,7 +494,7 @@ export default function EditPropertyPage() {
     }
 
     if (imageToRemove.kind === 'existing') {
-      if (!confirm('?Est?s seguro de que quieres eliminar esta imagen?')) {
+      if (!confirm('¿Está seguro de que desea eliminar esta imagen?')) {
         return;
       }
 

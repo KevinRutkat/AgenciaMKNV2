@@ -61,7 +61,7 @@ export default function ViviendaCard({
     "Propiedad",
     "hab.",
     "baños",
-    "¿Estás seguro de que quieres eliminar esta propiedad? Esta acción no se puede deshacer.",
+    "¿Está seguro de que desea eliminar esta propiedad? Esta acción no se puede deshacer.",
     "Error: No hay sesión activa",
     "Error al eliminar la propiedad",
     "Vendido",

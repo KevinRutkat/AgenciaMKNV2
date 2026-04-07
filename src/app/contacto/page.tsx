@@ -52,20 +52,20 @@ export default function ContactoPage() {
 
     // Formulario
     "Envíanos un mensaje",
-    "Te responderemos lo antes posible",
+    "Le responderemos lo antes posible",
     "Nombre completo *",
-    "Ingresa tu nombre completo",
+    "Introduzca su nombre completo",
     "Correo electrónico *",
-    "tu@email.com",
+    "correo@ejemplo.com",
     "Teléfono *",
     "+34 123 456 789",
     "Motivo del contacto *",
-    "Cuéntanos tu consulta (venta, gestión de alquiler, médico, hospital, notaría, banco, traducción, etc.)",
+    "Cuéntenos su consulta (venta, gestión de alquiler, médico, hospital, notaría, banco, traducción, etc.)",
     "Enviando…",
     "Enviar mensaje",
 
     // Mensajes de estado
-    "¡Gracias por contactarnos! Tu mensaje ha sido enviado y te responderemos pronto.",
+    "Gracias por contactarnos. Su mensaje ha sido enviado y le responderemos pronto.",
     "Error al enviar el mensaje. Por favor intenta de nuevo.",
 
     // Información de contacto
@@ -377,7 +377,7 @@ export default function ContactoPage() {
                   >
                     <Marker
                       position={agencyLocation}
-                      title="Agencia MKN - Venta de viviendas y gestion de alquileres"
+                      title="Agencia MKN - Venta de viviendas y gestión de alquileres"
                     />
                   </GoogleMap>
                 ) : (

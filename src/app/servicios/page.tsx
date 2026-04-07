@@ -29,8 +29,8 @@ export default function ServiciosPage() {
     "No solo traducimos: acompañamos de verdad en documentos, citas y gestiones importantes",
 
     // Call to action
-    "¿Necesitas asesoramiento?",
-    "Cuéntanos tu caso y lo trabajamos contigo de forma personal, cercana y profesional.",
+    "¿Necesita asesoramiento?",
+    "Cuéntenos su caso y lo trabajamos con usted de forma personal, cercana y profesional.",
     "Contactar",
     "Llamar ahora",
 
@@ -44,7 +44,7 @@ export default function ServiciosPage() {
     "Seguimiento continuo hasta cerrar la operación",
 
     "Gestión de alquileres para propietarios",
-    "No alquilamos por cuenta propia: gestionamos el alquiler de tu vivienda con seguimiento completo",
+    "No alquilamos por cuenta propia: gestionamos el alquiler de su vivienda con seguimiento completo",
     "Promoción de la vivienda y difusión del alquiler",
     "Atención, filtro y respuesta a consultas",
     "Coordinación de visitas y documentación",
@@ -60,7 +60,7 @@ export default function ServiciosPage() {
     "Apoyo en la negociación y en los siguientes pasos",
 
     "Documentación y seguimiento completo",
-    "Nos ocupamos del seguimiento real del proceso para que no te sientas solo ante el papeleo",
+    "Nos ocupamos del seguimiento real del proceso para que no se sienta solo ante el papeleo",
     "Revisión de documentación de la vivienda y del proceso",
     "Apoyo con certificados y documentación necesaria",
     "Comprobación de pasos previos y situación documental",
@@ -85,7 +85,7 @@ export default function ServiciosPage() {
     "Apoyo en formularios, citas y comunicaciones importantes",
 
     "Acompañamiento presencial",
-    "Estamos contigo donde de verdad importa: cerca, presentes y profesionales",
+    "Estamos con usted donde de verdad importa: cerca, presentes y profesionales",
     "Médicos, consultas y seguimiento sanitario",
     "Hospitales, pruebas e ingresos",
     "Notarías, firmas y poderes",
