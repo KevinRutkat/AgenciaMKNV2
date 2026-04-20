@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { imagesBucketName, imagesBucketPrefix } from '@/lib/config';
 import { normalizeEnergyEfficiency } from '@/lib/energyEfficiency';
+import { normalizeSpecialStatusFlags } from '@/lib/propertySpecialStatus';
 import {
   normalizeRentPricePeriod,
   stripRentPriceSuffix,
@@ -179,6 +180,12 @@ export async function POST(request: NextRequest) {
 
     const isRentRequest = formData.get('is_rent') === 'true';
 
+    const specialStatuses = normalizeSpecialStatusFlags({
+      is_featured: formData.get('is_featured') === 'true',
+      is_sold: formData.get('is_sold') === 'true',
+      is_reserved: formData.get('is_reserved') === 'true',
+    });
+
     const propertyData = {
       name: formData.get('name') as string,
       descripcion: formData.get('descripcion') as string,
@@ -204,13 +211,12 @@ export async function POST(request: NextRequest) {
       propiedades: propiedadesArray,
       is_rent: isRentRequest,
       plantas: parseInt(formData.get('plantas') as string),
-      is_featured: formData.get('is_featured') === 'true',
+      ...specialStatuses,
       category: formData.get('category') as string,
       eficiencia_energetica: normalizeEnergyEfficiency(
         formData.get('eficiencia_energetica') as string | null,
       ),
-      // 👇 Nuevo campo: por defecto false salvo que se envíe explícitamente
-      is_sold: formData.get('is_sold') === 'true',
+      // Estados especiales normalizados: destacada, vendida y reservada
       inserted_at: new Date().toISOString(),
     };
 
@@ -511,8 +517,15 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    const specialStatuses = normalizeSpecialStatusFlags({
+      is_featured: rest.is_featured,
+      is_sold: rest.is_sold,
+      is_reserved: rest.is_reserved,
+    });
+
     const updateData = {
-      ...rest, // incluye is_sold si viene del cliente
+      ...rest,
+      ...specialStatuses,
       price:
         rest.is_rent === true
           ? stripRentPriceSuffix(rest.price)

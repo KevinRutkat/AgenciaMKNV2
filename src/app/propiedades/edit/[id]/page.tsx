@@ -21,6 +21,12 @@ import {
   type RentPricePeriod,
 } from '@/lib/viviendaUtils';
 import {
+  getPropertyAvailabilityStatus,
+  normalizeSpecialStatusFlags,
+  resolveAvailabilityStatusSelection,
+  type PropertyAvailabilityStatus,
+} from '@/lib/propertySpecialStatus';
+import {
   Bars3Icon,
   PhotoIcon,
   InformationCircleIcon,
@@ -90,7 +96,8 @@ export default function EditPropertyPage() {
     is_featured: false,
     category: 'usada',
     eficiencia_energetica: '',
-    is_sold: false, // NUEVO CAMPO
+    is_sold: false,
+    is_reserved: false,
   });
 
   // Lista de características desde constantes compartidas
@@ -112,6 +119,7 @@ export default function EditPropertyPage() {
   const rentPricePeriod = normalizeRentPricePeriod(formData.rent_price_period);
   const rentPriceSuffix = getRentPriceSuffix(rentPricePeriod);
   const rentPriceLabel = rentPricePeriod === 'day' ? 'diario' : 'mensual';
+  const availabilityStatus = getPropertyAvailabilityStatus(formData);
   const [isLoading, setIsLoading] = useState(true);
 
   // Estado para buscador de características
@@ -187,8 +195,11 @@ export default function EditPropertyPage() {
           return match ? match.label : p;
         });
 
-        const isSoldFromDb = !!vivienda.is_sold;
-        const isFeaturedFromDb = !!vivienda.is_featured;
+        const specialStatuses = normalizeSpecialStatusFlags({
+          is_featured: vivienda.is_featured,
+          is_sold: vivienda.is_sold,
+          is_reserved: vivienda.is_reserved,
+        });
         const normalizedCategoryValue = normalizeCategory(vivienda.category);
         const isRentCategory = normalizedCategoryValue.includes('alquiler');
 
@@ -208,12 +219,11 @@ export default function EditPropertyPage() {
           is_rent: isRentCategory || vivienda.is_rent || false,
           rent_price_period: normalizeRentPricePeriod(vivienda.rent_price_period),
           plantas: vivienda.plantas || 1,
-          // 👇 Si está vendida, forzamos destacado a false
-          is_featured: isSoldFromDb ? false : isFeaturedFromDb,
+          // Solo vendida y reservada son mutuamente excluyentes
+          ...specialStatuses,
           category: normalizedCategoryValue || 'usada',
           eficiencia_energetica:
             normalizeEnergyEfficiency(vivienda.eficiencia_energetica) || '',
-          is_sold: isSoldFromDb,
         });
 
         if (vivienda.lat && vivienda.lng) {
@@ -352,25 +362,6 @@ export default function EditPropertyPage() {
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
 
-      // 🔁 Mutua exclusión: Destacado vs Vendido
-      if (name === 'is_sold') {
-        setFormData((prev) => ({
-          ...prev,
-          is_sold: checked,
-          is_featured: checked ? false : prev.is_featured,
-        }));
-        return;
-      }
-
-      if (name === 'is_featured') {
-        setFormData((prev) => ({
-          ...prev,
-          is_featured: checked,
-          is_sold: checked ? false : prev.is_sold,
-        }));
-        return;
-      }
-
       setFormData((prev) => ({
         ...prev,
         [name]: checked,
@@ -386,6 +377,22 @@ export default function EditPropertyPage() {
         [name]: value,
       }));
     }
+  };
+
+  const handleFeaturedChange = (checked: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      is_featured: checked,
+    }));
+  };
+
+  const handleAvailabilityStatusChange = (
+    status: PropertyAvailabilityStatus,
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      ...resolveAvailabilityStatusSelection(prev, status),
+    }));
   };
 
   const createNewImageItems = (files: File[]) =>
@@ -579,6 +586,7 @@ export default function EditPropertyPage() {
       const eficienciaEnergetica = normalizeEnergyEfficiency(
         formData.eficiencia_energetica,
       );
+      const specialStatuses = normalizeSpecialStatusFlags(formData);
 
       const imageOrder = orderedImages.map((image, index) => ({
         ...image,
@@ -611,6 +619,7 @@ export default function EditPropertyPage() {
         body: JSON.stringify({
           id: propertyId,
           ...formData,
+          ...specialStatuses,
           category: normalizedCategoryValue || formData.category,
           is_rent: isRentCategory,
           rent_price_period: isRentCategory
@@ -1118,7 +1127,7 @@ export default function EditPropertyPage() {
                         type="checkbox"
                         name="is_featured"
                         checked={formData.is_featured}
-                        onChange={handleInputChange}
+                        onChange={(e) => handleFeaturedChange(e.target.checked)}
                         className="mr-3 h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
                       />
                       <span className="text-sm text-gray-700">
@@ -1126,18 +1135,53 @@ export default function EditPropertyPage() {
                       </span>
                     </label>
 
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="is_sold"
-                        checked={formData.is_sold}
-                        onChange={handleInputChange}
-                        className="mr-3 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
-                      />
-                      <span className="text-sm text-gray-700">
-                         Vendido
+                    <div className="space-y-2">
+                      <span className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Estado comercial
                       </span>
-                    </label>
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="availability_status"
+                          checked={availabilityStatus === 'available'}
+                          onChange={() =>
+                            handleAvailabilityStatusChange('available')
+                          }
+                          className="mr-3 h-4 w-4 border-gray-300 text-gray-700 focus:ring-gray-500"
+                        />
+                        <span className="text-sm text-gray-700">
+                          Disponible
+                        </span>
+                      </label>
+
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="availability_status"
+                          checked={availabilityStatus === 'reserved'}
+                          onChange={() =>
+                            handleAvailabilityStatusChange('reserved')
+                          }
+                          className="mr-3 h-4 w-4 border-gray-300 text-amber-600 focus:ring-amber-500"
+                        />
+                        <span className="text-sm font-medium text-amber-700">
+                          Reservado
+                        </span>
+                      </label>
+
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="availability_status"
+                          checked={availabilityStatus === 'sold'}
+                          onChange={() => handleAvailabilityStatusChange('sold')}
+                          className="mr-3 h-4 w-4 border-gray-300 text-red-600 focus:ring-red-500"
+                        />
+                        <span className="text-sm font-medium text-red-700">
+                          Vendido
+                        </span>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>

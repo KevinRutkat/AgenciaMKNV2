@@ -37,6 +37,7 @@ export interface Vivienda {
   plantas: number
   is_featured: boolean
   is_sold: boolean | null
+  is_reserved: boolean | null
   eficiencia_energetica?: string | null
 }
 

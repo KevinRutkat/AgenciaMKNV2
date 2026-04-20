@@ -12,6 +12,7 @@ import {
   isRentListing,
   normalizeCategory,
 } from "@/lib/viviendaUtils";
+import { getPropertySpecialStatus } from "@/lib/propertySpecialStatus";
 import {
   PencilSquareIcon,
   TrashIcon,
@@ -23,7 +24,7 @@ import {
   BeakerIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
-import { CheckBadgeIcon, StarIcon } from "@heroicons/react/24/solid";
+import { CheckBadgeIcon, ClockIcon, StarIcon } from "@heroicons/react/24/solid";
 
 interface ViviendaCardProps {
   vivienda: Vivienda;
@@ -65,6 +66,7 @@ export default function ViviendaCard({
     "Error: No hay sesión activa",
     "Error al eliminar la propiedad",
     "Vendido",
+    "Reservado",
     vivienda.descripcion,
   ];
 
@@ -86,6 +88,7 @@ export default function ViviendaCard({
     noSessionError,
     deleteError,
     sold,
+    reserved,
     translatedDescription,
   ] = mounted ? translations : textsToTranslate;
 
@@ -147,6 +150,30 @@ export default function ViviendaCard({
   const normalizedCategory = normalizeCategory(vivienda.category);
   const isRent = isRentListing(vivienda);
   const rentPricePeriod = getRentPricePeriod(vivienda);
+  const specialStatus = getPropertySpecialStatus(vivienda);
+  const shouldDimImage =
+    specialStatus === "sold" || specialStatus === "reserved";
+  const specialBadge =
+    specialStatus === "sold"
+      ? {
+          label: sold,
+          color: "bg-neutral-dark",
+          Icon: CheckBadgeIcon,
+        }
+      : specialStatus === "reserved"
+        ? {
+            label: reserved,
+            color: "bg-red-600",
+            Icon: ClockIcon,
+          }
+        : specialStatus === "featured"
+          ? {
+              label: featured,
+              color: "bg-accent-coral",
+              Icon: StarIcon,
+            }
+          : null;
+  const SpecialBadgeIcon = specialBadge?.Icon;
 
   const getCategoryBadge = () => {
     if (normalizedCategory === "usada")
@@ -201,7 +228,7 @@ export default function ViviendaCard({
             alt={`${vivienda.name} en ${vivienda.location}`}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-            className={`object-cover ${vivienda.is_sold ? "opacity-60" : ""}`}
+            className={`object-cover ${shouldDimImage ? "opacity-60" : ""}`}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-neutral-muted">
@@ -225,19 +252,14 @@ export default function ViviendaCard({
           </div>
         </div>
 
-        {(vivienda.is_sold || vivienda.is_featured) && (
+        {specialBadge && SpecialBadgeIcon && (
           <div className="absolute top-2 left-2 z-10 pointer-events-none">
-            {vivienda.is_sold ? (
-              <span className="inline-flex items-center gap-1.5 bg-neutral-dark text-white text-xs px-2 py-1 rounded-full font-semibold">
-                <CheckBadgeIcon className="h-3.5 w-3.5" />
-                {sold}
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 bg-accent-coral text-white text-xs px-2 py-1 rounded-full font-semibold">
-                <StarIcon className="h-3.5 w-3.5" />
-                {featured}
-              </span>
-            )}
+            <span
+              className={`inline-flex items-center gap-1.5 ${specialBadge.color} text-white text-xs px-2 py-1 rounded-full font-semibold`}
+            >
+              <SpecialBadgeIcon className="h-3.5 w-3.5" />
+              {specialBadge.label}
+            </span>
           </div>
         )}
 

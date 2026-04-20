@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { supabase, Vivienda, ViviendaImage } from "@/lib/supabase";
 import ViviendaDetailClient from "@/components/ViviendaDetailClient";
-import { CheckBadgeIcon } from "@heroicons/react/24/solid";
+import { getPropertySpecialStatus } from "@/lib/propertySpecialStatus";
+import { CheckBadgeIcon, ClockIcon } from "@heroicons/react/24/solid";
 
 const baseUrl = "https://www.agenciamkn.com";
 
@@ -162,6 +163,7 @@ export default async function ViviendaDetailPage({ params }: Props) {
   const imageUrls = images
     .map((img) => normalizeImageUrl(img.url))
     .filter((url): url is string => Boolean(url));
+  const specialStatus = getPropertySpecialStatus(vivienda);
 
   const priceValue = toNumber(vivienda.price);
   const sizeValue = toNumber(vivienda.metros);
@@ -248,9 +250,12 @@ export default async function ViviendaDetailPage({ params }: Props) {
       "@type": "Offer",
       "price": priceValue ?? vivienda.price,
       "priceCurrency": "EUR",
-      "availability": vivienda.is_sold
-        ? "https://schema.org/Sold"
-        : "https://schema.org/InStock",
+      "availability":
+        specialStatus === "sold"
+          ? "https://schema.org/Sold"
+          : specialStatus === "reserved"
+            ? "https://schema.org/LimitedAvailability"
+            : "https://schema.org/InStock",
     },
   };
 
@@ -267,11 +272,20 @@ export default async function ViviendaDetailPage({ params }: Props) {
       />
 
       {/* Banner "Vendido" arriba si aplica */}
-      {vivienda.is_sold && (
+      {specialStatus === "sold" && (
         <div className="bg-red-600 text-white text-center py-2">
           <span className="text-sm sm:text-base font-semibold inline-flex items-center gap-2">
             <CheckBadgeIcon className="h-4 w-4" />
             Esta propiedad está marcada como <strong>VENDIDA</strong>
+          </span>
+        </div>
+      )}
+
+      {specialStatus === "reserved" && (
+        <div className="bg-red-600 text-white text-center py-2">
+          <span className="text-sm sm:text-base font-semibold inline-flex items-center gap-2">
+            <ClockIcon className="h-4 w-4" />
+            Esta propiedad esta marcada como <strong>RESERVADA</strong>
           </span>
         </div>
       )}

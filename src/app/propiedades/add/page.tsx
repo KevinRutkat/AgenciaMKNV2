@@ -21,6 +21,12 @@ import {
   type RentPricePeriod,
 } from '@/lib/viviendaUtils';
 import {
+  getPropertyAvailabilityStatus,
+  normalizeSpecialStatusFlags,
+  resolveAvailabilityStatusSelection,
+  type PropertyAvailabilityStatus,
+} from '@/lib/propertySpecialStatus';
+import {
   MagnifyingGlassIcon,
   Bars3Icon,
   PhotoIcon,
@@ -53,6 +59,8 @@ interface ViviendaInsert {
   lat?: number;
   lng?: number;
   is_featured: boolean;
+  is_sold: boolean;
+  is_reserved: boolean;
   inserted_at: string;
   oldprice?: string;
   eficiencia_energetica?: string | null;
@@ -95,6 +103,8 @@ export default function AddPropertyPage() {
     rent_price_period: 'month' as RentPricePeriod,
     plantas: 1,
     is_featured: false,
+    is_sold: false,
+    is_reserved: false,
     category: 'usada',
     eficiencia_energetica: ''
   });
@@ -117,6 +127,7 @@ export default function AddPropertyPage() {
   const rentPricePeriod = normalizeRentPricePeriod(formData.rent_price_period);
   const rentPriceSuffix = getRentPriceSuffix(rentPricePeriod);
   const rentPriceLabel = rentPricePeriod === 'day' ? 'diario' : 'mensual';
+  const availabilityStatus = getPropertyAvailabilityStatus(formData);
 
   // Estado para buscador de características
   const [searchCaracteristicas, setSearchCaracteristicas] = useState('');
@@ -217,6 +228,22 @@ export default function AddPropertyPage() {
         }));
       }
     }
+  };
+
+  const handleFeaturedChange = (checked: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      is_featured: checked,
+    }));
+  };
+
+  const handleAvailabilityStatusChange = (
+    status: PropertyAvailabilityStatus,
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      ...resolveAvailabilityStatusSelection(prev, status),
+    }));
   };
 
   // Manejar selección de características múltiples
@@ -368,6 +395,7 @@ export default function AddPropertyPage() {
       const eficienciaEnergetica = normalizeEnergyEfficiency(
         formData.eficiencia_energetica,
       );
+      const specialStatuses = normalizeSpecialStatusFlags(formData);
 
       const toInsert: ViviendaInsert = {
         is_rent: isRentCategory,
@@ -390,7 +418,7 @@ export default function AddPropertyPage() {
         reference_code: generateRefCode(),
         lat: coordinates?.lat || formData.lat,
         lng: coordinates?.lng || formData.lng,
-        is_featured: formData.is_featured,
+        ...specialStatuses,
         inserted_at: new Date().toISOString(),
         eficiencia_energetica: eficienciaEnergetica
       };
@@ -799,7 +827,7 @@ export default function AddPropertyPage() {
                         type="checkbox"
                         name="is_featured"
                         checked={formData.is_featured}
-                        onChange={handleInputChange}
+                        onChange={(e) => handleFeaturedChange(e.target.checked)}
                         className="mr-3 h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
                       />
                       <span className="inline-flex items-center gap-2 text-sm text-gray-700">
@@ -807,6 +835,51 @@ export default function AddPropertyPage() {
                         Propiedad destacada
                       </span>
                     </label>
+                    <div className="space-y-2">
+                      <span className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Estado comercial
+                      </span>
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="availability_status"
+                          checked={availabilityStatus === 'available'}
+                          onChange={() =>
+                            handleAvailabilityStatusChange('available')
+                          }
+                          className="mr-3 h-4 w-4 border-gray-300 text-gray-700 focus:ring-gray-500"
+                        />
+                        <span className="text-sm text-gray-700">
+                          Disponible
+                        </span>
+                      </label>
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="availability_status"
+                          checked={availabilityStatus === 'reserved'}
+                          onChange={() =>
+                            handleAvailabilityStatusChange('reserved')
+                          }
+                          className="mr-3 h-4 w-4 border-gray-300 text-amber-600 focus:ring-amber-500"
+                        />
+                        <span className="text-sm font-medium text-amber-700">
+                          Reservado
+                        </span>
+                      </label>
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="availability_status"
+                          checked={availabilityStatus === 'sold'}
+                          onChange={() => handleAvailabilityStatusChange('sold')}
+                          className="mr-3 h-4 w-4 border-gray-300 text-red-600 focus:ring-red-500"
+                        />
+                        <span className="text-sm font-medium text-red-700">
+                          Vendido
+                        </span>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>

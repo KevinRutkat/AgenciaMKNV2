@@ -17,7 +17,7 @@ import {
   SparklesIcon,
   TagIcon,
 } from "@heroicons/react/24/outline";
-import { HomeIcon, MapPinIcon, CheckBadgeIcon } from "@heroicons/react/24/solid";
+import { HomeIcon, MapPinIcon, CheckBadgeIcon, ClockIcon } from "@heroicons/react/24/solid";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useMultipleTranslations, useTranslation } from "@/hooks/useTranslation";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
@@ -32,6 +32,7 @@ import {
   getRentPricePeriod,
   isRentListing,
 } from "@/lib/viviendaUtils";
+import { getPropertySpecialStatus } from "@/lib/propertySpecialStatus";
 
 type Props = {
   vivienda: Vivienda;
@@ -64,6 +65,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     "Coordenadas:",
     "Dirección:",
     "Vendido",
+    "Reservado",
     "Eficiencia energetica",
   ];
 
@@ -86,6 +88,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
     coordenadasLabel,
     direccionLabel,
     soldText,
+    reservedText,
     energyLabel,
   ] = useMultipleTranslations(textsToTranslate);
 
@@ -190,6 +193,24 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
 
   const isRent = isRentListing(vivienda);
   const rentPricePeriod = getRentPricePeriod(vivienda);
+  const specialStatus = getPropertySpecialStatus(vivienda);
+  const shouldDimImage =
+    specialStatus === "sold" || specialStatus === "reserved";
+  const specialBadge =
+    specialStatus === "sold"
+      ? {
+          label: soldText,
+          color: "bg-neutral-dark",
+          Icon: CheckBadgeIcon,
+        }
+      : specialStatus === "reserved"
+        ? {
+            label: reservedText,
+            color: "bg-red-600",
+            Icon: ClockIcon,
+          }
+        : null;
+  const SpecialBadgeIcon = specialBadge?.Icon;
   const energyEfficiencyValue = formatEnergyEfficiencyLabel(
     vivienda.eficiencia_energetica,
   );
@@ -251,10 +272,12 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-semibold text-neutral-dark mb-2 flex items-center flex-wrap gap-3 font-display">
             {vivienda.name}
-            {vivienda.is_sold && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-dark text-white text-xs sm:text-sm font-semibold">
-                <CheckBadgeIcon className="h-4 w-4" />
-                {soldText}
+            {specialBadge && SpecialBadgeIcon && (
+              <span
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full ${specialBadge.color} text-white text-xs sm:text-sm font-semibold`}
+              >
+                <SpecialBadgeIcon className="h-4 w-4" />
+                {specialBadge.label}
               </span>
             )}
           </h1>
@@ -277,7 +300,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                     priority={true}
                     quality={90}
                     sizes="(max-width: 1023px) 100vw, 50vw"
-                    className={`object-cover ${vivienda.is_sold ? "opacity-70" : ""}`}
+                    className={`object-cover ${shouldDimImage ? "opacity-70" : ""}`}
                   />
 
                   {images.length > 1 && (
