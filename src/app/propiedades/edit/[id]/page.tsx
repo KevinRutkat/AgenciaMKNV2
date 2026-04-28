@@ -27,6 +27,11 @@ import {
   type PropertyAvailabilityStatus,
 } from '@/lib/propertySpecialStatus';
 import {
+  MAX_SOURCE_IMAGE_SIZE,
+  VALID_IMAGE_FORMATS,
+  prepareImagesForStorage,
+} from '@/lib/clientImageProcessing';
+import {
   Bars3Icon,
   PhotoIcon,
   InformationCircleIcon,
@@ -58,7 +63,6 @@ function summarizeOrderedImagesForDebug(images: OrderedImageItem[]) {
 }
 
 const MAX_IMAGES = 20;
-const VALID_IMAGE_FORMATS = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 export default function EditPropertyPage() {
   const router = useRouter();
@@ -410,9 +414,9 @@ export default function EditPropertyPage() {
       return ` Error: Solo se pueden tener m?ximo ${MAX_IMAGES} im?genes en total. Ya tienes ${orderedImages.length}, intentas agregar ${files.length}`;
     }
 
-    const oversizedFiles = files.filter((file) => file.size > 5 * 1024 * 1024);
+    const oversizedFiles = files.filter((file) => file.size > MAX_SOURCE_IMAGE_SIZE);
     if (oversizedFiles.length > 0) {
-      return ' Error: Algunas im?genes superan los 5MB. Por favor, reduce el tama?o';
+      return ' Error: Algunas imagenes superan los 20MB. Por favor, reduce el tamano';
     }
 
     const invalidFiles = files.filter((file) => !VALID_IMAGE_FORMATS.includes(file.type));
@@ -423,7 +427,7 @@ export default function EditPropertyPage() {
     return null;
   };
 
-  const appendImages = (files: File[]) => {
+  const appendImages = async (files: File[]) => {
     if (files.length === 0) return;
 
     const validationError = validateImageFiles(files);
@@ -432,8 +436,16 @@ export default function EditPropertyPage() {
       return;
     }
 
-    setOrderedImages((prev) => [...prev, ...createNewImageItems(files)]);
-    setSubmitMessage('');
+    try {
+      setSubmitMessage('Optimizando imagenes para guardarlas con mejor calidad...');
+      const preparedFiles = await prepareImagesForStorage(files);
+      setOrderedImages((prev) => [...prev, ...createNewImageItems(preparedFiles)]);
+      setSubmitMessage('');
+    } catch (error) {
+      setSubmitMessage(
+        `Error: ${error instanceof Error ? error.message : 'No se pudieron preparar las imagenes'}`,
+      );
+    }
   };
 
   const normalizeImageSortOrder = async () => {
@@ -1345,7 +1357,7 @@ export default function EditPropertyPage() {
 
                 <div className="text-xs text-gray-500">
                   <p>? Formatos aceptados: JPG, PNG, WebP</p>
-                  <p>? Tamano maximo por imagen: 5MB</p>
+                  <p>? Tamano maximo por imagen: 20MB (se optimizan al guardar)</p>
                   <p>? Maximo 20 imagenes por propiedad</p>
                 </div>
               </div>
@@ -1398,8 +1410,9 @@ export default function EditPropertyPage() {
                         <Image
                           src={image.url}
                           alt="Imagen de la propiedad"
-                          width={200}
-                          height={128}
+                          width={320}
+                          height={205}
+                          quality={95}
                           className="w-full h-32 object-cover rounded-lg border border-gray-200"
                         />
                         <div className="mt-2 flex items-center justify-between gap-2">

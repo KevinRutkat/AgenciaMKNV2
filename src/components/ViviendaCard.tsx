@@ -220,14 +220,15 @@ export default function ViviendaCard({
 
       <div
         onClick={handleClick}
-        className="relative h-40 sm:h-48 md:h-52 bg-neutral-light flex-shrink-0 cursor-pointer"
+        className="relative h-56 sm:h-56 md:h-60 bg-neutral-light flex-shrink-0 cursor-pointer"
       >
         {primaryImage ? (
           <Image
             src={primaryImage.url}
             alt={`${vivienda.name} en ${vivienda.location}`}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+            quality={92}
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 60vw, (max-width: 1280px) 45vw, 36vw"
             className={`object-cover ${shouldDimImage ? "opacity-60" : ""}`}
           />
         ) : (

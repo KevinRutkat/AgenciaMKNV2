@@ -287,7 +287,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.18fr)_minmax(340px,0.82fr)] gap-8">
           {/* Galería de imágenes */}
           <div className="space-y-4">
             <div className="relative bg-neutral-light rounded-2xl overflow-hidden aspect-[4/3] border border-neutral-gray">
@@ -298,8 +298,8 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                     alt={`${vivienda.name} - Imagen ${currentImageIndex + 1}`}
                     fill
                     priority={true}
-                    quality={90}
-                    sizes="(max-width: 1023px) 100vw, 50vw"
+                    quality={95}
+                    sizes="(max-width: 1023px) 100vw, 64vw"
                     className={`object-cover ${shouldDimImage ? "opacity-70" : ""}`}
                   />
 
@@ -391,6 +391,7 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
                         src={image.url}
                         alt={`${vivienda.name} - Vista previa ${index + 1}`}
                         fill
+                        quality={90}
                         sizes="(max-width: 640px) 64px, 80px"
                         className="object-cover"
                       />

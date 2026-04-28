@@ -290,7 +290,8 @@ export default function ViviendasCostaSection() {
                                     src={primaryImage.url}
                                     alt={`${vivienda.name} en ${vivienda.location}`}
                                     fill
-                                    sizes="260px"
+                                    quality={90}
+                                    sizes="360px"
                                     className="object-cover"
                                   />
                                 ) : (
