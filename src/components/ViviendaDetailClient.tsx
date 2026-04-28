@@ -42,6 +42,8 @@ type Props = {
 export default function ViviendaDetailClient({ vivienda, images }: Props) {
   const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<"right" | "left">("right");
+  const [animKey, setAnimKey] = useState(0);
   const [showContact, setShowContact] = useState(false);
 
   const { isLoaded, loadError } = useGoogleMaps();
@@ -119,6 +121,8 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
   const nextImage = useCallback(() => {
     const newIndex =
       currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
+    setSlideDirection("right");
+    setAnimKey((k) => k + 1);
     setCurrentImageIndex(newIndex);
     scrollToPreview(newIndex);
   }, [currentImageIndex, images.length]);
@@ -126,6 +130,8 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
   const prevImage = useCallback(() => {
     const newIndex =
       currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
+    setSlideDirection("left");
+    setAnimKey((k) => k + 1);
     setCurrentImageIndex(newIndex);
     scrollToPreview(newIndex);
   }, [currentImageIndex, images.length]);
@@ -148,6 +154,8 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
   }, [images.length, prevImage, nextImage]);
 
   const goToImage = (index: number) => {
+    setSlideDirection(index > currentImageIndex ? "right" : "left");
+    setAnimKey((k) => k + 1);
     setCurrentImageIndex(index);
     scrollToPreview(index);
   };
@@ -293,15 +301,20 @@ export default function ViviendaDetailClient({ vivienda, images }: Props) {
             <div className="relative bg-neutral-light rounded-2xl overflow-hidden aspect-[4/3] border border-neutral-gray">
               {images.length > 0 ? (
                 <>
-                  <Image
-                    src={images[currentImageIndex].url}
-                    alt={`${vivienda.name} - Imagen ${currentImageIndex + 1}`}
-                    fill
-                    priority={true}
-                    quality={95}
-                    sizes="(max-width: 1023px) 100vw, 64vw"
-                    className={`object-cover ${shouldDimImage ? "opacity-70" : ""}`}
-                  />
+                  <div
+                    key={animKey}
+                    className={`absolute inset-0 ${slideDirection === "right" ? "gallery-slide-in-right" : "gallery-slide-in-left"}`}
+                  >
+                    <Image
+                      src={images[currentImageIndex].url}
+                      alt={`${vivienda.name} - Imagen ${currentImageIndex + 1}`}
+                      fill
+                      priority={true}
+                      quality={95}
+                      sizes="(max-width: 1023px) 100vw, 64vw"
+                      className={`object-cover ${shouldDimImage ? "opacity-70" : ""}`}
+                    />
+                  </div>
 
                   {images.length > 1 && (
                     <>

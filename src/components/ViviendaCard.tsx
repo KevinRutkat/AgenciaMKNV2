@@ -193,7 +193,7 @@ export default function ViviendaCard({
   const categoryBadge = getCategoryBadge();
 
   return (
-    <article className="bg-white rounded-2xl border border-neutral-gray overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col relative group">
+    <article className="bg-white rounded-2xl border border-neutral-gray overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col relative group">
       {user && (
         <div className="absolute bottom-2 right-2 z-30 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
@@ -220,17 +220,20 @@ export default function ViviendaCard({
 
       <div
         onClick={handleClick}
-        className="relative h-56 sm:h-56 md:h-60 bg-neutral-light flex-shrink-0 cursor-pointer"
+        className="relative h-56 sm:h-56 md:h-60 bg-neutral-light flex-shrink-0 cursor-pointer overflow-hidden"
       >
         {primaryImage ? (
-          <Image
-            src={primaryImage.url}
-            alt={`${vivienda.name} en ${vivienda.location}`}
-            fill
-            quality={92}
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 60vw, (max-width: 1280px) 45vw, 36vw"
-            className={`object-cover ${shouldDimImage ? "opacity-60" : ""}`}
-          />
+          <>
+            <Image
+              src={primaryImage.url}
+              alt={`${vivienda.name} en ${vivienda.location}`}
+              fill
+              quality={92}
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 60vw, (max-width: 1280px) 45vw, 36vw"
+              className={`object-cover transition-transform duration-500 group-hover:scale-110 ${shouldDimImage ? "opacity-60" : ""}`}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-[1]" />
+          </>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-neutral-muted">
             <span className="inline-flex items-center gap-2">
@@ -241,12 +244,12 @@ export default function ViviendaCard({
         )}
 
         <div className="absolute bottom-2 left-2 z-10 flex flex-col gap-1 pointer-events-none md:hidden">
-          <div className="bg-white/85 backdrop-blur-sm px-3 py-2 rounded-xl border border-neutral-gray">
-            <span className="block text-neutral-dark font-semibold text-2xl leading-none whitespace-nowrap">
+          <div className="bg-white shadow-lg px-3 py-2 rounded-xl">
+            <span className="block text-neutral-dark font-bold text-xl leading-none whitespace-nowrap">
               {formatListingPrice(vivienda.price, isRent, rentPricePeriod)}
             </span>
             {vivienda.oldprice && (
-              <span className="block text-[10px] text-accent-coral line-through leading-tight mt-1 font-medium whitespace-nowrap">
+              <span className="block text-xs text-accent-coral line-through leading-tight mt-1 font-medium whitespace-nowrap">
                 {formatListingPrice(vivienda.oldprice, isRent, rentPricePeriod)}
               </span>
             )}
@@ -291,48 +294,36 @@ export default function ViviendaCard({
           </p>
         )}
 
-        <p className="text-neutral-muted text-sm mb-3 line-clamp-2 flex-1">
+        <p className="text-neutral-muted text-sm mb-3 line-clamp-1 sm:line-clamp-2 flex-1">
           {translatedDescription}
         </p>
 
-        <div className="flex flex-wrap gap-3 md:gap-4 mb-4 text-sm text-neutral-muted">
+        <div className="flex gap-2 mb-4">
           <div
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-1.5 bg-neutral-light rounded-lg px-2.5 py-1.5 text-xs text-neutral-muted"
             title={vivienda.metros ? `${vivienda.metros} m²` : "N/A"}
           >
-            <ArrowsPointingOutIcon className="h-4 w-4 text-neutral-muted" />
-            <span className="font-medium">
-              {vivienda.metros ? `${vivienda.metros} m²` : "N/A"}
+            <ArrowsPointingOutIcon className="h-3.5 w-3.5 text-primary-blue shrink-0" />
+            <span className="font-semibold text-neutral-dark">
+              {vivienda.metros ? `${vivienda.metros} m²` : "—"}
             </span>
           </div>
           <div
-            className="flex items-center gap-1.5"
-            title={
-              vivienda.habitaciones
-                ? `${vivienda.habitaciones} ${bedrooms}`
-                : "N/A"
-            }
+            className="flex items-center gap-1.5 bg-neutral-light rounded-lg px-2.5 py-1.5 text-xs text-neutral-muted"
+            title={vivienda.habitaciones ? `${vivienda.habitaciones} ${bedrooms}` : "N/A"}
           >
-            <Squares2X2Icon className="h-4 w-4 text-neutral-muted" />
-            <span className="font-medium">
-              {vivienda.habitaciones
-                ? `${vivienda.habitaciones} ${bedrooms}`
-                : "N/A"}
+            <Squares2X2Icon className="h-3.5 w-3.5 text-primary-blue shrink-0" />
+            <span className="font-semibold text-neutral-dark">
+              {vivienda.habitaciones ? vivienda.habitaciones : "—"}
             </span>
           </div>
           <div
-            className="flex items-center gap-1.5"
-            title={
-              vivienda.bathroom
-                ? `${vivienda.bathroom} ${bathrooms}`
-                : "N/A"
-            }
+            className="flex items-center gap-1.5 bg-neutral-light rounded-lg px-2.5 py-1.5 text-xs text-neutral-muted"
+            title={vivienda.bathroom ? `${vivienda.bathroom} ${bathrooms}` : "N/A"}
           >
-            <BeakerIcon className="h-4 w-4 text-neutral-muted" />
-            <span className="font-medium">
-              {vivienda.bathroom
-                ? `${vivienda.bathroom} ${bathrooms}`
-                : "N/A"}
+            <BeakerIcon className="h-3.5 w-3.5 text-primary-blue shrink-0" />
+            <span className="font-semibold text-neutral-dark">
+              {vivienda.bathroom ? vivienda.bathroom : "—"}
             </span>
           </div>
         </div>

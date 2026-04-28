@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import Image from "next/image";
 import { useLanguage, SupportedLanguage } from "@/contexts/LanguageContext";
 
 // Mensajes localizados para evitar gastar tokens en el indicador
@@ -40,7 +41,7 @@ export default function TranslationLoadingIndicator() {
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-b border-neutral-gray text-neutral-dark py-1 px-4 shadow-sm transition-all duration-300">
       <div className="max-w-7xl mx-auto flex items-center justify-center space-x-2">
-        <div className="animate-spin h-3 w-3 border-2 border-neutral-dark border-t-transparent rounded-full"></div>
+        <Image src="/LogoPNG.png" alt="" width={16} height={16} className="animate-pulse object-contain" aria-hidden="true" />
         <span className="text-xs font-medium opacity-90 flex items-center space-x-1">
           <Flag code={currentLanguage} />
           <span>{message}</span>

@@ -70,6 +70,7 @@
 .hover-bg-primary-green-dark:hover { background-color: var(--primary-green-dark) !important; }
 .hover-bg-accent-coral-dark:hover { background-color: var(--accent-coral-dark) !important; }
 .hover-bg-neutral-gray:hover { background-color: var(--neutral-gray) !important; }
+.hover-bg-neutral-light:hover { background-color: var(--neutral-light) !important; }
 
 .hover-text-primary-blue:hover { color: var(--primary-blue) !important; }
 .hover-text-primary-blue-dark:hover { color: var(--primary-blue-dark) !important; }
@@ -117,24 +118,14 @@
 /* Mejoras para accesibilidad en móvil */
 @media (max-width: 640px) {
   /* Asegurar que los elementos interactivos tengan al menos 44px de altura */
-  button, 
-  input[type="button"], 
-  input[type="submit"], 
+  button,
+  input[type="button"],
+  input[type="submit"],
   .btn {
     min-height: 44px;
     min-width: 44px;
   }
-  
-  /* Mejorar el espaciado de los enlaces */
-  a {
-    padding: 4px;
-  }
-  
-  /* Asegurar que el texto no sea demasiado pequeño */
-  body, p, span, div {
-    font-size: 16px !important;
-  }
-  
+
   /* Hacer que las imágenes sean responsive por defecto */
   img {
     max-width: 100%;
@@ -191,6 +182,55 @@ h4,
   0% { opacity: 0; }
   100% { opacity: 1; }
 }
+
+/* Menú móvil - deslizamiento hacia abajo */
+@keyframes mobile-menu-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-menu-open {
+  animation: mobile-menu-slide 0.2s ease-out both;
+}
+
+/* Animación de entrada para las cards de viviendas */
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-enter {
+  animation: card-enter 0.45s ease-out both;
+}
+
+/* Animaciones de la galería de imágenes (slide direccional) */
+@keyframes gallery-slide-in-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes gallery-slide-in-left {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.gallery-slide-in-right {
+  animation: gallery-slide-in-right 0.28s ease-out both;
+}
+.gallery-slide-in-left {
+  animation: gallery-slide-in-left 0.28s ease-out both;
+}
+
 
 /* Estilos para la página de detalle de vivienda */
 .line-clamp-1 {

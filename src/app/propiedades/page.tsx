@@ -394,8 +394,12 @@ export default function PropiedadesPage() {
         <div className="max-w-7xl mx-auto">
           {filteredViviendas.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-              {filteredViviendas.map((vivienda) => (
-                <div key={vivienda.id} className="relative">
+              {filteredViviendas.map((vivienda, index) => (
+                <div
+                  key={vivienda.id}
+                  className="relative card-enter"
+                  style={{ animationDelay: `${Math.min(index * 60, 420)}ms` }}
+                >
                   <ViviendaCard vivienda={vivienda} images={images} />
                 </div>
               ))}

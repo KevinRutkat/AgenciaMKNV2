@@ -161,10 +161,10 @@ export default function AddPropertyPage() {
   // Mostrar loading si Google Maps no está cargado o hay error
   if (!isLoaded || loadError) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-kehre-gradient-light flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-          <p className="text-teal-600">{loadError ? 'Error cargando Google Maps' : 'Cargando...'}</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-blue mx-auto mb-4"></div>
+          <p className="text-primary-blue">{loadError ? 'Error cargando Google Maps' : 'Cargando...'}</p>
         </div>
       </div>
     );
@@ -509,17 +509,17 @@ export default function AddPropertyPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-kehre-gradient-light flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-          <p className="text-teal-600">Cargando...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-blue mx-auto mb-4"></div>
+          <p className="text-primary-blue">Cargando...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white">
+    <div className="min-h-screen bg-kehre-gradient-light">
       <Banner 
         title="Añadir Nueva Propiedad"
         subtitle="Completa la información para añadir una nueva propiedad al catálogo"
@@ -528,13 +528,18 @@ export default function AddPropertyPage() {
       />
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white rounded-2xl shadow-lg border border-neutral-gray/40 p-6 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-7">
             
             {/* Información básica */}
+            <div className="flex items-center gap-3 pt-2">
+              <span className="h-4 w-0.5 rounded-full bg-primary-blue shrink-0"></span>
+              <span className="text-[11px] font-bold text-neutral-muted uppercase tracking-widest">Información básica</span>
+              <span className="flex-1 h-px bg-neutral-gray/60"></span>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Nombre de la propiedad *
+                <label htmlFor="name" className="block text-sm font-medium text-neutral-dark mb-2">Nombre de la propiedad *
                 </label>
                 <input
                   type="text"
@@ -543,15 +548,20 @@ export default function AddPropertyPage() {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                   placeholder="Ej: Villa Mediterránea con vistas al mar"
                 />
               </div>
             </div>
 
             {/* Descripción */}
+            <div className="flex items-center gap-3 pt-2">
+              <span className="h-4 w-0.5 rounded-full bg-primary-blue shrink-0"></span>
+              <span className="text-[11px] font-bold text-neutral-muted uppercase tracking-widest">Descripción</span>
+              <span className="flex-1 h-px bg-neutral-gray/60"></span>
+            </div>
             <div>
-              <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-2">Descripción *
+              <label htmlFor="descripcion" className="block text-sm font-medium text-neutral-dark mb-2">Descripción *
               </label>
               <textarea
                 id="descripcion"
@@ -560,22 +570,27 @@ export default function AddPropertyPage() {
                 onChange={handleInputChange}
                 required
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 resize-none"
+                className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue resize-none transition-colors"
                 placeholder="Describe las características principales de la propiedad..."
               />
             </div>
 
             {/* Precios y detalles técnicos */}
+            <div className="flex items-center gap-3 pt-2">
+              <span className="h-4 w-0.5 rounded-full bg-primary-blue shrink-0"></span>
+              <span className="text-[11px] font-bold text-neutral-muted uppercase tracking-widest">Precios y medidas</span>
+              <span className="flex-1 h-px bg-neutral-gray/60"></span>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
               {isRentPrice && (
                 <div className="flex flex-col">
-                  <label htmlFor="rent_price_period" className="flex min-h-[2.75rem] items-end text-sm font-medium text-gray-700 mb-2">Periodicidad del alquiler *</label>
+                  <label htmlFor="rent_price_period" className="flex min-h-[2.75rem] items-end text-sm font-medium text-neutral-dark mb-2">Periodicidad del alquiler *</label>
                   <select
                     id="rent_price_period"
                     name="rent_price_period"
                     value={formData.rent_price_period}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                    className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                   >
                     <option value="month">Por mes</option>
                     <option value="day">Por día</option>
@@ -583,7 +598,7 @@ export default function AddPropertyPage() {
                 </div>
               )}
               <div className="flex flex-col">
-                <label htmlFor="price" className="flex min-h-[2.75rem] items-end text-sm font-medium text-gray-700 mb-2">Precio{isRentPrice ? ` ${rentPriceSuffix}` : ''} *
+                <label htmlFor="price" className="flex min-h-[2.75rem] items-end text-sm font-medium text-neutral-dark mb-2">Precio{isRentPrice ? ` ${rentPriceSuffix}` : ''} *
                 </label>
                 <input
                   type="text"
@@ -592,14 +607,14 @@ export default function AddPropertyPage() {
                   value={formData.price}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                   placeholder={isRentPrice ? `Ej: ${rentPricePeriod === 'day' ? '120' : '750'}€ ${rentPriceSuffix}` : "Ej: 450,000€"}
                   title={isRentPrice ? `Precio ${rentPriceLabel}` : "Precio de venta"}
                 />
               </div>
 
               <div className="flex flex-col">
-                <label htmlFor="oldprice" className="flex min-h-[2.75rem] items-end text-sm font-medium text-gray-700 mb-2">Precio anterior{isRentPrice ? ` ${rentPriceSuffix}` : ''} (opcional)
+                <label htmlFor="oldprice" className="flex min-h-[2.75rem] items-end text-sm font-medium text-neutral-dark mb-2">Precio anterior{isRentPrice ? ` ${rentPriceSuffix}` : ''} (opcional)
                 </label>
                 <input
                   type="text"
@@ -607,14 +622,14 @@ export default function AddPropertyPage() {
                   name="oldprice"
                   value={formData.oldprice}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                   placeholder={isRentPrice ? `Ej: ${rentPricePeriod === 'day' ? '150' : '900'}€ ${rentPriceSuffix}` : "Ej: 500,000€"}
                   title={isRentPrice ? `Precio ${rentPriceLabel} anterior` : "Precio de venta anterior"}
                 />
               </div>
 
               <div className="flex flex-col">
-                <label htmlFor="metros" className="flex min-h-[2.75rem] items-end text-sm font-medium text-gray-700 mb-2">Metros cuadrados *
+                <label htmlFor="metros" className="flex min-h-[2.75rem] items-end text-sm font-medium text-neutral-dark mb-2">Metros cuadrados *
                 </label>
                 <input
                   type="text"
@@ -623,16 +638,21 @@ export default function AddPropertyPage() {
                   value={formData.metros}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                   placeholder="Ej: 120 m²"
                 />
               </div>
             </div>
 
             {/* Habitaciones y baños */}
+            <div className="flex items-center gap-3 pt-2">
+              <span className="h-4 w-0.5 rounded-full bg-primary-blue shrink-0"></span>
+              <span className="text-[11px] font-bold text-neutral-muted uppercase tracking-widest">Datos físicos</span>
+              <span className="flex-1 h-px bg-neutral-gray/60"></span>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
               <div>
-                <label htmlFor="habitaciones" className="block text-sm font-medium text-gray-700 mb-2">Habitaciones *
+                <label htmlFor="habitaciones" className="block text-sm font-medium text-neutral-dark mb-2">Habitaciones *
                 </label>
                 <input
                   type="number"
@@ -642,12 +662,12 @@ export default function AddPropertyPage() {
                   onChange={handleInputChange}
                   required
                   min="1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                 />
               </div>
 
               <div>
-                <label htmlFor="bathroom" className="block text-sm font-medium text-gray-700 mb-2">Baños *
+                <label htmlFor="bathroom" className="block text-sm font-medium text-neutral-dark mb-2">Baños *
                 </label>
                 <input
                   type="number"
@@ -657,12 +677,12 @@ export default function AddPropertyPage() {
                   onChange={handleInputChange}
                   required
                   min="1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                 />
               </div>
 
               <div>
-                <label htmlFor="plantas" className="block text-sm font-medium text-gray-700 mb-2">Plantas *
+                <label htmlFor="plantas" className="block text-sm font-medium text-neutral-dark mb-2">Plantas *
                 </label>
                 <input
                   type="number"
@@ -672,12 +692,12 @@ export default function AddPropertyPage() {
                   onChange={handleInputChange}
                   required
                   min="1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                 />
               </div>
 
               <div>
-                <label htmlFor="property_type" className="block text-sm font-medium text-gray-700 mb-2">Tipo de vivienda *
+                <label htmlFor="property_type" className="block text-sm font-medium text-neutral-dark mb-2">Tipo de vivienda *
                 </label>
                 <select
                   id="property_type"
@@ -685,7 +705,7 @@ export default function AddPropertyPage() {
                   value={formData.property_type}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                 >
                   <option value="casa">Casa</option>
                   <option value="chalet">Chalet</option>
@@ -699,14 +719,14 @@ export default function AddPropertyPage() {
               </div>
 
               <div>
-                <label htmlFor="eficiencia_energetica" className="block text-sm font-medium text-gray-700 mb-2">Eficiencia energetica
+                <label htmlFor="eficiencia_energetica" className="block text-sm font-medium text-neutral-dark mb-2">Eficiencia energetica
                 </label>
                 <select
                   id="eficiencia_energetica"
                   name="eficiencia_energetica"
                   value={formData.eficiencia_energetica}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                 >
                   {ENERGY_EFFICIENCY_OPTIONS.map((option) => (
                     <option key={option.value || 'empty'} value={option.value}>
@@ -718,9 +738,14 @@ export default function AddPropertyPage() {
             </div>
 
             {/* Ubicación con Google Maps */}
+            <div className="flex items-center gap-3 pt-2">
+              <span className="h-4 w-0.5 rounded-full bg-primary-blue shrink-0"></span>
+              <span className="text-[11px] font-bold text-neutral-muted uppercase tracking-widest">Ubicación</span>
+              <span className="flex-1 h-px bg-neutral-gray/60"></span>
+            </div>
             <div className="space-y-4">
               <div>
-                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">Ubicación *
+                <label htmlFor="location" className="block text-sm font-medium text-neutral-dark mb-2">Ubicación *
                 </label>
                 <Autocomplete
                   onLoad={(autocomplete) => setAutocompleteObj(autocomplete)}
@@ -738,7 +763,7 @@ export default function AddPropertyPage() {
                     value={formData.location}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                    className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                     placeholder="Escribe la dirección completa..."
                   />
                 </Autocomplete>
@@ -748,9 +773,9 @@ export default function AddPropertyPage() {
               {coordinates && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Vista previa de la ubicación
+                    <label className="block text-sm font-medium text-neutral-dark mb-2">Vista previa de la ubicación
                     </label>
-                    <div className="h-64 rounded-lg overflow-hidden border border-gray-300">
+                    <div className="h-64 rounded-xl overflow-hidden border border-neutral-gray">
                       <GoogleMap
                         mapContainerStyle={{ height: '100%', width: '100%' }}
                         zoom={15}
@@ -770,7 +795,7 @@ export default function AddPropertyPage() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="lat" className="block text-sm font-medium text-gray-700 mb-2">Latitud
+                      <label htmlFor="lat" className="block text-sm font-medium text-neutral-dark mb-2">Latitud
                       </label>
                       <input
                         type="number"
@@ -779,14 +804,14 @@ export default function AddPropertyPage() {
                         name="lat"
                         value={formData.lat}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-gray-50"
+                        className="w-full px-3 py-2 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue bg-neutral-light"
                         placeholder="36.6169"
                         readOnly
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="lng" className="block text-sm font-medium text-gray-700 mb-2">Longitud
+                      <label htmlFor="lng" className="block text-sm font-medium text-neutral-dark mb-2">Longitud
                       </label>
                       <input
                         type="number"
@@ -795,7 +820,7 @@ export default function AddPropertyPage() {
                         name="lng"
                         value={formData.lng}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-gray-50"
+                        className="w-full px-3 py-2 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue bg-neutral-light"
                         placeholder="-4.4999"
                         readOnly
                       />
@@ -806,11 +831,16 @@ export default function AddPropertyPage() {
             </div>
 
             {/* Características y categoría */}
-            <div className="space-y-6">
+            <div className="flex items-center gap-3 pt-2">
+              <span className="h-4 w-0.5 rounded-full bg-primary-blue shrink-0"></span>
+              <span className="text-[11px] font-bold text-neutral-muted uppercase tracking-widest">Categoría y estado</span>
+              <span className="flex-1 h-px bg-neutral-gray/60"></span>
+            </div>
+            <div className="space-y-7">
               {/* Categoría y propiedades destacadas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">Categoría *
+                  <label htmlFor="category" className="block text-sm font-medium text-neutral-dark mb-2">Categoría *
                   </label>
                   <select
                     id="category"
@@ -818,7 +848,7 @@ export default function AddPropertyPage() {
                     value={formData.category}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                    className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                   >
                     <option value="alquiler">Alquiler</option>
                     <option value="usada">Usada</option>
@@ -828,9 +858,9 @@ export default function AddPropertyPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-neutral-dark">
                     <span className="inline-flex items-center gap-2">
-                      <StarIcon className="h-4 w-4 text-gray-500" />
+                      <StarIcon className="h-4 w-4 text-neutral-muted" />
                       Propiedades especiales
                     </span>
                   </label>
@@ -840,15 +870,15 @@ export default function AddPropertyPage() {
                         name="is_featured"
                         checked={formData.is_featured}
                         onChange={(e) => handleFeaturedChange(e.target.checked)}
-                        className="mr-3 h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                        className="mr-3 h-4 w-4 text-primary-blue focus:ring-primary-blue border-gray-300 rounded"
                       />
-                      <span className="inline-flex items-center gap-2 text-sm text-gray-700">
-                        <StarIcon className="h-4 w-4 text-teal-600" />
+                      <span className="inline-flex items-center gap-2 text-sm text-neutral-dark">
+                        <StarIcon className="h-4 w-4 text-primary-blue" />
                         Propiedad destacada
                       </span>
                     </label>
                     <div className="space-y-2">
-                      <span className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      <span className="block text-xs font-semibold uppercase tracking-wide text-neutral-muted">
                         Estado comercial
                       </span>
                       <label className="flex items-center">
@@ -859,9 +889,9 @@ export default function AddPropertyPage() {
                           onChange={() =>
                             handleAvailabilityStatusChange('available')
                           }
-                          className="mr-3 h-4 w-4 border-gray-300 text-gray-700 focus:ring-gray-500"
+                          className="mr-3 h-4 w-4 border-gray-300 text-neutral-dark focus:ring-gray-500"
                         />
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-neutral-dark">
                           Disponible
                         </span>
                       </label>
@@ -898,7 +928,7 @@ export default function AddPropertyPage() {
 
               {/* Características de la propiedad */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Características de la propiedad
+                <label className="block text-sm font-medium text-neutral-dark mb-3">Características de la propiedad
                 </label>
                 
                 {/* Buscador de características */}
@@ -909,20 +939,20 @@ export default function AddPropertyPage() {
                       value={searchCaracteristicas}
                       onChange={(e) => setSearchCaracteristicas(e.target.value)}
                       placeholder=" Buscar características... (ej: piscina, terraza, garaje)"
-                      className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm"
+                      className="w-full pl-9 pr-3 py-2 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue text-sm"
                     />
-                    <span className="absolute left-3 top-2.5 text-gray-400">
+                    <span className="absolute left-3 top-2.5 text-neutral-muted">
                       <MagnifyingGlassIcon className="h-4 w-4" />
                     </span>
                   </div>
                   {searchCaracteristicas && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-neutral-muted mt-1">
                       Mostrando {caracteristicasFiltradas.length} de {caracteristicasDisponibles.length} características
                     </p>
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-60 overflow-y-auto border border-neutral-gray/60 rounded-xl p-4 bg-neutral-light">
                   {caracteristicasFiltradas.map((caracteristica, index) => (
                     <label key={index} className="flex items-center cursor-pointer hover:bg-white p-2 rounded transition-colors"><input
                         type="checkbox"
@@ -930,15 +960,15 @@ export default function AddPropertyPage() {
                           p => normalizeFeature(p) === normalizeFeature(caracteristica)
                         )}
                         onChange={() => handleCaracteristicaChange(caracteristica)}
-                        className="mr-2 h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                        className="mr-2 h-4 w-4 text-primary-blue focus:ring-primary-blue border-gray-300 rounded"
                       />
-                      <span className="text-xs text-gray-700">{caracteristica}</span>
+                      <span className="text-xs text-neutral-dark">{caracteristica}</span>
                     </label>
                   ))}
                   
                   {caracteristicasFiltradas.length === 0 && searchCaracteristicas && (
                     <div className="col-span-full text-center py-4">
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-neutral-muted">
                         No se encontraron características que coincidan con &quot;{searchCaracteristicas}&quot;
                       </p>
                     </div>
@@ -947,18 +977,18 @@ export default function AddPropertyPage() {
                 
                 {/* Mostrar características seleccionadas */}
                 {formData.propiedades.length > 0 && (
-                  <div className="mt-3 p-3 bg-teal-50 rounded-lg">
-                    <p className="text-sm font-medium text-teal-800 mb-2">
+                  <div className="mt-3 p-3 bg-primary-blue-light rounded-xl">
+                    <p className="text-sm font-medium text-primary-blue-dark mb-2">
                       Características seleccionadas ({formData.propiedades.length}):
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {formData.propiedades.map((prop, index) => (
-                        <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-teal-100 text-teal-800">
+                        <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary-blue/10 text-primary-blue-dark">
                           {prop}
                           <button
                             type="button"
                             onClick={() => handleCaracteristicaChange(prop)}
-                            className="ml-1 text-teal-600 hover:text-teal-800"
+                            className="ml-1 text-primary-blue hover:text-primary-blue-dark"
                             title="Quitar característica"
                           >
                             <XMarkIcon className="h-3 w-3" />
@@ -972,29 +1002,34 @@ export default function AddPropertyPage() {
             </div>
 
             {/* Imagenes */}
+            <div className="flex items-center gap-3 pt-2">
+              <span className="h-4 w-0.5 rounded-full bg-primary-blue shrink-0"></span>
+              <span className="text-[11px] font-bold text-neutral-muted uppercase tracking-widest">Imágenes</span>
+              <span className="flex-1 h-px bg-neutral-gray/60"></span>
+            </div>
             <div>
-              <label htmlFor="images" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="images" className="block text-sm font-medium text-neutral-dark mb-2">
                 <span className="inline-flex items-center gap-2">
-                  <PhotoIcon className="h-4 w-4 text-gray-500" />
+                  <PhotoIcon className="h-4 w-4 text-neutral-muted" />
                   Imagenes de la propiedad (maximo 20)
                 </span>
               </label>
 
               <div className="space-y-4">
                 <div className="space-y-3">
-                  <label htmlFor="images" className="cursor-pointer"><div 
-                      className={`w-full p-6 border-2 border-dashed rounded-lg transition-all text-center ${
-                        isDragOver 
-                          ? 'border-teal-500 bg-teal-100' 
-                          : 'border-teal-300 bg-teal-50 hover:bg-teal-100'
+                  <label htmlFor="images" className="cursor-pointer"><div
+                      className={`w-full p-6 border-2 border-dashed rounded-xl transition-all text-center ${
+                        isDragOver
+                          ? 'border-primary-blue bg-primary-blue/10'
+                          : 'border-primary-blue/30 bg-primary-blue-light hover:bg-primary-blue/10'
                       }`}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
                     >
                       <div className="flex flex-col items-center space-y-2">
-                        <ArrowUpTrayIcon className="h-8 w-8 text-teal-600" />
-                        <div className="text-teal-700 font-medium">
+                        <ArrowUpTrayIcon className="h-8 w-8 text-primary-blue" />
+                        <div className="text-neutral-dark font-medium">
                           {isDragOver 
                             ? 'Suelta las imagenes aqui' 
                             : pendingImages.length === 0 
@@ -1002,7 +1037,7 @@ export default function AddPropertyPage() {
                               : `Agregar mas imagenes (${pendingImages.length}/${MAX_IMAGES})`
                           }
                         </div>
-                        <div className="text-sm text-teal-600">
+                        <div className="text-sm text-primary-blue">
                           {isDragOver 
                             ? 'Puedes soltar multiples imagenes a la vez' 
                             : pendingImages.length === 0
@@ -1010,7 +1045,7 @@ export default function AddPropertyPage() {
                               : 'Selecciona mas imagenes para agregarlas al orden actual'
                           }
                         </div>
-                        <div className="text-xs text-teal-500">
+                        <div className="text-xs text-neutral-muted">
                           {isDragOver ? '' : 'o arrastra y suelta las imagenes aqui'}
                         </div>
                       </div>
@@ -1027,26 +1062,26 @@ export default function AddPropertyPage() {
                   />
                 </div>
                 
-                <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                  <p className="inline-flex items-center gap-2 text-sm text-blue-700 font-medium mb-1">
+                <div className="bg-primary-blue-light p-3 rounded-xl border border-primary-blue/20">
+                  <p className="inline-flex items-center gap-2 text-sm text-primary-blue-dark font-medium mb-1">
                     <InformationCircleIcon className="h-4 w-4" />
                     Orden manual de imagenes
                   </p>
-                  <p className="text-xs text-blue-600">
+                  <p className="text-xs text-primary-blue">
                     Arrastra las miniaturas para fijar portada y orden final.
                   </p>
                 </div>
                 
-                <div className="text-xs text-gray-500">
-                  <p>? Formatos aceptados: JPG, PNG, WebP</p>
-                  <p>? Tamano maximo por imagen: 20MB (se optimizan al guardar)</p>
-                  <p>? Maximo 20 imagenes por propiedad</p>
+                <div className="text-xs text-neutral-muted">
+                  <p>· Formatos aceptados: JPG, PNG, WebP</p>
+                  <p>· Tamaño maximo por imagen: 20MB (se optimizan al guardar)</p>
+                  <p>· Máximo 20 imagenes por propiedad</p>
                 </div>
                 
                 {pendingImages.length > 0 && (
                   <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-600">
-                      <span className={`font-medium ${pendingImages.length === MAX_IMAGES ? 'text-amber-600' : 'text-teal-600'}`}>
+                    <div className="text-sm text-neutral-muted">
+                      <span className={`font-medium ${pendingImages.length === MAX_IMAGES ? 'text-amber-600' : 'text-primary-blue'}`}>
                         {pendingImages.length} de {MAX_IMAGES} imagenes seleccionadas
                       </span>
                     </div>
@@ -1072,10 +1107,10 @@ export default function AddPropertyPage() {
               {pendingImages.length > 0 && (
                 <div className="mt-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-medium text-gray-700">
+                    <h4 className="text-sm font-medium text-neutral-dark">
                       Orden de visualizacion ({pendingImages.length}):
                     </h4>
-                    <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
+                    <span className="inline-flex items-center gap-1.5 text-xs text-neutral-muted">
                       <Bars3Icon className="h-3 w-3" />
                       Arrastra para reordenar
                     </span>
@@ -1092,12 +1127,12 @@ export default function AddPropertyPage() {
                         onDragEnd={handlePreviewDragEnd}
                         className={`relative group cursor-grab active:cursor-grabbing rounded-xl border bg-white p-2 shadow-sm transition-all duration-200 ${
                           draggedImageId === image.clientId
-                            ? 'border-teal-500 opacity-70 scale-[0.98] rotate-1 shadow-xl'
+                            ? 'border-primary-blue opacity-70 scale-[0.98] rotate-1 shadow-xl'
                             : dragOverImageId === image.clientId
-                              ? 'border-teal-400 -translate-y-1 scale-[1.03] shadow-lg ring-2 ring-teal-200'
+                              ? 'border-primary-blue/50 -translate-y-1 scale-[1.03] shadow-lg ring-2 ring-primary-blue/20'
                               : recentlyMovedImageId === image.clientId
-                                ? 'border-teal-300 shadow-md ring-2 ring-teal-100'
-                                : 'border-gray-200 hover:border-teal-300 hover:-translate-y-0.5'
+                                ? 'border-primary-blue/30 shadow-md ring-2 ring-primary-blue/10'
+                                : 'border-neutral-gray/50 hover:border-primary-blue/30 hover:-translate-y-0.5'
                         }`}
                       >
                         <div className="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-1 text-[11px] font-semibold text-white">
@@ -1105,7 +1140,7 @@ export default function AddPropertyPage() {
                           {index + 1}
                         </div>
                         {index === 0 && (
-                          <div className="absolute right-3 top-3 z-10 rounded-full bg-teal-600 px-2 py-1 text-[11px] font-semibold text-white">
+                          <div className="absolute right-3 top-3 z-10 rounded-full bg-primary-blue px-2 py-1 text-[11px] font-semibold text-white">
                             Portada
                           </div>
                         )}
@@ -1115,10 +1150,10 @@ export default function AddPropertyPage() {
                           width={320}
                           height={205}
                           quality={95}
-                          className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                          className="w-full h-32 object-cover rounded-xl border border-neutral-gray/50"
                         />
                         <div className="mt-2 flex items-center justify-between gap-2">
-                          <p className="truncate text-xs text-gray-600" title={image.file.name}>
+                          <p className="truncate text-xs text-neutral-muted" title={image.file.name}>
                             {image.file.name}
                           </p>
                           <button
@@ -1139,10 +1174,10 @@ export default function AddPropertyPage() {
 
             {submitMessage && (
               <div
-                className={`p-4 rounded-lg text-center border ${
+                className={`p-4 rounded-xl text-center border ${
                   isSubmitError
                     ? 'bg-red-100 text-red-700 border-red-200'
-                    : 'bg-green-100 text-green-700 border-green-200'
+                    : 'bg-primary-green-light text-primary-green-dark border-primary-green/30'
                 }`}
               >
                 <div className="inline-flex items-center gap-2">
@@ -1161,7 +1196,7 @@ export default function AddPropertyPage() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-600 transition-colors"
+                className="flex-1 bg-white text-neutral-dark py-3 px-6 rounded-xl font-semibold border border-neutral-gray hover-bg-neutral-light transition-colors"
               >
                 <span className="inline-flex items-center gap-2">
                   <ArrowLeftIcon className="h-4 w-4" />
@@ -1172,7 +1207,7 @@ export default function AddPropertyPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 px-6 rounded-lg font-semibold hover:from-teal-700 hover:to-teal-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="flex-1 bg-primary-blue text-white py-3 px-6 rounded-xl font-semibold hover-bg-primary-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
               >
                 {isSubmitting ? (
                   <span className="inline-flex items-center gap-2">
