@@ -4,6 +4,7 @@ import type { NextConfig } from "next";
 // Configuración de Next.js - aquí definimos cómo se comporta nuestra aplicación
 const nextConfig: NextConfig = {
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
