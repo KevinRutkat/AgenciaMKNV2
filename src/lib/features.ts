@@ -59,6 +59,7 @@ export const FEATURES: Feature[] = [
   { key: "campana extractora", label: "Campana extractora" },
   { key: "cocina de gas", label: "Cocina de gas" },
   { key: "cocina de induccion", label: "Cocina de inducción" },
+  { key: "cocina electrica", label: "Cocina eléctrica" },
   { key: "lavadora", label: "Lavadora" },
 
   // Parking / garaje
