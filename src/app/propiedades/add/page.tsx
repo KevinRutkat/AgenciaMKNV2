@@ -661,7 +661,7 @@ export default function AddPropertyPage() {
                   value={formData.habitaciones}
                   onChange={handleInputChange}
                   required
-                  min="1"
+                  min="0"
                   className="w-full px-3 py-2.5 border border-neutral-gray rounded-xl focus:ring-2 focus:ring-primary-blue focus:border-primary-blue transition-colors"
                 />
               </div>

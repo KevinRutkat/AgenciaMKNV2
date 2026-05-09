@@ -157,13 +157,13 @@ export default function ViviendaCard({
     specialStatus === "sold"
       ? {
           label: sold,
-          color: "bg-neutral-dark",
+          color: "bg-red-600",
           Icon: CheckBadgeIcon,
         }
       : specialStatus === "reserved"
         ? {
             label: reserved,
-            color: "bg-red-600",
+            color: "bg-amber-500",
             Icon: ClockIcon,
           }
         : specialStatus === "featured"
@@ -192,8 +192,15 @@ export default function ViviendaCard({
 
   const categoryBadge = getCategoryBadge();
 
+  const cardBorder =
+    specialStatus === "sold"
+      ? "border-red-400 border-2"
+      : specialStatus === "reserved"
+        ? "border-amber-400 border-2"
+        : "border-neutral-gray border";
+
   return (
-    <article className="bg-white rounded-2xl border border-neutral-gray overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col relative group">
+    <article className={`bg-white rounded-2xl ${cardBorder} overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col relative group`}>
       {user && (
         <div className="absolute bottom-2 right-2 z-30 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
@@ -259,9 +266,9 @@ export default function ViviendaCard({
         {specialBadge && SpecialBadgeIcon && (
           <div className="absolute top-2 left-2 z-10 pointer-events-none">
             <span
-              className={`inline-flex items-center gap-1.5 ${specialBadge.color} text-white text-xs px-2 py-1 rounded-full font-semibold`}
+              className={`inline-flex items-center gap-1.5 ${specialBadge.color} text-white ${specialStatus === "sold" || specialStatus === "reserved" ? "text-sm px-3 py-1.5 shadow-lg" : "text-xs px-2 py-1"} rounded-full font-bold`}
             >
-              <SpecialBadgeIcon className="h-3.5 w-3.5" />
+              <SpecialBadgeIcon className={specialStatus === "sold" || specialStatus === "reserved" ? "h-4 w-4" : "h-3.5 w-3.5"} />
               {specialBadge.label}
             </span>
           </div>
@@ -310,11 +317,11 @@ export default function ViviendaCard({
           </div>
           <div
             className="flex items-center gap-1.5 bg-neutral-light rounded-lg px-2.5 py-1.5 text-xs text-neutral-muted"
-            title={vivienda.habitaciones ? `${vivienda.habitaciones} ${bedrooms}` : "N/A"}
+            title={vivienda.habitaciones != null ? `${vivienda.habitaciones} ${bedrooms}` : "N/A"}
           >
             <Squares2X2Icon className="h-3.5 w-3.5 text-primary-blue shrink-0" />
             <span className="font-semibold text-neutral-dark">
-              {vivienda.habitaciones ? vivienda.habitaciones : "—"}
+              {vivienda.habitaciones != null ? vivienda.habitaciones : "—"}
             </span>
           </div>
           <div
