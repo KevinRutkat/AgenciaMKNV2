@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 // Importamos tipografías de Google Fonts
 import { Work_Sans } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 // Importamos el componente Header personalizado
 import Header from "@/components/Header";
 // Importamos el componente Footer personalizado
@@ -198,6 +199,7 @@ export default function RootLayout({
               {children}
               <FloatingLanguageSelector position="bottom-left" />
               <Footer />
+              <Analytics />
             </GoogleMapsProvider>
           </AuthProvider>
         </LanguageProvider>
