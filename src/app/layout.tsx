@@ -1,4 +1,4 @@
-﻿// Importamos el tipo Metadata de Next.js para definir metadatos SEO
+// Importamos el tipo Metadata de Next.js para definir metadatos SEO
 import type { Metadata } from "next";
 // Importamos tipografías de Google Fonts
 import { Work_Sans } from "next/font/google";
@@ -14,6 +14,8 @@ import FloatingLanguageSelector from "@/components/FloatingLanguageSelector";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { GoogleMapsProvider } from "@/contexts/GoogleMapsContext";
+// Vercel Analytics
+import { Analytics } from "@vercel/analytics/next";
 // Estilos globales
 import "./globals.css";
 
@@ -203,6 +205,7 @@ export default function RootLayout({
             </GoogleMapsProvider>
           </AuthProvider>
         </LanguageProvider>
+        <Analytics />
       </body>
     </html>
   );
