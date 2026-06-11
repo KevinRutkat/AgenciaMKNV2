@@ -17,6 +17,15 @@ export default function FloatingLanguageSelector({
 
   useEffect(() => {
     setMounted(true);
+    // Carga diferida de flag-icons para no bloquear el render inicial
+    const id = 'flag-icons-stylesheet'
+    if (!document.getElementById(id)) {
+      const link = document.createElement('link')
+      link.id = id
+      link.rel = 'stylesheet'
+      link.href = '/flag-icons.min.css'
+      document.head.appendChild(link)
+    }
   }, []);
 
   // Map de idioma -> código de bandera (flag-icons)

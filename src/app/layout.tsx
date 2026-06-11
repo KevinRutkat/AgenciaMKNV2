@@ -11,7 +11,6 @@ import FloatingLanguageSelector from "@/components/FloatingLanguageSelector";
 // Providers globales
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import { GoogleMapsProvider } from "@/contexts/GoogleMapsContext";
 import { isSeoLocale } from "@/lib/i18n";
 // Estilos globales
 import "./globals.css";
@@ -172,6 +171,9 @@ export default async function RootLayout({
   return (
     <html lang={htmlLang}>
       <head>
+        {/* Preconnect a Supabase para reducir latencia de red crítica */}
+        <link rel="preconnect" href="https://cbmcapwcbeeorpmlyqbe.supabase.co" />
+        <link rel="dns-prefetch" href="https://cbmcapwcbeeorpmlyqbe.supabase.co" />
         {/* Schema.org WebSite */}
         <script
           type="application/ld+json"
@@ -186,14 +188,12 @@ export default async function RootLayout({
       <body className="antialiased">
         <LanguageProvider>
           <AuthProvider>
-            <GoogleMapsProvider>
-              <TranslationLoadingIndicator />
-              <Header />
-              {children}
-              <FloatingLanguageSelector position="bottom-left" />
-              <Footer />
-              <Analytics />
-            </GoogleMapsProvider>
+            <TranslationLoadingIndicator />
+            <Header />
+            {children}
+            <FloatingLanguageSelector position="bottom-left" />
+            <Footer />
+            <Analytics />
           </AuthProvider>
         </LanguageProvider>
       </body>

@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Banner from "@/components/Banner";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
@@ -15,6 +16,11 @@ import {
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
+
+const LazyGoogleMapsWrapper = dynamic(
+  () => import("@/components/LazyGoogleMapsWrapper"),
+  { ssr: false },
+)
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -36,14 +42,54 @@ const stagger: Variants = {
   visible: { transition: { staggerChildren: 0.1 } },
 };
 
-export default function ContactoPage() {
+// Componente interno: solo se monta dentro de LazyGoogleMapsWrapper (que provee el contexto)
+function ContactoMapEmbed({
+  errorCargandoMapa,
+  cargandoMapa,
+}: {
+  errorCargandoMapa: string;
+  cargandoMapa: string;
+}) {
   const { isLoaded, loadError } = useGoogleMaps();
+  const agencyLocation = { lat: 37.627368, lng: -0.710618 };
 
-  const agencyLocation = {
-    lat: 37.627368,
-    lng: -0.710618,
-  };
+  return (
+    <div className="relative h-64 rounded-lg overflow-hidden border border-neutral-gray">
+      {isLoaded && !loadError ? (
+        <GoogleMap
+          mapContainerStyle={{ height: "100%", width: "100%" }}
+          zoom={15}
+          center={agencyLocation}
+          options={{
+            disableDefaultUI: false,
+            zoomControl: true,
+            streetViewControl: true,
+            mapTypeControl: true,
+            fullscreenControl: true,
+            gestureHandling: "cooperative",
+          }}
+        >
+          <Marker
+            position={agencyLocation}
+            title="Agencia MKN - Gestión de viviendas, acompañamiento y traducción"
+          />
+        </GoogleMap>
+      ) : (
+        <div className="w-full h-full bg-neutral-light flex items-center justify-center">
+          <div className="text-center text-neutral-muted">
+            <MapIcon className="h-10 w-10 text-primary-blue mx-auto mb-4" />
+            <p className="text-lg font-semibold">
+              {loadError ? errorCargandoMapa : cargandoMapa}
+            </p>
+            <p className="text-sm opacity-70">Cabo de Palos, Cartagena</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
+export default function ContactoPage() {
   const [formData, setFormData] = useState({
     nombre: "",
     correo: "",
@@ -394,38 +440,12 @@ export default function ContactoPage() {
                 {ubicacionTitle}
               </h2>
 
-              <div className="relative h-64 rounded-lg overflow-hidden border border-neutral-gray">
-                {isLoaded && !loadError ? (
-                  <GoogleMap
-                    mapContainerStyle={{ height: "100%", width: "100%" }}
-                    zoom={15}
-                    center={agencyLocation}
-                    options={{
-                      disableDefaultUI: false,
-                      zoomControl: true,
-                      streetViewControl: true,
-                      mapTypeControl: true,
-                      fullscreenControl: true,
-                      gestureHandling: "cooperative",
-                    }}
-                  >
-                    <Marker
-                      position={agencyLocation}
-                      title="Agencia MKN - Gestión de viviendas, acompañamiento y traducción"
-                    />
-                  </GoogleMap>
-                ) : (
-                  <div className="w-full h-full bg-neutral-light flex items-center justify-center">
-                    <div className="text-center text-neutral-muted">
-                      <MapIcon className="h-10 w-10 text-primary-blue mx-auto mb-4" />
-                      <p className="text-lg font-semibold">
-                        {loadError ? errorCargandoMapa : cargandoMapa}
-                      </p>
-                      <p className="text-sm opacity-70">Cabo de Palos, Cartagena</p>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <LazyGoogleMapsWrapper placeholderHeight="h-64">
+                <ContactoMapEmbed
+                  errorCargandoMapa={errorCargandoMapa}
+                  cargandoMapa={cargandoMapa}
+                />
+              </LazyGoogleMapsWrapper>
 
               <div className="mt-3 text-center">
                 <a

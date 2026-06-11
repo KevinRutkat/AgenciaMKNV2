@@ -84,10 +84,13 @@ export default function Banner({
             src={image}
             alt="Costa con faro - Agencia Inmobiliaria MKN"
             fill
+            sizes="100vw"
             className={`object-cover object-center transition-opacity duration-1000 ease-in-out ${
               index === currentImageIndex ? 'opacity-100' : 'opacity-0'
             }`}
-            priority={index === 0} // Solo la primera imagen tiene priority
+            priority={index === 0}
+            fetchPriority={index === 0 ? 'high' : 'low'}
+            loading={index === 0 ? 'eager' : 'lazy'}
           />
         ))
       ) : (
@@ -95,8 +98,11 @@ export default function Banner({
           src={imagesToUse[0]}
           alt="Costa con faro - Agencia Inmobiliaria MKN"
           fill
+          sizes="100vw"
           className="object-cover object-center"
           priority
+          fetchPriority="high"
+          loading="eager"
         />
       )}
       

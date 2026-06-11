@@ -29,8 +29,10 @@ export default function Logo({ size = 'medium', showText = true, className = '' 
         <Image
           src="/LogoPNG.png"
           alt="Agencia MKN Logo"
-          width={48}
-          height={48}
+          width={64}
+          height={64}
+          sizes="64px"
+          quality={85}
           className="w-full h-full object-contain"
           priority
         />

@@ -147,12 +147,13 @@ export async function POST(request: NextRequest) {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      // Subir archivo a Supabase Storage
+      // Subir archivo a Supabase Storage con caché de 1 año
   const { error: uploadError } = await supabase.storage
         .from(imagesBucketName)
         .upload(filePath, buffer, {
           contentType: file.type,
-          upsert: true
+          upsert: true,
+          cacheControl: '31536000',
         });
 
       if (uploadError) {

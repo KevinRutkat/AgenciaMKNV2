@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node -e \"require('fs').copyFileSync('node_modules/flag-icons/css/flag-icons.min.css','public/flag-icons.min.css')\"",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
@@ -36,5 +37,13 @@
   },
   "overrides": {
     "postcss": "8.5.15"
-  }
+  },
+  "browserslist": [
+    "Chrome >= 91",
+    "Edge >= 91",
+    "Firefox >= 89",
+    "Safari >= 15",
+    "iOS >= 15",
+    "not dead"
+  ]
 }
