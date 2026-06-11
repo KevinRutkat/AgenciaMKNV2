@@ -1,7 +1,6 @@
 import { MetadataRoute } from "next";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
-
-const baseUrl = "https://www.agenciamkn.com";
+import { BASE_URL, SEO_LOCALES, getLanguageAlternates, getLocalizedPath } from "@/lib/i18n";
 
 const toLastModified = (dateValue?: string) => {
   if (!dateValue) return new Date();
@@ -9,32 +8,58 @@ const toLastModified = (dateValue?: string) => {
   return Number.isNaN(parsed) ? new Date() : new Date(parsed);
 };
 
+const localizedEntries = ({
+  path,
+  lastModified,
+  changeFrequency,
+  priority,
+}: {
+  path: string;
+  lastModified: Date;
+  changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
+  priority: number;
+}): MetadataRoute.Sitemap =>
+  SEO_LOCALES.map((locale) => {
+    const localizedPath = getLocalizedPath(path, locale);
+
+    return {
+      url: `${BASE_URL}${localizedPath}`,
+      lastModified,
+      changeFrequency,
+      priority,
+      alternates: {
+        languages: getLanguageAlternates(path),
+      },
+    };
+  });
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const now = new Date();
   const staticRoutes: MetadataRoute.Sitemap = [
-    {
-      url: `${baseUrl}/`,
-      lastModified: new Date(),
+    ...localizedEntries({
+      path: "/",
+      lastModified: now,
       changeFrequency: "weekly",
       priority: 1,
-    },
-    {
-      url: `${baseUrl}/propiedades`,
-      lastModified: new Date(),
+    }),
+    ...localizedEntries({
+      path: "/propiedades",
+      lastModified: now,
       changeFrequency: "daily",
       priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/servicios`,
-      lastModified: new Date(),
+    }),
+    ...localizedEntries({
+      path: "/servicios",
+      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/contacto`,
-      lastModified: new Date(),
+    }),
+    ...localizedEntries({
+      path: "/contacto",
+      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
-    },
+    }),
   ];
 
   try {
@@ -47,12 +72,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return staticRoutes;
     }
 
-    const listingRoutes: MetadataRoute.Sitemap = data.map((vivienda) => ({
-      url: `${baseUrl}/propiedades/${vivienda.id}`,
-      lastModified: toLastModified(vivienda.inserted_at),
-      changeFrequency: "weekly",
-      priority: 0.7,
-    }));
+    const listingRoutes: MetadataRoute.Sitemap = data.flatMap((vivienda) =>
+      localizedEntries({
+        path: `/propiedades/${vivienda.id}`,
+        lastModified: toLastModified(vivienda.inserted_at),
+        changeFrequency: "weekly",
+        priority: 0.7,
+      }),
+    );
 
     return [...staticRoutes, ...listingRoutes];
   } catch {

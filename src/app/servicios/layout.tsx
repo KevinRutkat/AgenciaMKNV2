@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getLanguageAlternates } from "@/lib/i18n";
 
 const title = "Servicios inmobiliarios y acompañamiento lingüístico";
 const description =
@@ -59,7 +60,10 @@ const servicesSchema = {
 export const metadata: Metadata = {
   title,
   description,
-  alternates: { canonical: "/servicios" },
+  alternates: {
+    canonical: "/servicios",
+    languages: getLanguageAlternates("/servicios"),
+  },
   openGraph: {
     title,
     description,

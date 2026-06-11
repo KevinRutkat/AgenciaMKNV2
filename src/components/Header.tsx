@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getLocalizedPath, stripLocaleFromPath } from "@/lib/i18n";
 import { useState, useEffect } from "react";
 import Logo from "./Logo";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -20,6 +22,7 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, signOut, getSessionInfo } = useAuth();
+  const { currentLanguage } = useLanguage();
   const [sessionInfo, setSessionInfo] = useState<{
     isValid: boolean;
     timeLeft: string | null;
@@ -71,9 +74,12 @@ export default function Header() {
   }, [user, getSessionInfo]);
 
   const isActive = (path: string) => {
-    if (path === "/") return pathname === "/";
-    return pathname.startsWith(path);
+    const pathWithoutLocale = stripLocaleFromPath(pathname);
+    if (path === "/") return pathWithoutLocale === "/";
+    return pathWithoutLocale.startsWith(path);
   };
+
+  const localeHref = (path: string) => getLocalizedPath(path, currentLanguage);
 
   const getLinkClasses = (path: string) => {
     const base =
@@ -98,10 +104,10 @@ export default function Header() {
   };
 
   const navLinks = [
-    { path: "/", label: inicioText, Icon: HomeIcon },
-    { path: "/propiedades", label: propiedadesText, Icon: BuildingOffice2Icon },
-    { path: "/servicios", label: serviciosText, Icon: BriefcaseIcon },
-    { path: "/contacto", label: contactoText, Icon: EnvelopeIcon },
+    { path: "/", href: localeHref("/"), label: inicioText, Icon: HomeIcon },
+    { path: "/propiedades", href: localeHref("/propiedades"), label: propiedadesText, Icon: BuildingOffice2Icon },
+    { path: "/servicios", href: localeHref("/servicios"), label: serviciosText, Icon: BriefcaseIcon },
+    { path: "/contacto", href: localeHref("/contacto"), label: contactoText, Icon: EnvelopeIcon },
   ];
 
   return (
@@ -113,7 +119,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="group transition-opacity">
+            <Link href={localeHref("/")} className="group transition-opacity">
               <Logo size="medium" showText={true} />
             </Link>
           </div>
@@ -121,28 +127,28 @@ export default function Header() {
           {/* Navegación escritorio */}
           <div className="hidden md:flex items-center gap-6">
             <Link
-              href="/"
+              href={localeHref("/")}
               className={getLinkClasses("/")}
               aria-current={isActive("/") ? "page" : undefined}
             >
               {inicioText}
             </Link>
             <Link
-              href="/propiedades"
+              href={localeHref("/propiedades")}
               className={getLinkClasses("/propiedades")}
               aria-current={isActive("/propiedades") ? "page" : undefined}
             >
               {propiedadesText}
             </Link>
             <Link
-              href="/servicios"
+              href={localeHref("/servicios")}
               className={getLinkClasses("/servicios")}
               aria-current={isActive("/servicios") ? "page" : undefined}
             >
               {serviciosText}
             </Link>
             <Link
-              href="/contacto"
+              href={localeHref("/contacto")}
               className={getLinkClasses("/contacto")}
               aria-current={isActive("/contacto") ? "page" : undefined}
             >
@@ -206,10 +212,10 @@ export default function Header() {
             <div className="bg-white rounded-2xl border border-neutral-gray/60 shadow-xl overflow-hidden mt-2">
               {/* Links de navegación */}
               <div className="p-3 space-y-1">
-                {navLinks.map(({ path, label, Icon }) => (
+                {navLinks.map(({ path, href, label, Icon }) => (
                   <Link
                     key={path}
-                    href={path}
+                    href={href}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-150 ${
                       isActive(path)
                         ? "bg-primary-blue text-white shadow-sm"

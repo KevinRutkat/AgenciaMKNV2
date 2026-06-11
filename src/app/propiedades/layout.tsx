@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getLanguageAlternates } from "@/lib/i18n";
 
 const title = "Propiedades en Cabo de Palos y La Manga";
 const description =
@@ -19,7 +20,10 @@ const collectionSchema = {
 export const metadata: Metadata = {
   title,
   description,
-  alternates: { canonical: "/propiedades" },
+  alternates: {
+    canonical: "/propiedades",
+    languages: getLanguageAlternates("/propiedades"),
+  },
   openGraph: {
     title,
     description,

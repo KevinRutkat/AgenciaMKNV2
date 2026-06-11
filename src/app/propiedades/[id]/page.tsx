@@ -4,6 +4,7 @@ import { supabase, Vivienda, ViviendaImage } from "@/lib/supabase";
 import ViviendaDetailClient from "@/components/ViviendaDetailClient";
 import { getPropertySpecialStatus } from "@/lib/propertySpecialStatus";
 import { CheckBadgeIcon, ClockIcon } from "@heroicons/react/24/solid";
+import { getLanguageAlternates } from "@/lib/i18n";
 
 const baseUrl = "https://www.agenciamkn.com";
 
@@ -110,7 +111,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical },
+    alternates: {
+      canonical,
+      languages: getLanguageAlternates(canonical),
+    },
     openGraph: {
       title,
       description,

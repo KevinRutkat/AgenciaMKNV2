@@ -1,6 +1,8 @@
 'use client'
 
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { getLocaleFromPath, getLocalizedPath, isSeoLocale } from '@/lib/i18n';
 
 // Idiomas soportados
 export const SUPPORTED_LANGUAGES = {
@@ -34,6 +36,8 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
   const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguage>('es');
   const [isTranslating, setIsTranslating] = useState(false);
   // Contador de traducciones activas para evitar parpadeos en el estado
@@ -50,7 +54,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     //     setCurrentLanguage(savedLanguage);
     //   }
     // }
-  }, []);
+    setCurrentLanguage(getLocaleFromPath(pathname));
+  }, [pathname]);
 
   const clearTranslationCache = useCallback(() => {
     // Limpiar cache en memoria
@@ -72,13 +77,22 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const setLanguage = useCallback((language: SupportedLanguage) => {
     setCurrentLanguage(language);
     localStorage.setItem('selectedLanguage', language);
-    
+
+    // Save preference in a cookie so the middleware can redirect on next visit
+    document.cookie = `preferred-locale=${language}; max-age=${365 * 24 * 60 * 60}; path=/; samesite=lax`;
+
+    if (isSeoLocale(language)) {
+      const localizedPath = getLocalizedPath(pathname, language);
+      if (localizedPath !== pathname) {
+        router.push(localizedPath);
+      }
+    }
+
     // Si cambiamos a español, limpiar cualquier traducción residual del cache
     if (language === 'es') {
       clearTranslationCache();
     }
-  // sessionStorage.setItem('restoreLanguage', '1'); // activar si se desea restaurar en recargas
-  }, [clearTranslationCache]);
+  }, [clearTranslationCache, pathname, router]);
 
   const translate = useCallback(async (text: string, targetLanguage?: SupportedLanguage): Promise<string> => {
     const target = targetLanguage || currentLanguage;

@@ -12,6 +12,7 @@ import FloatingLanguageSelector from "@/components/FloatingLanguageSelector";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { GoogleMapsProvider } from "@/contexts/GoogleMapsContext";
+import { isSeoLocale } from "@/lib/i18n";
 // Estilos globales
 import "./globals.css";
 
@@ -156,13 +157,20 @@ export const metadata: Metadata = {
 };
 
 // Layout principal
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params?: Promise<{ locale?: string }>;
 }) {
+  const resolvedParams = params ? await params : {};
+  const htmlLang = resolvedParams.locale && isSeoLocale(resolvedParams.locale)
+    ? resolvedParams.locale
+    : "es";
+
   return (
-    <html lang="es">
+    <html lang={htmlLang}>
       <head>
         {/* Schema.org WebSite */}
         <script

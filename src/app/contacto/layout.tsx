@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getLanguageAlternates } from "@/lib/i18n";
 
 const title = "Contacto Agencia MKN";
 const description =
@@ -27,7 +28,10 @@ const contactSchema = {
 export const metadata: Metadata = {
   title,
   description,
-  alternates: { canonical: "/contacto" },
+  alternates: {
+    canonical: "/contacto",
+    languages: getLanguageAlternates("/contacto"),
+  },
   openGraph: {
     title,
     description,

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import HomePageClient from "@/components/HomePageClient";
+import { getLanguageAlternates } from "@/lib/i18n";
 
 const title = "Agencia MKN - Gestión de viviendas, acompañamiento y traducción";
 const description =
@@ -8,7 +9,10 @@ const description =
 export const metadata: Metadata = {
   title,
   description,
-  alternates: { canonical: "/" },
+  alternates: {
+    canonical: "/",
+    languages: getLanguageAlternates("/"),
+  },
   openGraph: {
     title,
     description,
