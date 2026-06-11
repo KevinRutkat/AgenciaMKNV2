@@ -1,7 +1,5 @@
 ﻿// Importamos el tipo Metadata de Next.js para definir metadatos SEO
 import type { Metadata } from "next";
-// Importamos tipografías de Google Fonts
-import { Work_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 // Importamos el componente Header personalizado
 import Header from "@/components/Header";
@@ -16,19 +14,6 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { GoogleMapsProvider } from "@/contexts/GoogleMapsContext";
 // Estilos globales
 import "./globals.css";
-
-// Configuración de fuentes
-const workSans = Work_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-sans",
-});
-
-const workSansDisplay = Work_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-serif",
-});
 
 // JSON-LD para estructura WebSite
 const websiteSchema = {
@@ -190,7 +175,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
       </head>
-      <body className={`${workSans.variable} ${workSansDisplay.variable} antialiased`}>
+      <body className="antialiased">
         <LanguageProvider>
           <AuthProvider>
             <GoogleMapsProvider>

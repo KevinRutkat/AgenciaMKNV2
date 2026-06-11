@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -6,6 +6,8 @@ import MapSection from "@/components/MapSection";
 import Banner from "@/components/Banner";
 import ViviendasCostaSection from "@/components/ViviendasCostaSection";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
+import { motion } from "motion/react";
+import type { Variants } from "motion/react";
 import {
   HomeModernIcon,
   MapPinIcon,
@@ -16,19 +18,29 @@ import {
   LanguageIcon,
 } from "@heroicons/react/24/outline";
 
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 32 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const stagger: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15 } },
+};
+
 export default function HomePageClient() {
   const textsToTranslate = [
     // Banner
-    "Venta de viviendas y gestión de alquileres a lo largo del Mar Menor",
-    "Gestionamos la venta de viviendas, la gestión de alquileres y ofrecemos servicios de traducción e interpretación en español, alemán e inglés.",
+    "Gestión de viviendas, acompañamiento y traducción en la Costa Cálida",
+    "Gestionamos la compraventa de viviendas, buscamos propiedades para clientes, acompañamos a extranjeros en sus gestiones y ofrecemos traducción e interpretación en español, alemán e inglés.",
     "Ver propiedades",
     "Ver servicios",
 
     // Sección: Sobre Agencia MKN
     "Sobre Agencia MKN",
-    "Somos una empresa cercana, centrada principalmente en la venta de viviendas y en la gestión de alquileres para propietarios en Cabo de Palos, Cartagena y la costa cercana.",
-    "No alquilamos por cuenta propia: acompañamos personalmente a propietarios y compradores en valoración, promoción, visitas, documentación, negociación y firma, con un seguimiento completo de cada paso.",
-    "No solo traducimos, acompañamos de verdad. Ayudamos en situaciones donde el idioma es clave: médicos, hospitales, notarías, bancos o aeropuertos.",
+    "Somos una agencia de gestión integral en Cabo de Palos, Cartagena y la costa cercana. Gestionamos la compraventa de viviendas, buscamos propiedades para clientes y acompañamos en alquileres para propietarios.",
+    "No somos una inmobiliaria: acompañamos personalmente en cada proceso, desde la búsqueda de la propiedad hasta la firma, incluyendo gestiones administrativas como NIE, notaría o ayuntamiento.",
+    "No solo traducimos, hacemos acompañamiento completo y personalizado a todos nuestros clientes. Ayudamos en medicos, hospitales, notarias, bancos o ayuntamientos.",
     "Foto de Agencia MKN - Oficina en Cabo de Palos",
 
     // Sección: Nuestra ubicación
@@ -42,24 +54,18 @@ export default function HomePageClient() {
     "Teléfono:",
     "Email:",
 
-    // Sección: Alquileres
-    "Gestionamos alquileres para propietarios",
-    "Ayudamos a propietarios que quieren alquilar su vivienda, pero que no quieren estresarse con todos los trámites burocráticos y el papeleo.",
-    "No alquilamos por nuestra cuenta: gestionamos el alquiler de su vivienda, la traducción, la documentación y la coordinación completa para que no tenga que preocuparse.",
-    "Quiero alquilar mi vivienda",
-
     // Sección: Nuestros servicios
     "Nuestros servicios",
-    "Venta de viviendas y gestión de alquileres",
-    "Acompañamiento personal en compraventa y gestión de alquileres para propietarios, con seguimiento completo hasta el final.",
-    "Traducción e interpretación cercana",
-    "Español y alemán principalmente, también inglés, para documentos, citas y gestiones donde necesita a alguien a su lado.",
+    "Compraventa, búsqueda de propiedades y gestión de alquileres",
+    "Acompañamiento personal en compraventa, búsqueda de propiedades para clientes y gestión de alquileres para propietarios, con seguimiento completo hasta el final.",
+    "Traducción, interpretación y acompañamiento",
+    "Español y alemán principalmente, también inglés, para documentos, citas y gestiones donde necesita a alguien a su lado: NIE, notaría, ayuntamiento, médicos y más.",
     "¿Desea que estudiemos su caso?",
     "Ver servicios",
 
     // CTA final
     "Cuando algo importante ocurre, no debería estar solo.",
-    "No solo traducimos y gestionamos viviendas: acompañamos personalmente en compras, ventas, alquileres, documentos y citas para que cada proceso se viva con claridad y confianza.",
+    "Somos una agencia de gestión y acompañamiento, no una inmobiliaria. Le ayudamos en compras, ventas, búsqueda de propiedades, alquileres, traducciones y gestiones administrativas para que cada proceso se viva con claridad y confianza.",
     "Contactar",
   ];
 
@@ -87,12 +93,6 @@ export default function HomePageClient() {
     addressLabel,
     phoneLabel,
     emailLabel,
-
-    // Alquileres
-    seasonalRentalsTitle,
-    seasonalRentalsP1,
-    seasonalRentalsP2,
-    seasonalRentalsButtonText,
 
     // Nuestros servicios
     servicesSectionTitle,
@@ -125,27 +125,43 @@ export default function HomePageClient() {
       {/* Contenido principal */}
       <main className="px-4 sm:px-6 md:px-8 py-10 sm:py-14">
         <div className="max-w-7xl mx-auto">
+
           {/* Sección: Quiénes somos */}
-          <section className="mb-16 sm:mb-20">
+          <motion.section
+            className="mb-16 sm:mb-20"
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-semibold text-neutral-dark mb-4 font-display">
+              <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+                <motion.h2
+                  variants={fadeUp}
+                  className="text-2xl sm:text-3xl font-semibold text-neutral-dark mb-4 font-display"
+                >
                   <span className="inline-flex items-center gap-2">
                     <HomeModernIcon className="h-6 w-6 text-primary-blue" />
                     {aboutTitle}
                   </span>
-                </h2>
-                <p className="text-base sm:text-lg text-neutral-muted mb-3 leading-relaxed">
+                </motion.h2>
+                <motion.p variants={fadeUp} className="text-base sm:text-lg text-neutral-muted mb-3 leading-relaxed">
                   {aboutP1}
-                </p>
-                <p className="text-base sm:text-lg text-neutral-muted mb-3 leading-relaxed">
+                </motion.p>
+                <motion.p variants={fadeUp} className="text-base sm:text-lg text-neutral-muted mb-3 leading-relaxed">
                   {aboutP2}
-                </p>
-                <p className="text-base sm:text-lg text-neutral-muted leading-relaxed">
+                </motion.p>
+                <motion.p variants={fadeUp} className="text-base sm:text-lg text-neutral-muted leading-relaxed">
                   {aboutP3}
-                </p>
-              </div>
-              <div className="relative h-80 sm:h-96 rounded-2xl overflow-hidden border border-neutral-gray shadow-sm">
+                </motion.p>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: 60 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                viewport={{ once: true, amount: 0.2 }}
+                className="relative h-80 sm:h-96 rounded-2xl overflow-hidden border border-neutral-gray shadow-sm"
+              >
                 <Image
                   src="/FotoLocal.png"
                   alt={officeAlt}
@@ -153,38 +169,47 @@ export default function HomePageClient() {
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
-              </div>
+              </motion.div>
             </div>
-          </section>
+          </motion.section>
 
           {/* Sección: Nuestra ubicación */}
-          <section className="mb-16 sm:mb-20">
+          <motion.section
+            className="mb-16 sm:mb-20"
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+          >
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-neutral-gray shadow-sm">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-neutral-dark mb-6 sm:mb-8 text-center font-display">
+              <motion.h2
+                variants={fadeUp}
+                className="text-2xl sm:text-3xl md:text-4xl font-semibold text-neutral-dark mb-6 sm:mb-8 text-center font-display"
+              >
                 <span className="inline-flex items-center gap-2">
                   <MapPinIcon className="h-7 w-7 text-primary-blue" />
                   {locationSectionTitle}
                 </span>
-              </h2>
+              </motion.h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Texto de ubicación */}
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-semibold text-neutral-dark mb-4">
+                <motion.div variants={stagger}>
+                  <motion.h3 variants={fadeUp} className="text-xl sm:text-2xl font-semibold text-neutral-dark mb-4">
                     {locationSubtitle}
-                  </h3>
-                  <p className="text-neutral-muted mb-4 leading-relaxed">
+                  </motion.h3>
+                  <motion.p variants={fadeUp} className="text-neutral-muted mb-4 leading-relaxed">
                     {locationP1}
-                  </p>
-                  <p className="text-neutral-muted mb-4 leading-relaxed">
+                  </motion.p>
+                  <motion.p variants={fadeUp} className="text-neutral-muted mb-4 leading-relaxed">
                     {locationP2}
-                  </p>
-                  <p className="text-neutral-muted mb-4 leading-relaxed">
+                  </motion.p>
+                  <motion.p variants={fadeUp} className="text-neutral-muted mb-4 leading-relaxed">
                     {locationP3}
-                  </p>
-                  <p className="text-neutral-muted mb-4 leading-relaxed">
+                  </motion.p>
+                  <motion.p variants={fadeUp} className="text-neutral-muted mb-4 leading-relaxed">
                     {locationP4}
-                  </p>
-                  <div className="space-y-2 text-neutral-muted">
+                  </motion.p>
+                  <motion.div variants={fadeUp} className="space-y-2 text-neutral-muted">
                     <p className="flex items-center">
                       <MapPinIcon className="h-5 w-5 text-primary-blue mr-3" />
                       <strong className="mr-2 text-neutral-dark">{addressLabel}</strong>
@@ -210,68 +235,76 @@ export default function HomePageClient() {
                         marionrutkat@gmail.com
                       </a>
                     </p>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
                 {/* Mapa (cargado solo en cliente) */}
-                <MapSection />
-              </div>
-            </div>
-          </section>
-
-          <section className="mb-16 sm:mb-20">
-            <div className="rounded-2xl border border-primary-blue/20 bg-primary-blue px-6 py-8 text-white shadow-sm sm:px-8">
-              <div className="max-w-4xl">
-                <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-white/75">
-                  Alquileres
-                </p>
-                <h2 className="mb-4 text-2xl font-semibold font-display sm:text-3xl">
-                  {seasonalRentalsTitle}
-                </h2>
-                <p className="mb-3 text-base leading-relaxed text-white/90 sm:text-lg">
-                  {seasonalRentalsP1}
-                </p>
-                <p className="mb-6 text-base leading-relaxed text-white/90 sm:text-lg">
-                  {seasonalRentalsP2}
-                </p>
-                <Link
-                  href="/contacto"
-                  className="inline-flex items-center rounded-full bg-white px-6 py-3 font-semibold text-primary-blue transition-all duration-300 hover-bg-neutral-gray"
+                <motion.div
+                  variants={{
+                    hidden: { opacity: 0, x: 40 },
+                    visible: { opacity: 1, x: 0, transition: { duration: 0.65, ease: "easeOut" } },
+                  }}
                 >
-                  {seasonalRentalsButtonText}
-                </Link>
+                  <MapSection />
+                </motion.div>
               </div>
             </div>
-          </section>
+          </motion.section>
 
           <ViviendasCostaSection />
 
           {/* Sección: Nuestros servicios */}
-          <section className="mb-16">
+          <motion.section
+            className="mb-16"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+          >
             <h2 className="text-3xl sm:text-4xl font-semibold text-neutral-dark mb-8 text-center font-display">
               <span className="inline-flex items-center gap-2">
                 <BriefcaseIcon className="h-7 w-7 text-primary-blue" />
                 {servicesSectionTitle}
               </span>
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              <div className="bg-white rounded-2xl p-6 border border-neutral-gray shadow-sm text-center">
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8"
+              variants={stagger}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              <motion.div
+                variants={fadeUp}
+                whileHover={{ y: -4, boxShadow: "0 8px 30px rgba(0,0,0,0.10)" }}
+                className="bg-white rounded-2xl p-6 border border-neutral-gray shadow-sm text-center"
+              >
                 <BuildingOffice2Icon className="h-10 w-10 text-primary-blue mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-neutral-dark mb-3">
                   {servicesCard1Title}
                 </h3>
                 <p className="text-neutral-muted">{servicesCard1Desc}</p>
-              </div>
-              <div className="bg-white rounded-2xl p-6 border border-neutral-gray shadow-sm text-center">
+              </motion.div>
+              <motion.div
+                variants={fadeUp}
+                whileHover={{ y: -4, boxShadow: "0 8px 30px rgba(0,0,0,0.10)" }}
+                className="bg-white rounded-2xl p-6 border border-neutral-gray shadow-sm text-center"
+              >
                 <LanguageIcon className="h-10 w-10 text-primary-blue mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-neutral-dark mb-3">
                   {servicesCard2Title}
                 </h3>
                 <p className="text-neutral-muted">{servicesCard2Desc}</p>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
-            <div className="mx-auto mb-8 max-w-xl overflow-hidden rounded-2xl border border-neutral-gray bg-white p-3 shadow-sm sm:p-4">
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="mx-auto mb-8 max-w-xl overflow-hidden rounded-2xl border border-neutral-gray bg-white p-3 shadow-sm sm:p-4"
+            >
               <div className="relative aspect-[1005/599] w-full">
                 <Image
                   src="/imgrecuadro.PNG"
@@ -281,24 +314,38 @@ export default function HomePageClient() {
                   sizes="(max-width: 768px) 100vw, 896px"
                 />
               </div>
-            </div>
+            </motion.div>
 
             {/* Call to action Servicios */}
-            <div className="bg-white/80 rounded-2xl p-6 text-center border border-neutral-gray shadow-sm">
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="bg-white/80 rounded-2xl p-6 text-center border border-neutral-gray shadow-sm"
+            >
               <p className="text-neutral-muted mb-4 text-lg">
                 {servicesCtaText}
               </p>
-              <Link
-                href="/servicios"
-                className="inline-flex items-center px-6 py-3 bg-primary-blue text-white rounded-full font-semibold transition-all duration-300 hover-bg-primary-blue-dark"
-              >
-                {servicesCtaButtonText}
-              </Link>
-            </div>
-          </section>
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="inline-block">
+                <Link
+                  href="/servicios"
+                  className="inline-flex items-center px-6 py-3 bg-primary-blue text-white rounded-full font-semibold transition-all duration-300 hover-bg-primary-blue-dark"
+                >
+                  {servicesCtaButtonText}
+                </Link>
+              </motion.div>
+            </motion.div>
+          </motion.section>
 
           {/* Call to Action final */}
-          <section className="text-center">
+          <motion.section
+            className="text-center"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <div className="bg-primary-blue rounded-2xl p-8 text-white shadow-sm">
               <h2 className="text-3xl font-semibold mb-4 font-display">
                 {finalCtaTitle}
@@ -306,14 +353,17 @@ export default function HomePageClient() {
               <p className="mx-auto mb-6 max-w-5xl px-4 text-lg opacity-90 sm:px-8">
                 {finalCtaText}
               </p>
-              <Link
-                href="/contacto"
-                className="inline-block bg-white text-primary-blue px-8 py-3 rounded-full font-semibold transition-all duration-300 hover-bg-neutral-gray"
-              >
-                {finalCtaButtonText}
-              </Link>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} className="inline-block">
+                <Link
+                  href="/contacto"
+                  className="inline-block bg-white text-primary-blue px-8 py-3 rounded-full font-semibold transition-all duration-300 hover-bg-neutral-gray"
+                >
+                  {finalCtaButtonText}
+                </Link>
+              </motion.div>
             </div>
-          </section>
+          </motion.section>
+
         </div>
       </main>
     </div>

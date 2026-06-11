@@ -4,6 +4,8 @@ import { useState } from "react";
 import Banner from "@/components/Banner";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
+import { motion } from "motion/react";
+import type { Variants } from "motion/react";
 import {
   EnvelopeIcon,
   PhoneIcon,
@@ -13,6 +15,26 @@ import {
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
+};
+
+const slideLeft: Variants = {
+  hidden: { opacity: 0, x: -40 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const slideRight: Variants = {
+  hidden: { opacity: 0, x: 40 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const stagger: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
 
 export default function ContactoPage() {
   const { isLoaded, loadError } = useGoogleMaps();
@@ -176,9 +198,13 @@ export default function ContactoPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           {/* Formulario */}
-          <section
+          <motion.section
             aria-label="Formulario de contacto"
             className="bg-white rounded-2xl border border-neutral-gray shadow-sm p-6 h-fit"
+            variants={slideLeft}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
           >
             <h2 className="text-2xl font-semibold text-neutral-dark mb-2">
               {formTitle}
@@ -284,13 +310,20 @@ export default function ContactoPage() {
                 </div>
               )}
             </form>
-          </section>
+          </motion.section>
 
           {/* Info de contacto y mapa */}
-          <div className="space-y-6">
-            <section
+          <motion.div
+            className="space-y-6"
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.05 }}
+          >
+            <motion.section
               aria-label="Información de contacto"
               className="bg-white rounded-2xl border border-neutral-gray shadow-sm p-6"
+              variants={slideRight}
             >
               <h2 className="text-2xl font-semibold text-neutral-dark mb-4">
                 {oficinaTitle}
@@ -350,11 +383,12 @@ export default function ContactoPage() {
                   </div>
                 </div>
               </div>
-            </section>
+            </motion.section>
 
-            <section
+            <motion.section
               aria-label="Mapa de ubicación"
               className="bg-white rounded-2xl border border-neutral-gray shadow-sm p-6"
+              variants={fadeUp}
             >
               <h2 className="text-2xl font-semibold text-neutral-dark mb-4">
                 {ubicacionTitle}
@@ -377,7 +411,7 @@ export default function ContactoPage() {
                   >
                     <Marker
                       position={agencyLocation}
-                      title="Agencia MKN - Venta de viviendas y gestión de alquileres"
+                      title="Agencia MKN - Gestión de viviendas, acompañamiento y traducción"
                     />
                   </GoogleMap>
                 ) : (
@@ -404,8 +438,8 @@ export default function ContactoPage() {
                   {mapaLink}
                 </a>
               </div>
-            </section>
-          </div>
+            </motion.section>
+          </motion.div>
         </div>
       </main>
     </div>

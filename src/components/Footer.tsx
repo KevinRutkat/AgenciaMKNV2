@@ -10,7 +10,7 @@ export default function Footer() {
 
   const textsToTranslate = [
     "Agencia MKN",
-    "Venta de viviendas y gestión de alquileres.",
+    "Agencia de gestión de viviendas, acompañamiento a clientes y traducción.",
     "Traducción e interpretación cercana en español, alemán e inglés para documentos, citas y gestiones en médicos, hospitales, notarías, bancos y organismos oficiales.",
     "Enlaces rápidos",
     "Inicio",
@@ -133,7 +133,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="border-t border-neutral-gray mt-6 sm:mt-8 pt-6 sm:pt-8 text-center text-neutral-muted">
           <p className="text-xs sm:text-sm">
-            &copy; 2025 Agencia Inmobiliaria MKN. Todos los derechos reservados. Desarrollado por HKode.es
+            &copy; 2025 Agencia MKN. Todos los derechos reservados. Desarrollado por HKode.es
           </p>
         </div>
       </div>

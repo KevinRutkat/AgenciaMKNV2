@@ -5,6 +5,8 @@ import { supabase, Vivienda, ViviendaImage } from "@/lib/supabase";
 import ViviendaCard from "@/components/ViviendaCard";
 import Banner from "@/components/Banner";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
+import { motion } from "motion/react";
+import type { Variants } from "motion/react";
 import {
   Squares2X2Icon,
   KeyIcon,
@@ -248,6 +250,21 @@ export default function PropiedadesPage() {
 
   const filteredViviendas = getFilteredViviendas();
 
+  const tabsContainer: Variants = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.05, delayChildren: 0.05 } },
+  };
+
+  const tabItem: Variants = {
+    hidden: { opacity: 0, y: -8 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" } },
+  };
+
+  const sortFade: Variants = {
+    hidden: { opacity: 0, y: -6 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut", delay: 0.38 } },
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-kehre-gradient-light flex items-center justify-center">
@@ -274,50 +291,25 @@ export default function PropiedadesPage() {
         <div className="max-w-7xl mx-auto">
           {/* Filtros por categoria */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-neutral-gray shadow-sm mb-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-wrap gap-2 sm:gap-3 lg:justify-center">
+            <motion.div
+              className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-wrap gap-2 sm:gap-3 lg:justify-center"
+              variants={tabsContainer}
+              initial="hidden"
+              animate="visible"
+            >
               {[
-                {
-                  id: "todas",
-                  label: todasLabel,
-                  count: viviendas.length,
-                  icon: Squares2X2Icon,
-                },
-                {
-                  id: "destacadas",
-                  label: destacadasLabel,
-                  count: propiedadesDestacadas.length,
-                  icon: StarIcon,
-                },
-                {
-                  id: "alquileres",
-                  label: alquileresLabel,
-                  count: alquileres.length,
-                  icon: KeyIcon,
-                },
-                {
-                  id: "usadas",
-                  label: usadasLabel,
-                  count: viviendasUsadas.length,
-                  shortLabel: usadasLabel,
-                  icon: ArrowPathIcon,
-                },
-                {
-                  id: "nuevas",
-                  label: nuevasLabel,
-                  count: sinEstrenar.length,
-                  icon: SparklesIcon,
-                },
-                {
-                  id: "otros",
-                  label: otrosLabel,
-                  count: otros.length,
-                  icon: AdjustmentsHorizontalIcon,
-                },
+                { id: "todas",      label: todasLabel,      count: viviendas.length,            icon: Squares2X2Icon },
+                { id: "destacadas", label: destacadasLabel,  count: propiedadesDestacadas.length, icon: StarIcon },
+                { id: "alquileres", label: alquileresLabel,  count: alquileres.length,            icon: KeyIcon },
+                { id: "usadas",     label: usadasLabel,      count: viviendasUsadas.length,       icon: ArrowPathIcon },
+                { id: "nuevas",     label: nuevasLabel,      count: sinEstrenar.length,           icon: SparklesIcon },
+                { id: "otros",      label: otrosLabel,       count: otros.length,                 icon: AdjustmentsHorizontalIcon },
               ].map((category) => {
                 const Icon = category.icon;
                 return (
-                  <button
+                  <motion.button
                     key={category.id}
+                    variants={tabItem}
                     type="button"
                     aria-pressed={activeCategory === category.id}
                     onClick={() => setActiveCategory(category.id)}
@@ -330,9 +322,7 @@ export default function PropiedadesPage() {
                     <span className="truncate inline-flex items-center gap-2">
                       <Icon className="h-4 w-4 flex-shrink-0" />
                       <span className="hidden sm:inline">{category.label}</span>
-                      <span className="sm:hidden">
-                        {category.shortLabel || category.label}
-                      </span>
+                      <span className="sm:hidden">{category.label}</span>
                     </span>
                     <span
                       className={`text-xs px-1.5 sm:px-2 py-0.5 rounded-full flex-shrink-0 ${
@@ -343,14 +333,19 @@ export default function PropiedadesPage() {
                     >
                       {category.count}
                     </span>
-                  </button>
+                  </motion.button>
                 );
               })}
-            </div>
+            </motion.div>
           </div>
 
           {/* Filtro de ordenamiento */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-neutral-gray shadow-sm">
+          <motion.div
+            className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-neutral-gray shadow-sm"
+            variants={sortFade}
+            initial="hidden"
+            animate="visible"
+          >
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
               <label
                 htmlFor="sort-select"
@@ -375,7 +370,7 @@ export default function PropiedadesPage() {
                 <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-muted" />
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 

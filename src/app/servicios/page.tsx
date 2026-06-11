@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { HomeIcon, LanguageIcon } from "@heroicons/react/24/solid";
 import Banner from "@/components/Banner";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
+import { motion, AnimatePresence } from "motion/react";
+import type { Variants } from "motion/react";
 
 interface ServiceItem {
   id: string;
@@ -19,14 +21,14 @@ export default function ServiciosPage() {
 
   const textsToTranslate = [
     // Banner
-    "Venta de viviendas, gestión de alquileres y acompañamiento real",
-    "Somos una empresa cercana: vendemos viviendas, gestionamos alquileres para propietarios y acompañamos en español, alemán e inglés cuando un trámite importante no debería hacerse en soledad.",
+    "Gestión de viviendas, acompañamiento a clientes y traducción",
+    "Somos una agencia de gestión integral, no una inmobiliaria: gestionamos compraventa y búsqueda de viviendas, acompañamos a clientes extranjeros en sus gestiones y ofrecemos traducción e interpretación en español, alemán e inglés.",
 
     // Títulos de secciones
-    "Servicios inmobiliarios",
-    "Acompañamiento personal en venta de viviendas y gestión de alquileres para propietarios",
+    "Gestión de viviendas",
+    "Acompañamiento personal en compraventa, búsqueda de propiedades y gestión de alquileres para propietarios",
     "Servicios de traducción",
-    "No solo traducimos: acompañamos de verdad en documentos, citas y gestiones importantes",
+    "No solo traducimos, hacemos acompañamiento completo y personalizado a todos nuestros clientes. Ayudamos en medicos, hospitales, notarias, bancos o ayuntamientos.",
 
     // Call to action
     "¿Necesita asesoramiento?",
@@ -35,20 +37,13 @@ export default function ServiciosPage() {
     "Llamar ahora",
 
     // Servicios inmobiliarios
-    "Venta de viviendas",
-    "Acompañamos personalmente a propietarios y compradores desde el primer paso hasta la firma",
+    "Compraventa y búsqueda de viviendas",
+    "Acompañamos personalmente a compradores y vendedores, y buscamos propiedades según las necesidades de cada cliente",
+    "Búsqueda de propiedades según los criterios del cliente",
     "Valoración realista y honesta de la vivienda",
-    "Preparación de la salida al mercado",
-    "Promoción y presentación cuidada de la propiedad",
-    "Atención directa a compradores interesados",
+    "Preparación y promoción de la salida al mercado",
+    "Atención directa a compradores y vendedores",
     "Seguimiento continuo hasta cerrar la operación",
-
-    "Gestión de alquileres para propietarios",
-    "No alquilamos por cuenta propia: gestionamos el alquiler de su vivienda con seguimiento completo",
-    "Promoción de la vivienda y difusión del alquiler",
-    "Atención, filtro y respuesta a consultas",
-    "Coordinación de visitas y documentación",
-    "Acompañamiento al propietario durante todo el proceso",
 
     "Visitas, negociación y acompañamiento",
     "Un trato cercano en cada visita, conversación y decisión importante",
@@ -84,15 +79,15 @@ export default function ServiciosPage() {
     "Gestiones bancarias y documentación financiera",
     "Apoyo en formularios, citas y comunicaciones importantes",
 
-    "Acompañamiento presencial",
-    "Estamos con usted donde de verdad importa: cerca, presentes y profesionales",
-    "Médicos, consultas y seguimiento sanitario",
-    "Hospitales, pruebas e ingresos",
-    "Notarías, firmas y poderes",
-    "Bancos y gestiones financieras",
-    "Organismos oficiales y administraciones",
+    "Acompañamiento presencial y gestiones administrativas",
+    "Estamos con usted donde de verdad importa: NIE, notaría, ayuntamiento, médicos, bancos y más",
+    "NIE, TIE y trámites con extranjería",
+    "Ayuntamientos, padrón y gestiones municipales",
+    "Notarías, firmas y poderes notariales",
+    "Médicos, hospitales, pruebas e ingresos",
+    "Bancos, gestiones financieras y seguros",
+    "Organismos oficiales y administraciones públicas",
     "Aeropuerto y desplazamientos importantes",
-    "Compra y venta de vivienda con interpretación presencial",
 
     "Seguimiento completo del proceso",
     "Lo que nos diferencia es la forma de estar: personalmente, de cerca y hasta el final",
@@ -129,13 +124,6 @@ export default function ServiciosPage() {
     analisisDetail3,
     analisisDetail4,
     analisisDetail5,
-
-    publicacionTitle,
-    publicacionDesc,
-    publicacionDetail1,
-    publicacionDetail2,
-    publicacionDetail3,
-    publicacionDetail4,
 
     visitasTitle,
     visitasDesc,
@@ -202,17 +190,6 @@ export default function ServiciosPage() {
         analisisDetail3,
         analisisDetail4,
         analisisDetail5,
-      ],
-    },
-    {
-      id: "publicacion-web",
-      title: publicacionTitle,
-      description: publicacionDesc,
-      details: [
-        publicacionDetail1,
-        publicacionDetail2,
-        publicacionDetail3,
-        publicacionDetail4,
       ],
     },
     {
@@ -306,6 +283,11 @@ export default function ServiciosPage() {
     setOpenItems(newOpenItems);
   };
 
+  const fadeUp: Variants = {
+    hidden: { opacity: 0, y: 28 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
+  };
+
   const ServiceAccordion = ({
     services,
     icon: Icon,
@@ -317,9 +299,13 @@ export default function ServiciosPage() {
     title: string;
     description: string;
   }) => (
-    <section
+    <motion.section
       aria-label={title}
       className="bg-white rounded-2xl border border-neutral-gray shadow-sm overflow-hidden"
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
     >
       <div className="flex items-center gap-3 p-6 bg-neutral-light border-b border-neutral-gray">
         <Icon className="h-6 w-6 text-primary-blue" />
@@ -347,31 +333,41 @@ export default function ServiciosPage() {
                   </p>
                 </div>
                 <div className="ml-4 flex-shrink-0">
-                  {openItems.has(service.id) ? (
-                    <ChevronUpIcon className="h-5 w-5 text-neutral-muted" />
-                  ) : (
+                  <motion.div
+                    animate={{ rotate: openItems.has(service.id) ? 180 : 0 }}
+                    transition={{ duration: 0.25 }}
+                  >
                     <ChevronDownIcon className="h-5 w-5 text-neutral-muted" />
-                  )}
+                  </motion.div>
                 </div>
               </div>
             </button>
 
-            {openItems.has(service.id) && (
-              <div className="px-6 pb-4 bg-white">
-                <ul className="space-y-2">
-                  {service.details.map((detail, index) => (
-                    <li key={index} className="flex items-start space-x-3 text-sm">
-                      <span className="text-primary-blue flex-shrink-0 w-2 h-2 bg-primary-blue rounded-full mt-2" />
-                      <span className="text-neutral-muted">{detail}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <AnimatePresence initial={false}>
+              {openItems.has(service.id) && (
+                <motion.div
+                  key="content"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.28, ease: "easeInOut" }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <ul className="px-6 pb-4 bg-white space-y-2">
+                    {service.details.map((detail, index) => (
+                      <li key={index} className="flex items-start space-x-3 text-sm">
+                        <span className="flex-shrink-0 w-2 h-2 bg-primary-blue rounded-full mt-2" />
+                        <span className="text-neutral-muted">{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ))}
       </div>
-    </section>
+    </motion.section>
   );
 
   return (
@@ -401,24 +397,34 @@ export default function ServiciosPage() {
         </div>
 
         {/* CTA */}
-        <section className="mt-16 bg-white/80 rounded-2xl p-8 text-center border border-neutral-gray shadow-sm">
+        <motion.section
+          className="mt-16 bg-white/80 rounded-2xl p-8 text-center border border-neutral-gray shadow-sm"
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
           <h2 className="text-2xl font-semibold mb-4 text-neutral-dark">{ctaTitle}</h2>
           <p className="text-lg mb-6 text-neutral-muted">{ctaSubtitle}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/contacto"
-              className="bg-primary-blue text-white px-6 py-3 rounded-full font-semibold hover-bg-primary-blue-dark transition-colors"
-            >
-              {contactButton}
-            </Link>
-            <a
-              href="tel:+34634737949"
-              className="border border-neutral-gray text-neutral-dark px-6 py-3 rounded-full font-semibold hover-bg-neutral-gray transition-colors"
-            >
-              {callButton}
-            </a>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                href="/contacto"
+                className="block bg-primary-blue text-white px-6 py-3 rounded-full font-semibold hover-bg-primary-blue-dark transition-colors"
+              >
+                {contactButton}
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+              <a
+                href="tel:+34634737949"
+                className="block border border-neutral-gray text-neutral-dark px-6 py-3 rounded-full font-semibold hover-bg-neutral-gray transition-colors"
+              >
+                {callButton}
+              </a>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
       </main>
     </div>
   );

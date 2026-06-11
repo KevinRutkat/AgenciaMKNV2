@@ -113,7 +113,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="hover:opacity-90 transition-opacity">
+            <Link href="/" className="group transition-opacity">
               <Logo size="medium" showText={true} />
             </Link>
           </div>

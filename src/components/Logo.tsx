@@ -39,8 +39,9 @@ export default function Logo({ size = 'medium', showText = true, className = '' 
       {/* Texto del logo */}
       {showText && (
         <div className="flex flex-col">
-          <span className={`font-semibold text-neutral-dark ${sizeClasses.text}`}>
+          <span className={`font-semibold text-neutral-dark ${sizeClasses.text} relative`}>
             Agencia MKN
+            <span className="absolute -bottom-0.5 left-0 h-0.5 w-0 bg-primary-blue rounded-full transition-all duration-300 group-hover:w-full" />
           </span>
         </div>
       )}

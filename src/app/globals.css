@@ -21,6 +21,9 @@
   --neutral-gray: #e5e0d9;          /* Lineas suaves */
   --neutral-dark: #1f1f1b;          /* Tinta */
   --neutral-muted: #5b5a55;         /* Tinta suave */
+
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", Arial, sans-serif;
+  --font-serif: "Segoe UI Variable Display", "Segoe UI", Arial, sans-serif;
 }
 
 
@@ -147,6 +150,7 @@ body {
     radial-gradient(900px 500px at 90% 10%, rgba(192, 112, 58, 0.08), transparent 50%),
     linear-gradient(180deg, #fbfaf8 0%, #f7f5f2 100%);
   font-family: var(--font-sans);
+  font-weight: 450;
 }
 
 h1,
@@ -155,6 +159,7 @@ h3,
 h4,
 .font-display {
   font-family: var(--font-serif);
+  font-weight: 650;
   letter-spacing: -0.01em;
 }
 
