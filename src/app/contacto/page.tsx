@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import { useState } from "react";
-import dynamic from "next/dynamic";
 import Banner from "@/components/Banner";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
@@ -16,11 +15,6 @@ import {
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
-
-const LazyGoogleMapsWrapper = dynamic(
-  () => import("@/components/LazyGoogleMapsWrapper"),
-  { ssr: false },
-)
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -440,12 +434,10 @@ export default function ContactoPage() {
                 {ubicacionTitle}
               </h2>
 
-              <LazyGoogleMapsWrapper placeholderHeight="h-64">
-                <ContactoMapEmbed
-                  errorCargandoMapa={errorCargandoMapa}
-                  cargandoMapa={cargandoMapa}
-                />
-              </LazyGoogleMapsWrapper>
+              <ContactoMapEmbed
+                errorCargandoMapa={errorCargandoMapa}
+                cargandoMapa={cargandoMapa}
+              />
 
               <div className="mt-3 text-center">
                 <a

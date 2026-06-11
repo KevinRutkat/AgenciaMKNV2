@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getLanguageAlternates } from "@/lib/i18n";
+import { GoogleMapsProvider } from "@/contexts/GoogleMapsContext";
 
 const title = "Contacto Agencia MKN";
 const description =
@@ -61,12 +62,12 @@ export default function ContactoLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <GoogleMapsProvider>
       {children}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(contactSchema) }}
       />
-    </>
+    </GoogleMapsProvider>
   );
 }
