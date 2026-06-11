@@ -8,9 +8,7 @@ interface GoogleMapsContextType {
   loadError: Error | undefined
 }
 
-const defaultValue: GoogleMapsContextType = { isLoaded: false, loadError: undefined }
-
-const GoogleMapsContext = createContext<GoogleMapsContextType>(defaultValue)
+const GoogleMapsContext = createContext<GoogleMapsContextType | undefined>(undefined)
 
 interface GoogleMapsProviderProps {
   children: ReactNode
@@ -19,7 +17,7 @@ interface GoogleMapsProviderProps {
 export function GoogleMapsProvider({ children }: GoogleMapsProviderProps) {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
-    libraries: ['places'] as const,
+    libraries: ['places'] as const, // Incluyendo places para autocompletado en formularios
   })
 
   return (
@@ -30,5 +28,9 @@ export function GoogleMapsProvider({ children }: GoogleMapsProviderProps) {
 }
 
 export function useGoogleMaps() {
-  return useContext(GoogleMapsContext)
+  const context = useContext(GoogleMapsContext)
+  if (context === undefined) {
+    throw new Error('useGoogleMaps must be used within a GoogleMapsProvider')
+  }
+  return context
 }

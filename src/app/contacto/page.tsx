@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Banner from "@/components/Banner";
@@ -36,54 +36,14 @@ const stagger: Variants = {
   visible: { transition: { staggerChildren: 0.1 } },
 };
 
-// Componente interno: solo se monta dentro de LazyGoogleMapsWrapper (que provee el contexto)
-function ContactoMapEmbed({
-  errorCargandoMapa,
-  cargandoMapa,
-}: {
-  errorCargandoMapa: string;
-  cargandoMapa: string;
-}) {
-  const { isLoaded, loadError } = useGoogleMaps();
-  const agencyLocation = { lat: 37.627368, lng: -0.710618 };
-
-  return (
-    <div className="relative h-64 rounded-lg overflow-hidden border border-neutral-gray">
-      {isLoaded && !loadError ? (
-        <GoogleMap
-          mapContainerStyle={{ height: "100%", width: "100%" }}
-          zoom={15}
-          center={agencyLocation}
-          options={{
-            disableDefaultUI: false,
-            zoomControl: true,
-            streetViewControl: true,
-            mapTypeControl: true,
-            fullscreenControl: true,
-            gestureHandling: "cooperative",
-          }}
-        >
-          <Marker
-            position={agencyLocation}
-            title="Agencia MKN - Gestión de viviendas, acompañamiento y traducción"
-          />
-        </GoogleMap>
-      ) : (
-        <div className="w-full h-full bg-neutral-light flex items-center justify-center">
-          <div className="text-center text-neutral-muted">
-            <MapIcon className="h-10 w-10 text-primary-blue mx-auto mb-4" />
-            <p className="text-lg font-semibold">
-              {loadError ? errorCargandoMapa : cargandoMapa}
-            </p>
-            <p className="text-sm opacity-70">Cabo de Palos, Cartagena</p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function ContactoPage() {
+  const { isLoaded, loadError } = useGoogleMaps();
+
+  const agencyLocation = {
+    lat: 37.627368,
+    lng: -0.710618,
+  };
+
   const [formData, setFormData] = useState({
     nombre: "",
     correo: "",
@@ -434,10 +394,38 @@ export default function ContactoPage() {
                 {ubicacionTitle}
               </h2>
 
-              <ContactoMapEmbed
-                errorCargandoMapa={errorCargandoMapa}
-                cargandoMapa={cargandoMapa}
-              />
+              <div className="relative h-64 rounded-lg overflow-hidden border border-neutral-gray">
+                {isLoaded && !loadError ? (
+                  <GoogleMap
+                    mapContainerStyle={{ height: "100%", width: "100%" }}
+                    zoom={15}
+                    center={agencyLocation}
+                    options={{
+                      disableDefaultUI: false,
+                      zoomControl: true,
+                      streetViewControl: true,
+                      mapTypeControl: true,
+                      fullscreenControl: true,
+                      gestureHandling: "cooperative",
+                    }}
+                  >
+                    <Marker
+                      position={agencyLocation}
+                      title="Agencia MKN - Gestión de viviendas, acompañamiento y traducción"
+                    />
+                  </GoogleMap>
+                ) : (
+                  <div className="w-full h-full bg-neutral-light flex items-center justify-center">
+                    <div className="text-center text-neutral-muted">
+                      <MapIcon className="h-10 w-10 text-primary-blue mx-auto mb-4" />
+                      <p className="text-lg font-semibold">
+                        {loadError ? errorCargandoMapa : cargandoMapa}
+                      </p>
+                      <p className="text-sm opacity-70">Cabo de Palos, Cartagena</p>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               <div className="mt-3 text-center">
                 <a

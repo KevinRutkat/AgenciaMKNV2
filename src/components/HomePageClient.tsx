@@ -2,17 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import dynamic from "next/dynamic";
+import MapSection from "@/components/MapSection";
 import Banner from "@/components/Banner";
 import ViviendasCostaSection from "@/components/ViviendasCostaSection";
-
-const LazyGoogleMapsWrapper = dynamic(
-  () => import("@/components/LazyGoogleMapsWrapper"),
-  { ssr: false },
-)
-const MapSection = dynamic(() => import("@/components/MapSection"), {
-  ssr: false,
-})
 import { useMultipleTranslations } from "@/hooks/useTranslation";
 import { motion } from "motion/react";
 import type { Variants } from "motion/react";
@@ -248,16 +240,14 @@ export default function HomePageClient() {
                   </motion.div>
                 </motion.div>
 
-                {/* Mapa — cargado bajo demanda cuando entra en viewport */}
+                {/* Mapa (cargado solo en cliente) */}
                 <motion.div
                   variants={{
                     hidden: { opacity: 0, x: 40 },
                     visible: { opacity: 1, x: 0, transition: { duration: 0.65, ease: "easeOut" } },
                   }}
                 >
-                  <LazyGoogleMapsWrapper>
-                    <MapSection />
-                  </LazyGoogleMapsWrapper>
+                  <MapSection />
                 </motion.div>
               </div>
             </div>

@@ -11,6 +11,7 @@ import FloatingLanguageSelector from "@/components/FloatingLanguageSelector";
 // Providers globales
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { GoogleMapsProvider } from "@/contexts/GoogleMapsContext";
 import { isSeoLocale } from "@/lib/i18n";
 // Estilos globales
 import "./globals.css";
@@ -188,12 +189,14 @@ export default async function RootLayout({
       <body className="antialiased">
         <LanguageProvider>
           <AuthProvider>
-            <TranslationLoadingIndicator />
-            <Header />
-            {children}
-            <FloatingLanguageSelector position="bottom-left" />
-            <Footer />
-            <Analytics />
+            <GoogleMapsProvider>
+              <TranslationLoadingIndicator />
+              <Header />
+              {children}
+              <FloatingLanguageSelector position="bottom-left" />
+              <Footer />
+              <Analytics />
+            </GoogleMapsProvider>
           </AuthProvider>
         </LanguageProvider>
       </body>
