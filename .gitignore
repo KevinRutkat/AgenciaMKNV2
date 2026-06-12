@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# generated flag assets (copied from node_modules at build/dev time)
+/public/flags

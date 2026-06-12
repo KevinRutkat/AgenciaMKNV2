@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node -e \"require('fs').copyFileSync('node_modules/flag-icons/css/flag-icons.min.css','public/flag-icons.min.css')\"",
+    "copy-flags": "node -e \"const fs=require('fs'),path=require('path');fs.copyFileSync('node_modules/flag-icons/css/flag-icons.min.css','public/flag-icons.min.css');function cpDir(src,dst){fs.mkdirSync(dst,{recursive:true});for(const f of fs.readdirSync(src)){const s=path.join(src,f),d=path.join(dst,f);fs.statSync(s).isDirectory()?cpDir(s,d):fs.copyFileSync(s,d)}}cpDir('node_modules/flag-icons/flags','public/flags')\"",
+    "predev": "npm run copy-flags",
+    "prebuild": "npm run copy-flags",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
