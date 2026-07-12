@@ -77,14 +77,8 @@ const localBusinessSchema = {
         "Thursday",
         "Friday",
       ],
-      opens: "09:00",
-      closes: "16:00",
-    },
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: "Saturday",
-      opens: "11:00",
-      closes: "14:00",
+      opens: "16:00",
+      closes: "21:00",
     },
   ],
 };
