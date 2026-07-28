@@ -6,12 +6,12 @@ const metadataByLocale: Record<Exclude<SeoLocale, "es">, { title: string; descri
   en: {
     title: "Properties in Cabo de Palos and La Manga",
     description:
-      "Browse homes for sale and rent in Cabo de Palos, La Manga and Cartagena with updated photos, prices and property details.",
+      "Browse homes for sale in Cabo de Palos, La Manga and Cartagena with updated photos, prices and property details.",
   },
   de: {
     title: "Immobilien in Cabo de Palos und La Manga",
     description:
-      "Entdecken Sie Immobilien zum Kauf und zur Miete in Cabo de Palos, La Manga und Cartagena mit aktuellen Fotos, Preisen und Details.",
+      "Entdecken Sie Immobilien zum Kauf in Cabo de Palos, La Manga und Cartagena mit aktuellen Fotos, Preisen und Details.",
   },
 };
 

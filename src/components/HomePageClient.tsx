@@ -38,7 +38,7 @@ export default function HomePageClient() {
 
     // Sección: Sobre Agencia MKN
     "Sobre Agencia MKN",
-    "Somos una agencia de gestión integral en Cabo de Palos, Cartagena y la costa cercana. Gestionamos la compraventa de viviendas, buscamos propiedades para clientes y acompañamos en alquileres para propietarios.",
+    "Somos una agencia de gestión integral en Cabo de Palos, Cartagena y la costa cercana. Gestionamos la compraventa de viviendas y buscamos propiedades para clientes.",
     "No somos una inmobiliaria: acompañamos personalmente en cada proceso, desde la búsqueda de la propiedad hasta la firma, incluyendo gestiones administrativas como NIE, notaría o ayuntamiento.",
     "No solo traducimos, hacemos acompañamiento completo y personalizado a todos nuestros clientes. Ayudamos en medicos, hospitales, notarias, bancos o ayuntamientos.",
     "Foto de Agencia MKN - Oficina en Cabo de Palos",
@@ -47,7 +47,7 @@ export default function HomePageClient() {
     "Nuestra ubicación",
     "Cabo de Palos, Cartagena",
     "Nos encontramos en Cabo de Palos, uno de los corazones del turismo de la costa mediterránea, desde donde ofrecemos nuestros servicios tanto de gestión como de traducción.",
-    "Destacamos en llevar a cabo un servicio cercano de principio a fin, con atención directa y seguimiento real en cada proceso, para que cada cliente se sienta acompañado y seguro en cada paso de su compra, venta, alquiler o gestión de documentos y citas.",
+    "Destacamos en llevar a cabo un servicio cercano de principio a fin, con atención directa y seguimiento real en cada proceso, para que cada cliente se sienta acompañado y seguro en cada paso de su compra, venta o gestión de documentos y citas.",
     "Nos movemos por toda la Región de Murcia, llegando también a zonas como Alicante o Almería, con la seguridad de que estaremos ahí donde se nos necesite.",
     "Atendemos a clientes nacionales e internacionales que buscan un servicio profesional, cercano y humano, especialmente en español y alemán.",
     "Dirección:",
@@ -56,8 +56,8 @@ export default function HomePageClient() {
 
     // Sección: Nuestros servicios
     "Nuestros servicios",
-    "Compraventa, búsqueda de propiedades y gestión de alquileres",
-    "Acompañamiento personal en compraventa, búsqueda de propiedades para clientes y gestión de alquileres para propietarios, con seguimiento completo hasta el final.",
+    "Compraventa y búsqueda de propiedades",
+    "Acompañamiento personal en compraventa y búsqueda de propiedades para clientes, con seguimiento completo hasta el final.",
     "Traducción, interpretación y acompañamiento",
     "Español y alemán principalmente, también inglés, para documentos, citas y gestiones donde necesita a alguien a su lado: NIE, notaría, ayuntamiento, médicos y más.",
     "¿Desea que estudiemos su caso?",
@@ -65,7 +65,7 @@ export default function HomePageClient() {
 
     // CTA final
     "Cuando algo importante ocurre, no debería estar solo.",
-    "Somos una agencia de gestión y acompañamiento, no una inmobiliaria. Le ayudamos en compras, ventas, búsqueda de propiedades, alquileres, traducciones y gestiones administrativas para que cada proceso se viva con claridad y confianza.",
+    "Somos una agencia de gestión y acompañamiento, no una inmobiliaria. Le ayudamos en compras, ventas, búsqueda de propiedades, traducciones y gestiones administrativas para que cada proceso se viva con claridad y confianza.",
     "Contactar",
   ];
 

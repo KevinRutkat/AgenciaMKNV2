@@ -70,7 +70,7 @@ export default function ContactoPage() {
   const textsToTranslate = [
     // Banner
     "Contáctanos",
-    "Estamos aquí para ayudarte en la venta de una vivienda, en la gestión de un alquiler o en una traducción e interpretación cercana para trámites importantes.",
+    "Estamos aquí para ayudarte en la venta o búsqueda de una vivienda, o en una traducción e interpretación cercana para trámites importantes.",
 
     // Formulario
     "Envíanos un mensaje",
@@ -82,7 +82,7 @@ export default function ContactoPage() {
     "Teléfono *",
     "+34 123 456 789",
     "Motivo del contacto *",
-    "Cuéntenos su consulta (venta, gestión de alquiler, médico, hospital, notaría, banco, traducción, etc.)",
+    "Cuéntenos su consulta (venta, búsqueda de vivienda, médico, hospital, notaría, banco, traducción, etc.)",
     "Enviando…",
     "Enviar mensaje",
 
@@ -99,7 +99,7 @@ export default function ContactoPage() {
     "30370 Cabo de Palos",
     "Murcia, España",
     "Horario de atención",
-    "Lunes a viernes: 16:00 - 21:00",
+    "Lunes a viernes: 11:00 - 15:00",
     "Fines de semana o fuera de horario: con cita previa",
 
     // Mapa

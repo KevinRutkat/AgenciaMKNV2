@@ -3,7 +3,7 @@ import { getLanguageAlternates } from "@/lib/i18n";
 
 const title = "Propiedades en Cabo de Palos y La Manga";
 const description =
-  "Explora viviendas en venta y alquiler en Cabo de Palos, La Manga y Cartagena con fotos, precios y detalles actualizados.";
+  "Explora viviendas en venta en Cabo de Palos, La Manga y Cartagena con fotos, precios y detalles actualizados.";
 
 const collectionSchema = {
   "@context": "https://schema.org",

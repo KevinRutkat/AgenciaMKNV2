@@ -6,7 +6,7 @@ const metadataByLocale: Record<Exclude<SeoLocale, "es">, { title: string; descri
   en: {
     title: "Real estate services and language support",
     description:
-      "Home sales, rental management for owners, administrative support and Spanish, German and English translation in Cabo de Palos, La Manga and Cartagena.",
+      "Home sales, property searches, administrative support and Spanish, German and English translation in Cabo de Palos, La Manga and Cartagena.",
   },
   de: {
     title: "Immobiliendienstleistungen und sprachliche Begleitung",

@@ -3,7 +3,7 @@ import { getLanguageAlternates } from "@/lib/i18n";
 
 const title = "Servicios inmobiliarios y acompañamiento lingüístico";
 const description =
-  "Servicios de venta de viviendas, gestión de alquileres para propietarios y traducción e interpretación cercana en Cabo de Palos, La Manga y Cartagena.";
+  "Servicios de venta de viviendas, búsqueda de propiedades y traducción e interpretación cercana en Cabo de Palos, La Manga y Cartagena.";
 
 const servicesSchema = {
   "@context": "https://schema.org",
@@ -36,7 +36,7 @@ const servicesSchema = {
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: "Gestión de alquileres para propietarios",
+          name: "Búsqueda de propiedades para clientes",
         },
       },
       {

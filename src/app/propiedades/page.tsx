@@ -5,11 +5,11 @@ import { supabase, Vivienda, ViviendaImage } from "@/lib/supabase";
 import ViviendaCard from "@/components/ViviendaCard";
 import Banner from "@/components/Banner";
 import { useMultipleTranslations } from "@/hooks/useTranslation";
+import { isRentListing } from "@/lib/viviendaUtils";
 import { motion } from "motion/react";
 import type { Variants } from "motion/react";
 import {
   Squares2X2Icon,
-  KeyIcon,
   ArrowPathIcon,
   SparklesIcon,
   AdjustmentsHorizontalIcon,
@@ -38,7 +38,6 @@ export default function PropiedadesPage() {
     // Filtros y categorias
     "Todas",
     "Destacadas",
-    "Alquileres",
     "Usadas",
     "Sin estrenar",
     "Otros",
@@ -63,7 +62,6 @@ export default function PropiedadesPage() {
     loadingText,
     todasLabel,
     destacadasLabel,
-    alquileresLabel,
     usadasLabel,
     nuevasLabel,
     otrosLabel,
@@ -95,7 +93,7 @@ export default function PropiedadesPage() {
       if (error) {
         console.error("Error fetching viviendas:", error);
       } else {
-        setViviendas(data || []);
+        setViviendas((data || []).filter((v) => !isRentListing(v)));
       }
     } catch (error) {
       console.error("Error:", error);
@@ -133,15 +131,6 @@ export default function PropiedadesPage() {
 
   // Filtrar viviendas por categorias segun los datos de Supabase
   const propiedadesDestacadas = viviendas.filter((v) => v.is_featured === true);
-
-  const alquileres = viviendas.filter(
-    (v) =>
-      v.is_rent === true ||
-      (v.category && v.category.toLowerCase() === "alquiler") ||
-      (v.property_type &&
-        v.property_type.toLowerCase().includes("alquiler")) ||
-      (v.name && v.name.toLowerCase().includes("alquiler")),
-  );
 
   const viviendasUsadas = viviendas.filter(
     (v) => v.category && v.category.toLowerCase() === "usada",
@@ -188,16 +177,6 @@ export default function PropiedadesPage() {
     switch (activeCategory) {
       case "destacadas":
         filtered = filtered.filter((v) => v.is_featured === true);
-        break;
-      case "alquileres":
-        filtered = filtered.filter(
-          (v) =>
-            v.is_rent === true ||
-            (v.category && v.category.toLowerCase() === "alquiler") ||
-            (v.property_type &&
-              v.property_type.toLowerCase().includes("alquiler")) ||
-            (v.name && v.name.toLowerCase().includes("alquiler")),
-        );
         break;
       case "usadas":
         filtered = filtered.filter(
@@ -300,7 +279,6 @@ export default function PropiedadesPage() {
               {[
                 { id: "todas",      label: todasLabel,      count: viviendas.length,            icon: Squares2X2Icon },
                 { id: "destacadas", label: destacadasLabel,  count: propiedadesDestacadas.length, icon: StarIcon },
-                { id: "alquileres", label: alquileresLabel,  count: alquileres.length,            icon: KeyIcon },
                 { id: "usadas",     label: usadasLabel,      count: viviendasUsadas.length,       icon: ArrowPathIcon },
                 { id: "nuevas",     label: nuevasLabel,      count: sinEstrenar.length,           icon: SparklesIcon },
                 { id: "otros",      label: otrosLabel,       count: otros.length,                 icon: AdjustmentsHorizontalIcon },

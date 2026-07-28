@@ -6,7 +6,7 @@ const metadataByLocale: Record<Exclude<SeoLocale, "es">, { title: string; descri
   en: {
     title: "Contact Agencia MKN",
     description:
-      "Contact Agencia MKN to sell a property, manage a rental or receive Spanish, German and English translation support in Cabo de Palos, La Manga and Cartagena.",
+      "Contact Agencia MKN to sell or find a property, or receive Spanish, German and English translation support in Cabo de Palos, La Manga and Cartagena.",
   },
   de: {
     title: "Kontakt Agencia MKN",

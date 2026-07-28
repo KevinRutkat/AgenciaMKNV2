@@ -26,7 +26,7 @@ export default function ServiciosPage() {
 
     // Títulos de secciones
     "Gestión de viviendas",
-    "Acompañamiento personal en compraventa, búsqueda de propiedades y gestión de alquileres para propietarios",
+    "Acompañamiento personal en compraventa y búsqueda de propiedades",
     "Servicios de traducción",
     "No solo traducimos, hacemos acompañamiento completo y personalizado a todos nuestros clientes. Ayudamos en medicos, hospitales, notarias, bancos o ayuntamientos.",
 
