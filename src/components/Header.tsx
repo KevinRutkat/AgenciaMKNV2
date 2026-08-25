@@ -10,6 +10,7 @@ import Logo from "./Logo";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
   ClockIcon,
+  SunIcon,
   HomeIcon,
   BuildingOffice2Icon,
   BriefcaseIcon,
@@ -38,6 +39,9 @@ export default function Header() {
   const contactoTextTranslated = useTranslation("Contacto");
   const anadirPropiedadTextTranslated = useTranslation("Añadir propiedad");
   const cerrarSesionTextTranslated = useTranslation("Cerrar sesión");
+  const vacationNoticeTextTranslated = useTranslation(
+    "Estamos cerrados por vacaciones hasta el 31 de agosto."
+  );
 
   // Fallback de texto hasta que hydrate el cliente
   const inicioText = mounted ? inicioTextTranslated : "Inicio";
@@ -50,6 +54,9 @@ export default function Header() {
   const cerrarSesionText = mounted
     ? cerrarSesionTextTranslated
     : "Cerrar sesión";
+  const vacationNoticeText = mounted
+    ? vacationNoticeTextTranslated
+    : "Estamos cerrados por vacaciones hasta el 31 de agosto.";
 
   useEffect(() => {
     setMounted(true);
@@ -112,6 +119,16 @@ export default function Header() {
 
   return (
     <header className="bg-white/95 backdrop-blur-md border-b border-neutral-gray/60 shadow-[0_1px_8px_rgba(0,0,0,0.06)] sticky top-0 z-40">
+      <div
+        className="bg-accent-coral text-white px-4 py-2"
+        role="status"
+        aria-label={vacationNoticeText}
+      >
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-center text-sm sm:text-base font-semibold">
+          <SunIcon className="h-5 w-5 shrink-0" aria-hidden="true" />
+          <span>{vacationNoticeText}</span>
+        </div>
+      </div>
       <nav
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
         aria-label="Navegación principal"
